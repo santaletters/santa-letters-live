@@ -32257,4 +32257,3 @@ app.post("/make-server-cf244566/admin/update-settings", async (c) => {
     return c.json({ error: error.message }, 500);
   }
 });
-*/

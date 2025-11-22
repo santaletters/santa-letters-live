@@ -4,8 +4,11 @@ import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Alert, AlertDescription } from "./ui/alert";
 import { CheckCircle, Loader2, Gift, Sparkles } from "lucide-react";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
+
+// Placeholder images
+const santaMagicalJourneyProduct = "https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=800";
+const northPoleSnowImage = "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800";
 
 interface UpsellProduct {
   id: string;

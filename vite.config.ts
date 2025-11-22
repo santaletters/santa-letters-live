@@ -26,6 +26,13 @@ export default defineConfig({
           'charts': ['recharts']
         }
       }
+    },
+    commonjsOptions: {
+      transformMixedEsModules: true,
+      include: [/node_modules/]
     }
+  },
+  optimizeDeps: {
+    include: ['react-slick']
   }
 });

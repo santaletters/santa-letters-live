@@ -562,11 +562,6 @@ function CheckoutInner({ letterPackages, onBack, onAddAnotherLetter, onEditPacka
     }
   }, []);
 
-  // Scroll to top when checkout page loads
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
-
   // 🎯 TRACKDESK LEAD CONVERSION - Fire when checkout page loads (customer reached checkout)
   useEffect(() => {
     console.log('📊 Firing Trackdesk LEAD conversion - customer reached checkout...');

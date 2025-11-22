@@ -36,6 +36,13 @@ type Step = "home" | "sales" | "form" | "checkout" | "success" | "admin" | "admi
 const STORAGE_KEY = "santaLetterData";
 
 export default function App() {
+  // Disable browser scroll restoration to prevent scroll position issues
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
+
   const [currentStep, setCurrentStep] = useState<Step>(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const path = window.location.pathname;
@@ -160,6 +167,9 @@ export default function App() {
 
   // Update URL when step changes (for better UX and bookmarking)
   useEffect(() => {
+    // Scroll to top immediately when step changes
+    window.scrollTo(0, 0);
+    
     const urlParams = new URLSearchParams(window.location.search);
     
     // Preserve important params

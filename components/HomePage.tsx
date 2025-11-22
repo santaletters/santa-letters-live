@@ -454,7 +454,7 @@ export function HomePage({
         {/* Santa's Certified Letter Image */}
         <div className="flex justify-center mt-12">
           <ImageWithFallback
-            src="https://images.unsplash.com/photo-1715173679369-18006e84d6a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW50YSUyMGNsYXVzJTIwY2VydGlmaWNhdGUlMjBsZXR0ZXJ8ZW58MXx8fHwxNzYzNzYyMzc1fDA&ixlib=rb-4.1.0&q=80&w=1080"
+            src="https://cdn.shopify.com/s/files/1/0711/9051/1843/files/4d484cc2510b3a1036e91ef46df30ebe51686c70.avif?v=1763846538"
             alt="Santa's Certified Letter"
             className="max-w-full h-auto w-full max-w-md rounded-lg"
           />

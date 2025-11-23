@@ -15,21 +15,21 @@ import { getAffiliateAttribution } from "../utils/affiliateTracking";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 
 // Unsplash Images
-const santaGiftsImage = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/60b2ae5dc77e0e237abbc5859153be375fa7f0b1.avif?v=1763928554";
+const santaGiftsImage = "https://images.unsplash.com/photo-1703753936800-593a07d2285b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW50YSUyMGNsYXVzJTIwZ2lmdHMlMjBwcmVzZW50c3xlbnwxfHx8fDE3NjM3NjIzNzV8MA&ixlib=rb-4.1.0&q=80&w=1080";
 const snowmanFooter = "https://images.unsplash.com/photo-1704394603705-0c30d98e67bc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaHJpc3RtYXMlMjBzbm93bWFuJTIwZGVjb3JhdGlvbnxlbnwxfHx8fDE3NjM3NjIzNzZ8MA&ixlib=rb-4.1.0&q=80&w=1080";
-const santaLogo = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/b444d373622fedd368dc701ca8031ce3422ae4be.avif?v=1763928554";
-const redRibbonBanner = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/471ddb56d9e5034f7977013e6d0669b15d2fa215.avif?v=1763928554";
-const santaWithGifts = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/60b2ae5dc77e0e237abbc5859153be375fa7f0b1.avif?v=1763928554";
-const moneyBackBadge = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/04c09fcb5cc765ed7acc2af3b35a32e26ebcdf9f.avif?v=1763928685";
-const safeCheckoutBanner = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/270a4a0ebfad685f13bb95414708fce2370124a5.avif?v=1763928685";
-const trustBadges = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/ce1e59c1c1e6dd0813685929db1f180cd65e79a4.avif?v=1763928685";
-const cardLogos = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/2c701446b95632e44dfa02744e06390f3611d48e.avif?v=1763928685";
+const santaLogo = "https://images.unsplash.com/photo-1762417582191-e69cd1cb0609?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW50YSUyMGNsYXVzJTIwbG9nb3xlbnwxfHx8fDE3NjM3NjIzNzZ8MA&ixlib=rb-4.1.0&q=80&w=1080";
+const redRibbonBanner = "https://images.unsplash.com/photo-1544724586-e364c71e2b55?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyZWQlMjByaWJib24lMjBiYW5uZXJ8ZW58MXx8fHwxNzYzNzYyMzc2fDA&ixlib=rb-4.1.0&q=80&w=1080";
+const santaWithGifts = "https://images.unsplash.com/photo-1703753936800-593a07d2285b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW50YSUyMGNsYXVzJTIwZ2lmdHMlMjBwcmVzZW50c3xlbnwxfHx8fDE3NjM3NjIzNzV8MA&ixlib=rb-4.1.0&q=80&w=1080";
+const moneyBackBadge = "https://images.unsplash.com/photo-1728057213505-775a6ebebf29?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25leSUyMGJhY2slMjBndWFyYW50ZWUlMjBiYWRnZXxlbnwxfHx8fDE3NjM3NjIzNzd8MA&ixlib=rb-4.1.0&q=80&w=1080";
+const safeCheckoutBanner = "https://images.unsplash.com/photo-1580062329539-c76d0cce5c4c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzZWN1cmUlMjBwYXltZW50JTIwYmFkZ2VzfGVufDF8fHx8MTc2Mzc2MjM3N3ww&ixlib=rb-4.1.0&q=80&w=1080";
+const trustBadges = "https://images.unsplash.com/photo-1580062329539-c76d0cce5c4c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzZWN1cmUlMjBwYXltZW50JTIwYmFkZ2VzfGVufDF8fHx8MTc2Mzc2MjM3N3ww&ixlib=rb-4.1.0&q=80&w=1080";
+const cardLogos = "https://images.unsplash.com/photo-1658842244540-883aff68fb78?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjcmVkaXQlMjBjYXJkJTIwbG9nb3N8ZW58MXx8fHwxNzYzNzYyMzc4fDA&ixlib=rb-4.1.0&q=80&w=1080";
 
 // Stripe Publishable Key (safe to expose in frontend)
 const STRIPE_PUBLISHABLE_KEY = 'pk_live_51SIHQT2NsH2CKfRANHrn5PsrTTnvRY0t5QStLGW8W3ihy4dhFVhDX4ZIP3lrOYhA1HPtnflUgDAhDxEZ0TgNB1V000lsmZhQBB';
 const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
 
-// Trackdesk Conversion Tracking - Fire immediately after successful payment
+// Trackdesk Pixel Conversion Tracking - Fire using frontend pixel
 function fireTrackdeskConversion(
   orderId: string, 
   customerEmail: string, 
@@ -37,7 +37,7 @@ function fireTrackdeskConversion(
   numberOfPackages: number,
   hasSubscription: boolean
 ) {
-  console.log('📊 Firing Trackdesk conversion via advertiser postback...');
+  console.log('📊 Firing Trackdesk SALE conversion via pixel...');
   
   // Check if conversion already fired for this order (prevent duplicates)
   const conversionKey = `trackdesk_conversion_${orderId}`;
@@ -46,44 +46,26 @@ function fireTrackdeskConversion(
     return;
   }
 
-  // Get the Trackdesk CID from sessionStorage
-  const cid = sessionStorage.getItem('trackdesk_cid');
-  
-  if (!cid) {
-    console.warn('⚠️ No Trackdesk CID found - skipping conversion tracking');
+  // Check if trackdesk function is available
+  if (typeof (window as any).trackdesk !== 'function') {
+    console.warn('⚠️ Trackdesk pixel not loaded - skipping conversion tracking');
     return;
   }
 
   try {
-    // Fire the conversion postback to our backend (which forwards to Trackdesk)
-    fetch(`https://${projectId}.supabase.co/functions/v1/make-server-cf244566/trackdesk/conversion`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${publicAnonKey}`,
-      },
-      body: JSON.stringify({
-        cid: cid,
-        amount: totalRevenue,
-        externalId: orderId,
-        customerId: customerEmail,
-        advS1: `packages_${numberOfPackages}`,
-        advS2: hasSubscription ? 'with_subscription' : 'one_time',
-        advS3: `revenue_${totalRevenue.toFixed(2)}`,
-        status: 'CONVERSION_STATUS_APPROVED'
-      }),
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log('✅ Trackdesk conversion postback fired successfully:', data);
-        // Mark as fired
-        sessionStorage.setItem(conversionKey, 'true');
-      })
-      .catch(error => {
-        console.error('❌ Error firing Trackdesk conversion:', error);
-      });
+    // Fire SALE conversion using Trackdesk pixel (BEFORE upsell)
+    // Value is passed directly as the transaction amount
+    (window as any).trackdesk('directwebinteractive', 'conversion', {
+      conversionType: 'sale',
+      amount: totalRevenue  // Transaction value in dollars
+    });
+
+    console.log(`✅ Trackdesk SALE conversion fired - Amount: $${totalRevenue.toFixed(2)}`);
+    
+    // Mark as fired
+    sessionStorage.setItem(conversionKey, 'true');
   } catch (error) {
-    console.error('❌ Error preparing Trackdesk conversion:', error);
+    console.error('❌ Error firing Trackdesk conversion:', error);
   }
 }
 
@@ -564,7 +546,7 @@ function CheckoutInner({ letterPackages, onBack, onAddAnotherLetter, onEditPacka
 
   // 🎯 TRACKDESK LEAD CONVERSION - Fire when checkout page loads (customer reached checkout)
   useEffect(() => {
-    console.log('📊 Firing Trackdesk LEAD conversion - customer reached checkout...');
+    console.log('📊 Firing Trackdesk LEAD conversion via pixel...');
     
     // Check if we already fired the lead conversion for this session
     const leadKey = `trackdesk_lead_fired`;
@@ -573,42 +555,25 @@ function CheckoutInner({ letterPackages, onBack, onAddAnotherLetter, onEditPacka
       return;
     }
 
-    // Get the Trackdesk CID from sessionStorage
-    const cid = sessionStorage.getItem('trackdesk_cid');
-    
-    if (!cid) {
-      console.warn('⚠️ No Trackdesk CID found - skipping lead tracking');
+    // Check if trackdesk function is available
+    if (typeof (window as any).trackdesk !== 'function') {
+      console.warn('⚠️ Trackdesk pixel not loaded - skipping lead tracking');
       return;
     }
 
     try {
-      console.log('📊 Firing Trackdesk LEAD conversion via advertiser postback...');
+      // Fire LEAD conversion using Trackdesk pixel (when customer fills out info)
+      // NO value passed - just fire the pixel
+      (window as any).trackdesk('directwebinteractive', 'conversion', {
+        conversionType: 'lead'
+      });
 
-      // Fire the lead postback to our backend (which forwards to Trackdesk)
-      fetch(`https://${projectId}.supabase.co/functions/v1/make-server-cf244566/trackdesk/lead`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${publicAnonKey}`,
-        },
-        body: JSON.stringify({
-          cid: cid,
-          advS1: `cart_value_${grandTotal.toFixed(2)}`,
-          advS2: `packages_${letterPackages.length}`,
-          advS3: monthlySubscription ? 'with_subscription' : 'one_time',
-        }),
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log('✅ Trackdesk LEAD postback fired successfully:', data);
-          // Mark as fired
-          sessionStorage.setItem(leadKey, 'true');
-        })
-        .catch(error => {
-          console.error('❌ Error firing Trackdesk lead:', error);
-        });
+      console.log('✅ Trackdesk LEAD conversion fired (no value passed)');
+      
+      // Mark as fired
+      sessionStorage.setItem(leadKey, 'true');
     } catch (error) {
-      console.error('❌ Error preparing Trackdesk lead:', error);
+      console.error('❌ Error firing Trackdesk lead:', error);
     }
   }, []); // Fire once on mount
 

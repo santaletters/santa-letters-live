@@ -257,8 +257,7 @@ export default function App() {
   const handlePackageSelect = (packageType: 'basic' | 'deluxe' | 'premium' | null) => {
     console.log("📦 Package selected:", packageType || 'funnel (no type)');
     setSelectedPackage(packageType || 'funnel');
-    // Redirect to PHP letterform
-    window.location.href = '/letterform.php';
+    setCurrentStep("form");
   };
 
   const handleFormComplete = (data: any) => {
@@ -511,7 +510,7 @@ export default function App() {
         
         {currentStep === "home" && (
           <HomePage
-            onSelectPackage={handleSelectPackage}
+            onSelectPackage={handlePackageSelect}
             cartItems={cartItems}
             onAddToCart={handleAddToCart}
             onUpdateCartQuantity={handleUpdateCartQuantity}
@@ -522,7 +521,7 @@ export default function App() {
         
         {currentStep === "sales" && (
           <SalesPage
-            onOrderNow={() => handleSelectPackage()} 
+            onOrderNow={() => handlePackageSelect(null)} 
           />
         )}
 

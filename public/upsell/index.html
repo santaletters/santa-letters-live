@@ -148,8 +148,8 @@
         // Initialize Stripe
         const stripe = Stripe('pk_live_51SIHQT2NsH2CKfRANHrn5PsrTTnvRY0t5QStLGW8W3ihy4dhFVhDX4ZIP3lrOYhA1HPtnflUgDAhDxEZ0TgNB1V000lsmZhQBB');
         
-        // Get order token
-        const orderToken = localStorage.getItem('currentOrderToken');
+        // Get order token from localStorage (saved by checkout page)
+        const orderToken = localStorage.getItem('orderAccessToken'); // FIXED: was 'currentOrderToken'
         
         // Quantity management
         let quantity = 1;

@@ -10,6 +10,7 @@ import { SnowUpsell } from "./components/SnowUpsell";
 import { SnowDownsell } from "./components/SnowDownsell";
 import { TrackdeskPixel } from "./components/TrackdeskPixel";
 import { TrackdeskDebug } from "./components/TrackdeskDebug";
+import { TrackdeskMaster } from "./components/TrackdeskMaster";
 import { projectId, publicAnonKey } from "./utils/supabase/info";
 import type { CartItem } from "./components/CartDrawer";
 
@@ -495,6 +496,7 @@ export default function App() {
         {/* Trackdesk Click Tracking - Loads on every page */}
         <TrackdeskPixel />
         <TrackdeskDebug />
+        <TrackdeskMaster />
         
         {currentStep === "home" && (
           <HomePage

@@ -6,7 +6,7 @@
     <title>Checkout - Letters From Santa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://js.stripe.com/v3/"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Trackdesk LEAD Pixel - Fires when checkout page loads -->
     <script>
@@ -32,188 +32,308 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        .pacifico { 
+            font-family: 'Pacifico', cursive; 
+        }
+        .star {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 2rem;
+            animation: twinkle 3s infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-b from-blue-900 via-blue-800 to-blue-700">
+<body class="min-h-screen bg-white">
     
     <!-- Promo Banner -->
-    <div class="bg-red-600 text-white text-center pt-3 pb-2 md:pt-2 md:pb-2">
-        <p>🎄 Get 30% OFF + FREE Shipping + 2 Bonus Gifts! 🎄</p>
+    <div class="bg-red-600 text-white text-center py-2">
+        <p class="font-semibold">🎄 Get 30% OFF + FREE Shipping + 2 Bonus Gifts! 🎄</p>
         <p class="text-sm">Family Owned and Operated. All orders shipped from the USA!</p>
     </div>
 
-    <!-- Header -->
-    <div class="relative bg-gradient-to-b from-blue-900 to-blue-800 text-white overflow-hidden pt-4 pb-10">
-        <div class="container mx-auto px-4 py-6 text-center">
-            <h1 class="text-3xl md:text-4xl font-bold">🔒 Secure Checkout</h1>
-            <p class="text-blue-100 mt-2">Your information is safe and encrypted</p>
-            
-            <!-- Guaranteed SAFE Checkout Section -->
-            <div class="mt-6 max-w-4xl mx-auto">
-                <img src="https://images.unsplash.com/photo-1687720106084-d6e235ad226c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYXltZW50JTIwY3JlZGl0JTIwY2FyZHMlMjBzZWN1cmV8ZW58MXx8fHwxNzY0MDExNDIzfDA&ixlib=rb-4.1.0&q=80&w=1080" alt="Guaranteed Safe Checkout - Visa, Mastercard, American Express, Discover, PayPal" class="w-full h-auto rounded-lg shadow-xl">
+    <!-- Header with Santa - Same as letterform -->
+    <div class="relative bg-gradient-to-b from-blue-900 via-blue-800 to-blue-700 text-white overflow-hidden py-8">
+        <!-- Decorative stars and snowflakes -->
+        <div class="star" style="top: 20px; left: 10%;">❄</div>
+        <div class="star" style="top: 50px; left: 80%;">★</div>
+        <div class="star" style="top: 80px; left: 20%;">★</div>
+        <div class="star" style="top: 40px; right: 15%;">❄</div>
+        <div class="star" style="top: 90px; left: 70%;">❄</div>
+        
+        <div class="container mx-auto px-4 relative">
+            <div class="grid md:grid-cols-3 items-center">
+                <!-- Left: Back to Letters + Logo -->
+                <div class="hidden md:flex items-center gap-4">
+                    <a href="/letterform/" class="flex items-center gap-2 bg-blue-800 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors">
+                        <span>←</span>
+                        <span>Back to Letters</span>
+                    </a>
+                    <img src="https://images.unsplash.com/photo-1762417582191-e69cd1cb0609?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW50YSUyMGNsYXVzJTIwbG9nbyUyMGNocmlzdG1hc3xlbnwxfHx8fDE3NjQwMTE3NDh8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Santa Logo" class="h-16 w-auto object-contain">
+                </div>
+                
+                <!-- Mobile Back Button -->
+                <div class="md:hidden mb-4">
+                    <a href="/letterform/" class="inline-flex items-center gap-2 bg-blue-800 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors text-sm">
+                        <span>←</span>
+                        <span>Back to Letters</span>
+                    </a>
+                </div>
+                
+                <!-- Center: Red Ribbon Banner -->
+                <div class="text-center">
+                    <div class="relative inline-block bg-red-600 px-8 py-4 rounded-lg shadow-lg transform -rotate-2">
+                        <div class="pacifico text-2xl md:text-3xl">🔒 Secure Checkout</div>
+                        <div class="pacifico text-xl md:text-2xl">Complete Your Order</div>
+                        <!-- Ribbon tails -->
+                        <div class="absolute -left-4 top-1/2 w-4 h-8 bg-red-700 transform -translate-y-1/2 -skew-y-6"></div>
+                        <div class="absolute -right-4 top-1/2 w-4 h-8 bg-red-700 transform -translate-y-1/2 skew-y-6"></div>
+                    </div>
+                </div>
+                
+                <!-- Right: Santa Image -->
+                <div class="hidden md:block text-right">
+                    <img src="https://images.unsplash.com/photo-1703753936800-593a07d2285b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW50YSUyMHByZXNlbnRzJTIwZ2lmdHN8ZW58MXx8fHwxNzY0MDExNzQ4fDA&ixlib=rb-4.1.0&q=80&w=1080" alt="Santa with gifts" class="h-48 w-auto object-contain ml-auto">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="bg-gray-50 py-6">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <div class="flex items-center justify-center gap-4 md:gap-8">
+                <!-- Step 1: Complete -->
+                <div class="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-full shadow-md">
+                    <div class="flex items-center justify-center w-8 h-8 bg-white text-green-500 rounded-full font-bold">✓</div>
+                    <span class="hidden md:inline font-semibold">Customize Letters</span>
+                </div>
+                
+                <div class="w-8 md:w-16 h-1 bg-green-500"></div>
+                
+                <!-- Step 2: Active -->
+                <div class="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-full shadow-md">
+                    <div class="flex items-center justify-center w-8 h-8 bg-white text-green-500 rounded-full font-bold">2</div>
+                    <span class="hidden md:inline font-semibold">Complete Order</span>
+                </div>
+                
+                <div class="w-8 md:w-16 h-1 bg-gray-300"></div>
+                
+                <!-- Step 3: Inactive -->
+                <div class="flex items-center gap-2 bg-gray-300 text-gray-600 px-4 py-2 rounded-full">
+                    <div class="flex items-center justify-center w-8 h-8 bg-white text-gray-600 rounded-full font-bold">3</div>
+                    <span class="hidden md:inline font-semibold">Letter Sent</span>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Main Content -->
-    <div class="relative">
-        <!-- White curve -->
-        <div class="absolute top-0 left-0 right-0 -translate-y-6">
-            <svg viewBox="0 0 1200 60" class="w-full h-16 fill-white">
-                <path d="M0,60 C300,0 900,0 1200,60 L1200,60 L0,60 Z"></path>
-            </svg>
-        </div>
+    <div class="bg-gray-50 py-12">
+        <div class="container mx-auto px-4 max-w-6xl">
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Left Column: Order Summary -->
+                <div class="lg:col-span-1 order-2 lg:order-1">
+                    <div class="bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-lg p-6 border-2 border-blue-100">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Order Summary</h2>
+                        <div id="order-items" class="space-y-3 mb-6"></div>
+                        
+                        <div class="border-t-2 border-gray-200 pt-4 mb-4 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Sub Total (1 package):</span>
+                                <span class="font-semibold" id="subtotal">$0.00</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Shipping:</span>
+                                <span class="font-semibold text-green-600">Free</span>
+                            </div>
+                            <div class="flex justify-between items-center font-bold text-gray-900">
+                                <span>Total Today</span>
+                                <span id="total">$0.00</span>
+                            </div>
+                        </div>
 
-        <div class="bg-white pb-12 pt-12">
-            <div class="container mx-auto px-4 max-w-6xl">
-                <div class="grid lg:grid-cols-3 gap-8">
-                    <!-- Left Column: Order Summary -->
-                    <div class="lg:col-span-1 order-2 lg:order-1">
-                        <div class="bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-lg p-6 sticky top-4 border-2 border-blue-100">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-4">📋 Order Summary</h2>
-                            <div id="order-items" class="space-y-3 mb-6"></div>
-                            
-                            <div class="border-t-2 border-gray-200 pt-4 mb-4 space-y-2">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-gray-600">Subtotal:</span>
-                                    <span class="font-semibold" id="subtotal">$0.00</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-gray-600">Shipping:</span>
-                                    <span class="font-semibold text-green-600">FREE</span>
-                                </div>
-                                <div class="flex justify-between items-center text-2xl font-bold text-blue-900">
-                                    <span>Total:</span>
-                                    <span id="total">$0.00</span>
+                        <button id="edit-letters-btn" class="w-full bg-white hover:bg-gray-50 text-blue-600 border-2 border-blue-600 px-4 py-2.5 rounded-lg font-semibold transition-all mb-2 flex items-center justify-center gap-2">
+                            <span>✏️</span> Edit
+                        </button>
+                        <button id="add-another-btn" class="w-full bg-white hover:bg-gray-50 text-blue-600 border-2 border-blue-600 px-4 py-2.5 rounded-lg font-semibold transition-all flex items-center justify-center gap-2">
+                            + Add Another Letter
+                        </button>
+                    </div>
+
+                    <!-- Money Back Guarantee Section -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-2 border-gray-100 mt-6 text-center">
+                        <img src="https://images.unsplash.com/photo-1728057213505-775a6ebebf29?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25leSUyMGJhY2slMjBndWFyYW50ZWUlMjBiYWRnZXxlbnwxfHx8fDE3NjQwMTE3NDd8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="100% Money Back Guarantee" class="w-32 h-32 mx-auto mb-4 object-contain">
+                        <h3 class="font-bold text-gray-900 mb-2">100% Money Back Guarantee</h3>
+                        <p class="text-sm text-gray-600 mb-2">If your child doesn't absolutely love their letter, we'll issue you a full 100% refund</p>
+                        <p class="text-sm text-gray-500">No Questions - No Hassle - No Waiting</p>
+                    </div>
+                </div>
+
+                <!-- Right Column: Payment Form -->
+                <div class="lg:col-span-2 order-1 lg:order-2">
+                    <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 border-2 border-gray-100">
+                        
+                        <!-- Guaranteed Safe Checkout Image -->
+                        <div class="mb-6">
+                            <img src="https://images.unsplash.com/photo-1687720106084-d6e235ad226c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYXltZW50JTIwY3JlZGl0JTIwY2FyZHMlMjBzZWN1cmV8ZW58MXx8fHwxNzY0MDExNDIzfDA&ixlib=rb-4.1.0&q=80&w=1080" alt="Guaranteed Safe Checkout - Visa, Mastercard, American Express, Discover" class="w-full h-auto rounded-lg">
+                        </div>
+
+                        <form id="payment-form">
+                            <!-- Shipping Date Selection -->
+                            <div class="mb-6 p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
+                                <label class="block font-bold text-gray-800 mb-3">📅 When should we ship your letter? *</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center p-3 bg-white rounded-lg border-2 border-gray-200 cursor-pointer hover:border-blue-500 transition-all">
+                                        <input type="radio" name="shippingDate" value="dec15" class="mr-3 w-5 h-5" checked>
+                                        <div>
+                                            <div class="font-semibold">Ship December 15th</div>
+                                            <div class="text-sm text-gray-600">Perfect timing to arrive before Christmas!</div>
+                                        </div>
+                                    </label>
+                                    <label class="flex items-center p-3 bg-white rounded-lg border-2 border-gray-200 cursor-pointer hover:border-blue-500 transition-all">
+                                        <input type="radio" name="shippingDate" value="dec1" class="mr-3 w-5 h-5">
+                                        <div>
+                                            <div class="font-semibold">Ship December 1st</div>
+                                            <div class="text-sm text-gray-600">Early arrival for maximum excitement!</div>
+                                        </div>
+                                    </label>
+                                    <label class="flex items-center p-3 bg-white rounded-lg border-2 border-gray-200 cursor-pointer hover:border-blue-500 transition-all">
+                                        <input type="radio" name="shippingDate" value="now" class="mr-3 w-5 h-5">
+                                        <div>
+                                            <div class="font-semibold">Ship Immediately</div>
+                                            <div class="text-sm text-gray-600">Get it as soon as possible!</div>
+                                        </div>
+                                    </label>
                                 </div>
                             </div>
 
-                            <button id="edit-letters-btn" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2.5 rounded-lg font-semibold transition-all mb-2 flex items-center justify-center gap-2">
-                                <span>✏️</span> Edit Letters
+                            <!-- Monthly Subscription Upsell -->
+                            <div class="mb-6 p-5 bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow-lg">
+                                <div class="flex items-start gap-3">
+                                    <input type="checkbox" id="monthlySubscription" class="mt-1 w-6 h-6 accent-white">
+                                    <div class="flex-1">
+                                        <label for="monthlySubscription" class="cursor-pointer">
+                                            <div class="font-bold text-white text-lg mb-2">🎁 YES! Add Santa's Magical Journey + Get 2 FREE GIFTS!</div>
+                                            <div class="text-white mb-3">Keep the magic alive all year! Get a personalized letter from Santa every month.</div>
+                                            
+                                            <!-- Bonus Gifts Box -->
+                                            <div class="bg-white bg-opacity-20 rounded-lg p-3 mb-3 text-white">
+                                                <p class="font-semibold mb-2">✨ Your 2 FREE Bonus Gifts:</p>
+                                                <p class="text-sm">🏭 Santa's Workshop VIP Badge</p>
+                                                <p class="text-sm">😇 Nice List Gold Pass</p>
+                                                <p class="text-xs mt-2 italic">Both authorized with a personalized Autographed Photo of Santa!</p>
+                                            </div>
+                                            
+                                            <div class="text-white text-sm">
+                                                Only <span class="font-bold text-xl">$12/month</span> (1 child x $12) starting in January. Cancel anytime with no hassle!
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h2 class="text-2xl font-bold text-gray-800 mb-6 bg-blue-900 text-white p-4 rounded-lg flex items-center gap-2">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                </svg>
+                                Payment Information
+                            </h2>
+                            
+                            <!-- We Accept Cards -->
+                            <div class="mb-6 flex items-center gap-3">
+                                <span class="font-semibold text-gray-700">We Accept:</span>
+                                <div class="flex gap-2">
+                                    <span class="text-xs bg-blue-600 text-white px-2 py-1 rounded">VISA</span>
+                                    <span class="text-xs bg-red-600 text-white px-2 py-1 rounded">MC</span>
+                                    <span class="text-xs bg-blue-400 text-white px-2 py-1 rounded">AMEX</span>
+                                    <span class="text-xs bg-orange-500 text-white px-2 py-1 rounded">DISC</span>
+                                </div>
+                            </div>
+
+                            <!-- Billing Information -->
+                            <div class="grid md:grid-cols-2 gap-4 mb-6">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">First Name *</label>
+                                    <input type="text" id="firstName" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Last Name *</label>
+                                    <input type="text" id="lastName" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address *</label>
+                                <input type="email" id="email" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" placeholder="you@example.com" required>
+                                <p class="text-xs text-gray-500 mt-1">Order confirmation will be sent to this email</p>
+                            </div>
+
+                            <div class="mb-6">
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Phone Number *</label>
+                                <input type="tel" id="phone" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" placeholder="(555) 123-4567" required>
+                            </div>
+
+                            <div class="mb-6">
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Card Information</label>
+                                <div id="card-element" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-white"></div>
+                                <div id="card-errors" class="text-red-600 text-sm mt-2"></div>
+                            </div>
+
+                            <!-- Secured by Stripe Badge -->
+                            <div class="mb-6 flex items-center justify-center gap-2 text-sm text-gray-600">
+                                <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Secured by Stripe - Your payment info is safe
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" id="submit-button" class="w-full bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white px-8 py-4 rounded-lg font-bold text-xl transition-all shadow-lg hover:shadow-xl pacifico">
+                                <span id="button-text">🎅 Complete Order</span>
+                                <span id="spinner" class="hidden">Processing...</span>
                             </button>
-                            <button id="add-another-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-semibold transition-all flex items-center justify-center gap-2">
-                                <span>➕</span> Add Another Letter
-                            </button>
-                        </div>
-                    </div>
 
-                    <!-- Right Column: Payment Form -->
-                    <div class="lg:col-span-2 order-1 lg:order-2">
-                        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 border-2 border-gray-100">
-                            <form id="payment-form">
-                                <!-- Shipping Date Selection -->
-                                <div class="mb-6 p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
-                                    <label class="block font-bold text-gray-800 mb-3">📅 When should we ship your letter? *</label>
-                                    <div class="space-y-2">
-                                        <label class="flex items-center p-3 bg-white rounded-lg border-2 border-gray-200 cursor-pointer hover:border-blue-500 transition-all">
-                                            <input type="radio" name="shippingDate" value="dec15" class="mr-3 w-5 h-5" checked>
-                                            <div>
-                                                <div class="font-semibold">Ship December 15th</div>
-                                                <div class="text-sm text-gray-600">Perfect timing to arrive before Christmas!</div>
-                                            </div>
-                                        </label>
-                                        <label class="flex items-center p-3 bg-white rounded-lg border-2 border-gray-200 cursor-pointer hover:border-blue-500 transition-all">
-                                            <input type="radio" name="shippingDate" value="dec1" class="mr-3 w-5 h-5">
-                                            <div>
-                                                <div class="font-semibold">Ship December 1st</div>
-                                                <div class="text-sm text-gray-600">Early arrival for maximum excitement!</div>
-                                            </div>
-                                        </label>
-                                        <label class="flex items-center p-3 bg-white rounded-lg border-2 border-gray-200 cursor-pointer hover:border-blue-500 transition-all">
-                                            <input type="radio" name="shippingDate" value="now" class="mr-3 w-5 h-5">
-                                            <div>
-                                                <div class="font-semibold">Ship Immediately</div>
-                                                <div class="text-sm text-gray-600">Get it as soon as possible!</div>
-                                            </div>
-                                        </label>
-                                    </div>
-                                </div>
+                            <div class="text-center text-sm text-gray-500 mt-3">
+                                Please complete your card information above
+                            </div>
 
-                                <!-- Monthly Subscription Upsell -->
-                                <div class="mb-6 p-5 bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow-lg">
-                                    <div class="flex items-start gap-3">
-                                        <input type="checkbox" id="monthlySubscription" class="mt-1 w-6 h-6 accent-white">
-                                        <div class="flex-1">
-                                            <label for="monthlySubscription" class="cursor-pointer">
-                                                <div class="font-bold text-white text-lg mb-2">🎁 YES! Add Santa's Magical Journey + Get 2 FREE GIFTS!</div>
-                                                <div class="text-white mb-3">Keep the magic alive all year! Get a personalized letter from Santa every month.</div>
-                                                
-                                                <!-- Bonus Gifts Box -->
-                                                <div class="bg-white bg-opacity-20 rounded-lg p-3 mb-3 text-white">
-                                                    <p class="font-semibold mb-2">✨ Your 2 FREE Bonus Gifts:</p>
-                                                    <p class="text-sm">🏭 Santa's Workshop VIP Badge</p>
-                                                    <p class="text-sm">😇 Nice List Gold Pass</p>
-                                                    <p class="text-xs mt-2 italic">Both authorized with a personalized Autographed Photo of Santa!</p>
-                                                </div>
-                                                
-                                                <div class="text-white text-sm">
-                                                    Only <span class="font-bold text-xl">$12/month</span> (1 child x $12) starting in January. Cancel anytime with no hassle!
-                                                </div>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="text-center text-xs text-gray-500 mt-2">
+                                We accept Visa, Mastercard, American Express, and Discover
+                            </div>
 
-                                <h2 class="text-2xl font-bold text-gray-800 mb-6">💳 Payment Information</h2>
-                                
-                                <!-- Billing Information -->
-                                <div class="grid md:grid-cols-2 gap-4 mb-6">
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-1">First Name *</label>
-                                        <input type="text" id="firstName" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" required>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Last Name *</label>
-                                        <input type="text" id="lastName" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" required>
-                                    </div>
-                                </div>
+                            <div id="payment-message" class="mt-4 text-center"></div>
 
-                                <div class="mb-6">
-                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address *</label>
-                                    <input type="email" id="email" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" placeholder="you@example.com" required>
-                                    <p class="text-xs text-gray-500 mt-1">Order confirmation will be sent to this email</p>
-                                </div>
-
-                                <div class="mb-6">
-                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Phone Number *</label>
-                                    <input type="tel" id="phone" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" placeholder="(555) 123-4567" required>
-                                </div>
-
-                                <!-- Card Element -->
-                                <div class="mb-6">
-                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Card Information *</label>
-                                    <div id="card-element" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-white"></div>
-                                    <div id="card-errors" class="text-red-600 text-sm mt-2"></div>
-                                </div>
-
-                                <!-- Submit Button -->
-                                <button type="submit" id="submit-button" class="w-full bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all shadow-lg hover:shadow-xl">
-                                    <span id="button-text">Complete Order - <span id="button-total">$0.00</span></span>
-                                    <span id="spinner" class="hidden">Processing...</span>
-                                </button>
-
-                                <div id="payment-message" class="mt-4 text-center"></div>
-
-                                <!-- Trust Badges -->
-                                <div class="flex flex-wrap justify-center items-center gap-4 mt-6 pt-6 border-t-2 border-gray-100">
-                                    <div class="flex items-center gap-2 text-gray-600 text-sm">
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        Secure SSL Encryption
-                                    </div>
-                                    <div class="flex items-center gap-2 text-gray-600 text-sm">
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        Money Back Guarantee
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
+                            <!-- TrustLock Badges -->
+                            <div class="flex justify-center items-center gap-4 mt-8">
+                                <img src="https://images.unsplash.com/photo-1644203654347-b7bf8cd4cda5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzc2wlMjBzZWN1cmUlMjB0cnVzdCUyMGJhZGdlfGVufDF8fHx8MTc2NDAxMTc0OHww&ixlib=rb-4.1.0&q=80&w=1080" alt="SSL Secure" class="h-16 object-contain">
+                                <img src="https://images.unsplash.com/photo-1644203654347-b7bf8cd4cda5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzc2wlMjBzZWN1cmUlMjB0cnVzdCUyMGJhZGdlfGVufDF8fHx8MTc2NDAxMTc0OHww&ixlib=rb-4.1.0&q=80&w=1080" alt="Business Verified" class="h-16 object-contain">
+                                <img src="https://images.unsplash.com/photo-1644203654347-b7bf8cd4cda5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzc2wlMjBzZWN1cmUlMjB0cnVzdCUyMGJhZGdlfGVufDF8fHx8MTc2NDAxMTc0OHww&ixlib=rb-4.1.0&q=80&w=1080" alt="Privacy Protected" class="h-16 object-contain">
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Footer Info -->
+    <div class="bg-gray-100 py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-gray-700 mb-2">Customer Support 7 Days A Week: 9am to 7pm EST</p>
+            <p class="text-blue-600 mb-2">
+                <a href="mailto:hello@santascertifiedletter.com" class="hover:underline">hello@santascertifiedletter.com</a> | 
+                <a href="tel:(800) 540-7716" class="hover:underline">(800) 540-7716</a>
+            </p>
+            <p class="text-sm text-gray-600">
+                <a href="/contact" class="hover:underline">Contact Us</a> | 
+                <a href="/privacy" class="hover:underline">Privacy Policy</a> | 
+                <a href="/terms" class="hover:underline">Terms & Conditions</a>
+            </p>
+            <p class="text-sm text-gray-500 mt-4">Santa's Certified Letter © 2025</p>
         </div>
     </div>
 
@@ -278,16 +398,15 @@
             
             packages.forEach((pkg, index) => {
                 const itemDiv = document.createElement('div');
-                itemDiv.className = 'flex justify-between items-start pb-3 border-b border-gray-200';
+                itemDiv.className = 'pb-3 border-b border-gray-200';
                 itemDiv.innerHTML = `
-                    <div class="flex-1">
-                        <p class="font-semibold text-gray-800">Letter ${index + 1}</p>
-                        <p class="text-sm text-gray-600">${pkg.childFirstName} ${pkg.childLastName}</p>
-                        <p class="text-xs text-gray-500">${pkg.city}, ${pkg.state}</p>
-                    </div>
-                    <div class="text-right">
+                    <div class="flex justify-between items-start mb-1">
+                        <p class="font-semibold text-gray-800">Santa Package #${index + 1}</p>
                         <p class="font-bold text-gray-800">$${LETTER_PRICE.toFixed(2)}</p>
                     </div>
+                    <p class="text-sm text-gray-600">Child's Name: ${pkg.childFirstName} ${pkg.childLastName}</p>
+                    <p class="text-xs text-gray-500">Ship To: ${pkg.city}, ${pkg.state}</p>
+                    <p class="text-xs text-gray-500">${pkg.streetAddress}</p>
                 `;
                 container.appendChild(itemDiv);
             });
@@ -296,7 +415,6 @@
             const totals = calculateTotals();
             document.getElementById('subtotal').textContent = `$${totals.subtotal.toFixed(2)}`;
             document.getElementById('total').textContent = `$${totals.total.toFixed(2)}`;
-            document.getElementById('button-total').textContent = `$${totals.total.toFixed(2)}`;
         }
 
         // Edit letters button

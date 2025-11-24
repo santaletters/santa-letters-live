@@ -478,7 +478,7 @@
                         'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJncGNncmhmbm12YXhia2Z6Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NjY3MzAsImV4cCI6MjA3NjA0MjczMH0.eDun3lViK4XA--bTwRTqyCTBO40B8JU7m12mc4Jz2mo'
                     },
                     body: JSON.stringify({
-                        amount: Math.round(totals.total * 100),
+                        total: totals.total, // Send total in dollars (server will convert to cents)
                         billingData: {
                             firstName,
                             lastName,

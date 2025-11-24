@@ -44,6 +44,21 @@ export default function App() {
     }
   }, []);
 
+  // CHECK IF WE'RE ON A STATIC HTML PAGE - DON'T RENDER REACT APP
+  const currentPath = window.location.pathname;
+  if (currentPath.startsWith('/letterform') || 
+      currentPath.startsWith('/checkout') || 
+      currentPath.startsWith('/upsell') ||
+      currentPath === '/letterform.php' ||
+      currentPath === '/checkout.php' ||
+      currentPath === '/upsell.php' ||
+      currentPath === '/checkout.html' ||
+      currentPath === '/upsell.html') {
+    // We're on a static HTML page, don't render React
+    console.log('🚫 Static HTML page detected, not rendering React app');
+    return null;
+  }
+
   const [currentStep, setCurrentStep] = useState<Step>(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const path = window.location.pathname;

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Letter Details - Letters From Santa</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Trackdesk Click Pixel -->
     <script>
@@ -20,97 +20,104 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        .pacifico { font-family: 'Pacifico', cursive; }
     </style>
 </head>
-<body class="bg-gradient-to-b from-red-50 via-white to-green-50 min-h-screen">
+<body class="min-h-screen bg-gradient-to-b from-blue-900 via-blue-800 to-blue-700">
     
-    <div class="max-w-4xl mx-auto px-4 py-8">
-        <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="pacifico text-5xl text-red-600 mb-2">🎅 Letters From Santa</h1>
-            <p class="text-gray-600 text-lg">Fill in your letter details below</p>
+    <!-- Promo Banner -->
+    <div class="bg-red-600 text-white text-center pt-3 pb-2 md:pt-2 md:pb-2">
+        <p>🎄 Get 30% OFF + FREE Shipping + 2 Bonus Gifts! 🎄</p>
+        <p class="text-sm">Family Owned and Operated. All orders shipped from the USA!</p>
+    </div>
+
+    <!-- Header with Santa -->
+    <div class="relative bg-gradient-to-b from-blue-900 to-blue-800 text-white overflow-hidden pt-4 pb-10">
+        <!-- Snowflakes decoration -->
+        <div class="absolute inset-0 opacity-20 pointer-events-none">
+            <div class="absolute top-10 left-10 text-white text-2xl">❄</div>
+            <div class="absolute top-20 right-20 text-white text-xl">❄</div>
+            <div class="absolute top-32 left-1/4 text-white text-lg">❄</div>
+            <div class="absolute top-16 right-1/3 text-white text-2xl">★</div>
+            <div class="absolute top-24 left-1/3 text-white text-xl">★</div>
+            <div class="absolute top-40 right-1/4 text-white text-lg">★</div>
         </div>
-
-        <!-- Package Selection -->
-        <div class="bg-white rounded-2xl shadow-lg p-8 mb-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">Choose Your Package</h2>
-            <div class="grid md:grid-cols-3 gap-4">
-                <!-- Silver Package -->
-                <div class="package-card border-2 border-gray-200 rounded-xl p-6 cursor-pointer hover:border-red-500 transition-all" data-package="basic" data-price="19.99" data-name="Silver Edition">
-                    <div class="text-center">
-                        <div class="text-3xl mb-2">🥈</div>
-                        <h3 class="font-bold text-xl mb-2">Silver Edition</h3>
-                        <p class="text-3xl font-bold text-red-600 mb-4">$19.99</p>
-                        <ul class="text-left text-sm text-gray-600 space-y-2">
-                            <li>✓ Personalized Letter</li>
-                            <li>✓ Santa's Signature</li>
-                            <li>✓ North Pole Postmark</li>
-                        </ul>
-                    </div>
+        
+        <div class="container mx-auto px-4 py-6 relative h-32">
+            <div class="flex items-start justify-between">
+                <!-- Back Button - Desktop Only -->
+                <div class="hidden md:flex items-center gap-4">
+                    <a href="/" class="text-white hover:text-red-100 transition-colors bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg">
+                        ← Back to Shop
+                    </a>
                 </div>
-
-                <!-- Gold Package -->
-                <div class="package-card border-2 border-gray-200 rounded-xl p-6 cursor-pointer hover:border-red-500 transition-all" data-package="deluxe" data-price="29.99" data-name="Gold Edition">
-                    <div class="bg-yellow-100 text-xs font-bold text-yellow-800 px-2 py-1 rounded-full inline-block mb-2">MOST POPULAR</div>
-                    <div class="text-center">
-                        <div class="text-3xl mb-2">🥇</div>
-                        <h3 class="font-bold text-xl mb-2">Gold Edition</h3>
-                        <p class="text-3xl font-bold text-red-600 mb-4">$29.99</p>
-                        <ul class="text-left text-sm text-gray-600 space-y-2">
-                            <li>✓ Everything in Silver</li>
-                            <li>✓ Nice List Certificate</li>
-                            <li>✓ Activity Sheet</li>
-                        </ul>
-                    </div>
+                
+                <!-- Mobile Back Button -->
+                <div class="md:hidden">
+                    <a href="/" class="text-white hover:text-red-100 transition-colors bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg text-sm">
+                        ← Back
+                    </a>
                 </div>
-
-                <!-- Platinum Package -->
-                <div class="package-card border-2 border-gray-200 rounded-xl p-6 cursor-pointer hover:border-red-500 transition-all" data-package="premium" data-price="59.99" data-name="Platinum Edition">
-                    <div class="bg-purple-100 text-xs font-bold text-purple-800 px-2 py-1 rounded-full inline-block mb-2">PREMIUM</div>
-                    <div class="text-center">
-                        <div class="text-3xl mb-2">💎</div>
-                        <h3 class="font-bold text-xl mb-2">Platinum Edition</h3>
-                        <p class="text-3xl font-bold text-red-600 mb-4">$59.99</p>
-                        <ul class="text-left text-sm text-gray-600 space-y-2">
-                            <li>✓ Everything in Gold</li>
-                            <li>✓ Santa's Magic Key</li>
-                            <li>✓ Reindeer Food</li>
-                            <li>✓ Premium Gift Box</li>
-                        </ul>
-                    </div>
+                
+                <!-- Centered Title -->
+                <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+                    <h1 class="text-3xl md:text-4xl font-bold">📬 Letter Details</h1>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Letter Forms Container -->
-        <div id="letters-container"></div>
-
-        <!-- Add Another Letter Button -->
-        <div class="text-center mt-6">
-            <button id="add-letter-btn" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full text-lg font-semibold transition-all">
-                ➕ Add Another Letter
-            </button>
+    <!-- Main Content - White Section -->
+    <div class="relative">
+        <!-- White curve -->
+        <div class="absolute top-0 left-0 right-0 -translate-y-6">
+            <svg viewBox="0 0 1200 60" class="w-full h-16 fill-white">
+                <path d="M0,60 C300,0 900,0 1200,60 L1200,60 L0,60 Z"></path>
+            </svg>
         </div>
 
-        <!-- Continue Button -->
-        <div class="text-center mt-8">
-            <button id="continue-btn" class="bg-red-600 hover:bg-red-700 text-white px-12 py-4 rounded-full text-xl font-bold transition-all shadow-lg">
-                Continue to Checkout →
-            </button>
+        <div class="bg-white pb-12 pt-12">
+            <div class="container mx-auto px-4 max-w-4xl">
+                <!-- Letter Forms Container -->
+                <div id="letters-container"></div>
+
+                <!-- Add Another Letter Button -->
+                <div class="text-center mt-6">
+                    <button id="add-letter-btn" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all shadow-md hover:shadow-lg">
+                        <span class="text-xl">➕</span>
+                        Add Another Letter ($17.95 each)
+                    </button>
+                </div>
+
+                <!-- Continue Button -->
+                <div class="text-center mt-8">
+                    <button id="continue-btn" class="bg-green-600 hover:bg-green-700 text-white px-12 py-4 rounded-lg font-bold transition-all shadow-lg hover:shadow-xl">
+                        Continue to Checkout →
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         // Load saved data from localStorage
         let packages = [];
-        let selectedPackage = localStorage.getItem('selectedPackage') || 'funnel';
         
         // Try to load existing packages
         const savedPackages = localStorage.getItem('santaLetterPackages');
         if (savedPackages) {
             try {
                 packages = JSON.parse(savedPackages);
+                // Remove packageType for funnel orders
+                packages = packages.map(pkg => ({
+                    childFirstName: pkg.childFirstName || '',
+                    childLastName: pkg.childLastName || '',
+                    friendName: pkg.friendName || '',
+                    streetAddress: pkg.streetAddress || '',
+                    unitApt: pkg.unitApt || '',
+                    city: pkg.city || '',
+                    state: pkg.state || '',
+                    zipCode: pkg.zipCode || ''
+                }));
             } catch (e) {
                 console.error('Error loading saved packages:', e);
             }
@@ -126,21 +133,12 @@
                 unitApt: '',
                 city: '',
                 state: '',
-                zipCode: '',
-                packageType: selectedPackage !== 'funnel' ? selectedPackage : 'deluxe',
-                packageName: selectedPackage === 'basic' ? 'Silver Edition' : selectedPackage === 'deluxe' ? 'Gold Edition' : selectedPackage === 'premium' ? 'Platinum Edition' : 'Gold Edition'
+                zipCode: ''
             });
         }
 
-        // Package selection
-        document.querySelectorAll('.package-card').forEach(card => {
-            card.addEventListener('click', function() {
-                document.querySelectorAll('.package-card').forEach(c => c.classList.remove('border-red-500', 'bg-red-50'));
-                this.classList.add('border-red-500', 'bg-red-50');
-                selectedPackage = this.dataset.package;
-                localStorage.setItem('selectedPackage', selectedPackage);
-            });
-        });
+        // US States for dropdown
+        const states = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'];
 
         // Render letter forms
         function renderLetters() {
@@ -149,61 +147,82 @@
             
             packages.forEach((pkg, index) => {
                 const letterDiv = document.createElement('div');
-                letterDiv.className = 'bg-white rounded-2xl shadow-lg p-8 mb-6';
+                letterDiv.className = 'bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-lg p-6 md:p-8 mb-6 border-2 border-blue-100';
                 letterDiv.innerHTML = `
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800">Letter #${index + 1}</h2>
-                        ${packages.length > 1 ? `<button class="delete-letter-btn text-red-600 hover:text-red-800 font-semibold" data-index="${index}">🗑️ Delete</button>` : ''}
+                        <div>
+                            <h2 class="text-2xl font-bold text-blue-900">Letter ${index + 1}</h2>
+                            <p class="text-sm text-gray-600">$17.95 per letter</p>
+                        </div>
+                        ${packages.length > 1 ? `<button class="delete-letter-btn text-red-600 hover:text-red-800 font-semibold flex items-center gap-1" data-index="${index}"><span class="text-lg">🗑️</span> Remove</button>` : ''}
                     </div>
                     
-                    <div class="grid md:grid-cols-2 gap-6">
+                    <div class="grid md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Child's First Name *</label>
-                            <input type="text" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none" value="${pkg.childFirstName || ''}" data-index="${index}" data-field="childFirstName" required>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Child's First Name *</label>
+                            <input type="text" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" value="${pkg.childFirstName || ''}" data-index="${index}" data-field="childFirstName" required>
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Child's Last Name *</label>
-                            <input type="text" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none" value="${pkg.childLastName || ''}" data-index="${index}" data-field="childLastName" required>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Child's Last Name *</label>
+                            <input type="text" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" value="${pkg.childLastName || ''}" data-index="${index}" data-field="childLastName" required>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Best Friend's Name (Optional)</label>
+                            <input type="text" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" value="${pkg.friendName || ''}" data-index="${index}" data-field="friendName" placeholder="Santa will mention them in the letter">
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Street Address *</label>
+                            <input type="text" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" value="${pkg.streetAddress || ''}" data-index="${index}" data-field="streetAddress" required>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Apartment/Unit (Optional)</label>
+                            <input type="text" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" value="${pkg.unitApt || ''}" data-index="${index}" data-field="unitApt">
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Best Friend's Name</label>
-                            <input type="text" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none" value="${pkg.friendName || ''}" data-index="${index}" data-field="friendName">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">City *</label>
+                            <input type="text" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" value="${pkg.city || ''}" data-index="${index}" data-field="city" required>
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Street Address *</label>
-                            <input type="text" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none" value="${pkg.streetAddress || ''}" data-index="${index}" data-field="streetAddress" required>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">State *</label>
+                            <select class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" data-index="${index}" data-field="state" required>
+                                <option value="">Select State</option>
+                                ${states.map(state => `<option value="${state}" ${pkg.state === state ? 'selected' : ''}>${state}</option>`).join('')}
+                            </select>
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Unit/Apt</label>
-                            <input type="text" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none" value="${pkg.unitApt || ''}" data-index="${index}" data-field="unitApt">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">City *</label>
-                            <input type="text" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none" value="${pkg.city || ''}" data-index="${index}" data-field="city" required>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">State *</label>
-                            <input type="text" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none" value="${pkg.state || ''}" data-index="${index}" data-field="state" required>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">ZIP Code *</label>
-                            <input type="text" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none" value="${pkg.zipCode || ''}" data-index="${index}" data-field="zipCode" required>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">ZIP Code *</label>
+                            <input type="text" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" value="${pkg.zipCode || ''}" data-index="${index}" data-field="zipCode" maxlength="5" required>
                         </div>
                     </div>
+                    
+                    ${index > 0 ? `
+                    <div class="mt-4 text-center">
+                        <button class="copy-address-btn text-blue-600 hover:text-blue-800 text-sm font-medium" data-index="${index}">
+                            📋 Copy address from Letter 1
+                        </button>
+                    </div>
+                    ` : ''}
                 `;
                 container.appendChild(letterDiv);
             });
 
-            // Attach event listeners for inputs
-            document.querySelectorAll('input[data-index]').forEach(input => {
+            // Attach event listeners for inputs and selects
+            document.querySelectorAll('input[data-index], select[data-index]').forEach(input => {
                 input.addEventListener('input', function() {
+                    const index = parseInt(this.dataset.index);
+                    const field = this.dataset.field;
+                    packages[index][field] = this.value;
+                    saveToLocalStorage();
+                });
+                
+                input.addEventListener('change', function() {
                     const index = parseInt(this.dataset.index);
                     const field = this.dataset.field;
                     packages[index][field] = this.value;
@@ -214,30 +233,35 @@
             // Attach event listeners for delete buttons
             document.querySelectorAll('.delete-letter-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    const index = parseInt(this.dataset.index);
-                    packages.splice(index, 1);
-                    saveToLocalStorage();
-                    renderLetters();
+                    if (confirm('Are you sure you want to remove this letter?')) {
+                        const index = parseInt(this.dataset.index);
+                        packages.splice(index, 1);
+                        saveToLocalStorage();
+                        renderLetters();
+                    }
                 });
             });
 
-            // Highlight selected package
-            const selectedCard = document.querySelector(`[data-package="${selectedPackage}"]`);
-            if (selectedCard) {
-                selectedCard.classList.add('border-red-500', 'bg-red-50');
-            }
+            // Attach event listeners for copy address buttons
+            document.querySelectorAll('.copy-address-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.dataset.index);
+                    if (packages[0]) {
+                        packages[index].streetAddress = packages[0].streetAddress;
+                        packages[index].unitApt = packages[0].unitApt;
+                        packages[index].city = packages[0].city;
+                        packages[index].state = packages[0].state;
+                        packages[index].zipCode = packages[0].zipCode;
+                        saveToLocalStorage();
+                        renderLetters();
+                    }
+                });
+            });
         }
 
         // Save to localStorage
         function saveToLocalStorage() {
-            // Update package types and names
-            packages.forEach(pkg => {
-                pkg.packageType = selectedPackage !== 'funnel' ? selectedPackage : 'deluxe';
-                pkg.packageName = selectedPackage === 'basic' ? 'Silver Edition' : selectedPackage === 'deluxe' ? 'Gold Edition' : selectedPackage === 'premium' ? 'Platinum Edition' : 'Gold Edition';
-            });
-            
             localStorage.setItem('santaLetterPackages', JSON.stringify(packages));
-            localStorage.setItem('selectedPackage', selectedPackage);
             console.log('✅ Saved to localStorage:', packages);
         }
 
@@ -251,33 +275,44 @@
                 unitApt: '',
                 city: '',
                 state: '',
-                zipCode: '',
-                packageType: selectedPackage !== 'funnel' ? selectedPackage : 'deluxe',
-                packageName: selectedPackage === 'basic' ? 'Silver Edition' : selectedPackage === 'deluxe' ? 'Gold Edition' : selectedPackage === 'premium' ? 'Platinum Edition' : 'Gold Edition'
+                zipCode: ''
             });
             saveToLocalStorage();
             renderLetters();
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            // Scroll to new letter
+            setTimeout(() => {
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }, 100);
         });
 
         // Continue to checkout
         document.getElementById('continue-btn').addEventListener('click', function() {
             // Validate all required fields
             let isValid = true;
+            let firstInvalidIndex = -1;
+            
             packages.forEach((pkg, index) => {
                 if (!pkg.childFirstName || !pkg.childLastName || !pkg.streetAddress || !pkg.city || !pkg.state || !pkg.zipCode) {
                     isValid = false;
-                    alert(`Please fill in all required fields for Letter #${index + 1}`);
+                    if (firstInvalidIndex === -1) {
+                        firstInvalidIndex = index;
+                    }
                 }
             });
 
-            if (isValid && packages.length > 0) {
-                saveToLocalStorage();
-                // Redirect to checkout
-                window.location.href = '/checkout/';
-            } else if (packages.length === 0) {
-                alert('Please add at least one letter');
+            if (!isValid) {
+                alert(`Please fill in all required fields for Letter ${firstInvalidIndex + 1}`);
+                return;
             }
+
+            if (packages.length === 0) {
+                alert('Please add at least one letter');
+                return;
+            }
+
+            saveToLocalStorage();
+            // Redirect to checkout
+            window.location.href = '/checkout/';
         });
 
         // Initial render

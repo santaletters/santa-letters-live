@@ -563,7 +563,21 @@
                 }
             } catch (error) {
                 console.error('Payment error:', error);
-                document.getElementById('payment-message').textContent = 'An error occurred. Please try again.';
+                console.error('Error details:', error.message, error.stack);
+                
+                // Show more detailed error message
+                let errorMessage = 'An error occurred. Please try again.';
+                if (error.message) {
+                    errorMessage = error.message;
+                }
+                if (error.message && error.message.includes('Failed to create payment intent')) {
+                    errorMessage = 'Unable to process payment. Please check your information and try again.';
+                }
+                if (error.message && error.message.includes('Failed to confirm order')) {
+                    errorMessage = 'Payment processed but order confirmation failed. Please contact support.';
+                }
+                
+                document.getElementById('payment-message').textContent = errorMessage;
                 document.getElementById('payment-message').classList.add('text-red-600');
                 submitButton.disabled = false;
                 document.getElementById('button-text').classList.remove('hidden');

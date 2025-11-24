@@ -8,6 +8,40 @@
       "destination": "/index.html"
     }
   ],
+  "routes": [
+    {
+      "src": "/letterform/?",
+      "dest": "/letterform/index.html"
+    },
+    {
+      "src": "/checkout/?",
+      "dest": "/checkout/index.html"
+    },
+    {
+      "src": "/upsell/?",
+      "dest": "/upsell/index.html"
+    },
+    {
+      "src": "/letterform.php",
+      "dest": "/letterform/index.html"
+    },
+    {
+      "src": "/checkout.php",
+      "dest": "/checkout/index.html"
+    },
+    {
+      "src": "/checkout.html",
+      "dest": "/checkout/index.html"
+    },
+    {
+      "src": "/upsell.php",
+      "dest": "/upsell/index.html"
+    },
+    {
+      "src": "/upsell.html",
+      "dest": "/upsell/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",

@@ -8,139 +8,220 @@
     <script src="https://js.stripe.com/v3/"></script>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Trackdesk tracker begin -->
+    <script async src="//cdn.trackdesk.com/tracking.js"></script>
+    <script>
+      (function(t,d,k){(t[k]=t[k]||[]).push(d);t[d]=t[d]||t[k].f||function(){(t[d].q=t[d].q||[]).push(arguments)}})(window,"trackdesk","TrackdeskObject");
+    </script>
+    <!-- Trackdesk tracker end -->
 
-  <!-- Trackdesk tracker begin -->
-<script async src="//cdn.trackdesk.com/tracking.js"></script>
-<script>
-  (function(t,d,k){(t[k]=t[k]||[]).push(d);t[d]=t[d]||t[k].f||function(){(t[d].q=t[d].q||[]).push(arguments)}})(window,"trackdesk","TrackdeskObject");
-
-  trackdesk("directwebinteractive", "conversion", {
-    "conversionType": "sale"
-    'event_id': 'upsell_' + Date.now() + '_' + Math.random(),
-        'value': parseFloat(orderValue)
-  });
-</script>
-<!-- Trackdesk tracker end -->
-
-  
     <style>
         body {
             font-family: 'Inter', sans-serif;
         }
         .pacifico { font-family: 'Pacifico', cursive; }
-        .timer {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #dc2626;
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
     </style>
 </head>
-<body class="bg-gradient-to-b from-blue-50 via-white to-blue-100 min-h-screen">
+<body class="min-h-screen">
     
-    <div class="max-w-4xl mx-auto px-4 py-8">
-        <!-- Timer Section -->
-        <div class="bg-red-600 text-white rounded-2xl shadow-2xl p-8 mb-8 text-center">
-            <h1 class="pacifico text-4xl mb-4">⏰ WAIT! Special Offer!</h1>
-            <p class="text-xl mb-4">This exclusive offer expires in:</p>
-            <div class="timer mb-4" id="timer">2:00</div>
-            <p class="text-lg">Don't miss this one-time opportunity!</p>
-        </div>
-
-        <!-- Offer Section -->
-        <div class="bg-white rounded-2xl shadow-lg p-8 mb-6">
-            <div class="text-center mb-8">
-                <h2 class="text-4xl font-bold text-gray-800 mb-4">❄️ Add Certified North Pole Snow!</h2>
-                <p class="text-xl text-gray-600 mb-2">Make your letter even more magical with authentic snow from the North Pole</p>
-                <div class="inline-block bg-yellow-100 text-yellow-800 px-6 py-2 rounded-full font-bold text-lg">
-                    Save 50% Today Only!
-                </div>
-            </div>
-
-            <!-- Product Image Placeholder -->
-            <div class="bg-gradient-to-b from-blue-100 to-white rounded-xl p-12 mb-8 text-center">
-                <div class="text-8xl mb-4">❄️</div>
-                <p class="text-gray-600">Authentic North Pole Snow in a sealed tube</p>
-            </div>
-
-            <!-- Features -->
-            <div class="grid md:grid-cols-2 gap-6 mb-8">
-                <div class="flex items-start gap-4">
-                    <div class="text-3xl">✓</div>
-                    <div>
-                        <h3 class="font-bold text-lg mb-2">100% Authentic</h3>
-                        <p class="text-gray-600">Real snow from the North Pole, certified and sealed</p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="text-3xl">✓</div>
-                    <div>
-                        <h3 class="font-bold text-lg mb-2">Magical Addition</h3>
-                        <p class="text-gray-600">Makes the Santa experience even more real for kids</p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="text-3xl">✓</div>
-                    <div>
-                        <h3 class="font-bold text-lg mb-2">Keepsake Quality</h3>
-                        <p class="text-gray-600">Beautifully packaged tube they can keep forever</p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="text-3xl">✓</div>
-                    <div>
-                        <h3 class="font-bold text-lg mb-2">Limited Quantity</h3>
-                        <p class="text-gray-600">Only available during holiday season</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pricing -->
-            <div class="bg-gradient-to-r from-red-50 to-green-50 rounded-xl p-8 mb-8 text-center">
-                <div class="flex justify-center items-center gap-6 mb-4">
-                    <div>
-                        <p class="text-gray-500 line-through text-2xl">$29.99</p>
-                        <p class="text-sm text-gray-600">Regular Price</p>
-                    </div>
-                    <div class="text-4xl font-bold">→</div>
-                    <div>
-                        <p class="text-5xl font-bold text-red-600">$14.99</p>
-                        <p class="text-sm text-green-600 font-semibold">50% OFF TODAY!</p>
-                    </div>
-                </div>
-                
-                <!-- Quantity Selector -->
-                <div class="flex justify-center items-center gap-4 mb-6">
-                    <label class="font-semibold text-lg">Quantity:</label>
-                    <button id="decrease-btn" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg font-bold text-xl">-</button>
-                    <span id="quantity" class="text-2xl font-bold w-12 text-center">1</span>
-                    <button id="increase-btn" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg font-bold text-xl">+</button>
-                </div>
-
-                <p class="text-gray-600 mb-2">Total: <span id="upsell-total" class="text-2xl font-bold text-red-600">$14.99</span></p>
-            </div>
-
-            <!-- CTA Buttons -->
-            <div class="space-y-4">
-                <button id="accept-btn" class="w-full bg-green-600 hover:bg-green-700 text-white px-8 py-5 rounded-full text-2xl font-bold transition-all shadow-lg">
-                    ✅ YES! Add North Pole Snow
-                </button>
-                <button id="decline-btn" class="w-full bg-gray-300 hover:bg-gray-400 text-gray-700 px-8 py-3 rounded-full text-lg font-semibold transition-all">
-                    No thanks, continue to my order
-                </button>
-            </div>
-
-            <div id="upsell-message" class="mt-6 text-center"></div>
-        </div>
-
-        <!-- Trust Badges -->
-        <div class="flex justify-center items-center gap-6 text-gray-500 text-sm">
-            <div class="flex items-center gap-2">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+    <div id="upsell-page" class="min-h-screen bg-gradient-to-br from-red-700 via-green-700 to-red-800 flex items-center justify-center p-4">
+        <div class="max-w-6xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Timer Banner -->
+            <div class="bg-red-600 text-white py-4 px-6 flex items-center justify-center gap-2">
+                <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                Secure Payment
+                <span class="text-lg font-bold">Limited Time Offer: <span id="timer">2:00</span></span>
             </div>
-            <div>Money-Back Guarantee</div>
+
+            <!-- Main Content -->
+            <div class="grid lg:grid-cols-2 gap-8 p-6 lg:p-8">
+                <!-- Left Column - Product Image -->
+                <div class="flex flex-col items-center justify-start bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 lg:p-8 pt-4">
+                    <img 
+                        src="https://images.unsplash.com/photo-1737671832208-fdfc86a90985?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzbm93JTIwZ2xvYmUlMjB3aW50ZXIlMjBnaWZ0JTIwcHJvZHVjdHxlbnwxfHx8fDE3NjQwMjA2ODl8MA&ixlib=rb-4.1.0&q=80&w=1080"
+                        alt="Certified North Pole Snow"
+                        class="w-full max-w-sm h-auto object-contain drop-shadow-2xl rounded-lg"
+                    />
+                    <div class="mt-4 text-center">
+                        <h3 class="text-xl font-bold text-blue-900 mb-2">🎄 Authentic North Pole Snow</h3>
+                        <p class="text-gray-600">Certified & Collectible</p>
+                    </div>
+                    
+                    <!-- Features List -->
+                    <ul class="space-y-2 mt-4 w-full max-w-md">
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Authentic certified snow from the North Pole</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Beautiful collectible jar with certificate</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Perfect keepsake to treasure forever</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Ships FREE with your Santa letter order</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Right Column - Offer Details -->
+                <div class="flex flex-col justify-start">
+                    <div class="mb-4">
+                        <h1 class="text-3xl lg:text-4xl font-bold text-red-700 mb-3">
+                            🎁 Wait! Add Certified North Pole Snow!
+                        </h1>
+                        <p class="text-gray-700 text-lg leading-relaxed">
+                            Complete your magical experience with authentic snow from the North Pole! 
+                            This special jar of certified snow makes the perfect keepsake.
+                        </p>
+                    </div>
+
+                    <!-- Price Badge -->
+                    <div class="bg-green-50 border-2 border-green-600 rounded-xl p-4 mb-4">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-gray-700 font-medium">Special One-Time Offer</span>
+                            <span class="text-3xl font-bold text-green-700">$9.99</span>
+                        </div>
+                        <p class="text-sm text-gray-600">per jar</p>
+                    </div>
+
+                    <!-- Quantity Selector -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-semibold mb-3 text-center">
+                            Select Quantity:
+                        </label>
+                        
+                        <!-- Quick Select Buttons -->
+                        <div class="flex flex-wrap gap-2 mb-4 justify-center">
+                            <button onclick="setQuantity(1)" class="qty-btn px-6 py-3 rounded-lg font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">1</button>
+                            <button onclick="setQuantity(2)" class="qty-btn px-6 py-3 rounded-lg font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">2</button>
+                            <button onclick="setQuantity(3)" class="qty-btn px-6 py-3 rounded-lg font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">3</button>
+                            <button onclick="setQuantity(4)" class="qty-btn px-6 py-3 rounded-lg font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">4</button>
+                            <button onclick="setQuantity(5)" class="qty-btn px-6 py-3 rounded-lg font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">5</button>
+                        </div>
+
+                        <!-- Plus/Minus Controls -->
+                        <div class="flex items-center gap-4 justify-center">
+                            <button onclick="decreaseQuantity()" class="px-8 py-3 text-xl font-bold border-2 border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">−</button>
+                            <div class="flex-1 text-center max-w-[100px]">
+                                <div id="quantity-display" class="text-3xl font-bold text-gray-900">1</div>
+                                <div id="quantity-label" class="text-sm text-gray-600">jar</div>
+                            </div>
+                            <button onclick="increaseQuantity()" class="px-8 py-3 text-xl font-bold border-2 border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">+</button>
+                        </div>
+
+                        <!-- Total Price -->
+                        <div class="mt-4 text-center py-3 bg-gray-50 rounded-lg">
+                            <span class="text-gray-700">Total: </span>
+                            <span id="total-price" class="text-2xl font-bold text-green-700">$9.99</span>
+                        </div>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="error-message" class="hidden mb-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700"></div>
+
+                    <!-- Action Buttons -->
+                    <div class="space-y-3">
+                        <button 
+                            id="accept-btn" 
+                            onclick="acceptUpsell()"
+                            class="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-xl font-bold shadow-lg rounded-lg transition-colors"
+                        >
+                            <span id="accept-text">✓ Yes! Add <span id="accept-qty">1</span> <span id="accept-label">Jar</span> for $<span id="accept-price">9.99</span></span>
+                            <span id="accept-loading" class="hidden">Adding to Order...</span>
+                        </button>
+
+                        <button 
+                            id="decline-btn" 
+                            onclick="declineUpsell()"
+                            class="w-full text-gray-600 hover:text-gray-800 py-3 rounded-lg transition-colors"
+                        >
+                            No thanks, I don't want this special offer
+                        </button>
+                    </div>
+
+                    <p class="text-center text-sm text-gray-500 mt-3">
+                        🔒 Secure checkout • 💳 Same payment method
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Downsell Page (hidden initially) -->
+    <div id="downsell-page" class="hidden min-h-screen bg-gradient-to-br from-orange-600 via-red-600 to-pink-700 flex items-center justify-center p-4">
+        <div class="max-w-4xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Header -->
+            <div class="bg-orange-600 text-white py-6 px-6 text-center">
+                <h1 class="text-3xl font-bold mb-2">⏰ LAST CHANCE!</h1>
+                <p class="text-lg">Before you go... here's an even better deal!</p>
+            </div>
+
+            <!-- Content -->
+            <div class="p-8">
+                <div class="text-center mb-6">
+                    <h2 class="text-4xl font-bold text-orange-700 mb-4">
+                        How About Just $7.99?
+                    </h2>
+                    <p class="text-xl text-gray-700 mb-4">
+                        We really want you to have this magical keepsake!
+                    </p>
+                    <div class="inline-block bg-yellow-100 border-2 border-yellow-400 rounded-lg px-6 py-3">
+                        <span class="text-gray-500 line-through text-2xl">$9.99</span>
+                        <span class="text-4xl font-bold text-orange-600 ml-3">$7.99</span>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 mb-6">
+                    <img 
+                        src="https://images.unsplash.com/photo-1737671832208-fdfc86a90985?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzbm93JTIwZ2xvYmUlMjB3aW50ZXIlMjBnaWZ0JTIwcHJvZHVjdHxlbnwxfHx8fDE3NjQwMjA2ODl8MA&ixlib=rb-4.1.0&q=80&w=1080"
+                        alt="North Pole Snow"
+                        class="w-full max-w-xs mx-auto h-auto object-contain drop-shadow-xl rounded-lg"
+                    />
+                </div>
+
+                <!-- Error Message -->
+                <div id="downsell-error" class="hidden mb-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700"></div>
+
+                <!-- Buttons -->
+                <div class="space-y-3">
+                    <button 
+                        id="downsell-accept-btn"
+                        onclick="acceptDownsell()"
+                        class="w-full bg-orange-600 hover:bg-orange-700 text-white py-6 text-2xl font-bold shadow-lg rounded-lg transition-colors"
+                    >
+                        <span id="downsell-accept-text">🎉 YES! Give Me This $7.99 Deal!</span>
+                        <span id="downsell-loading" class="hidden">Processing...</span>
+                    </button>
+
+                    <button 
+                        onclick="skipDownsell()"
+                        class="w-full text-gray-600 hover:text-gray-800 py-3 rounded-lg transition-colors"
+                    >
+                        No thanks, continue to my order
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -149,32 +230,54 @@
         const stripe = Stripe('pk_live_51SIHQT2NsH2CKfRANHrn5PsrTTnvRY0t5QStLGW8W3ihy4dhFVhDX4ZIP3lrOYhA1HPtnflUgDAhDxEZ0TgNB1V000lsmZhQBB');
         
         // Get order token from localStorage (saved by checkout page)
-        const orderToken = localStorage.getItem('orderAccessToken'); // FIXED: was 'currentOrderToken'
+        const orderToken = localStorage.getItem('orderAccessToken');
+        console.log('🔑 Order token:', orderToken);
         
         // Quantity management
         let quantity = 1;
-        const unitPrice = 14.99;
+        const UPSELL_PRICE = 9.99;
+        const DOWNSELL_PRICE = 7.99;
+        let processing = false;
 
         function updateTotal() {
-            const total = (quantity * unitPrice).toFixed(2);
-            document.getElementById('upsell-total').textContent = '$' + total;
+            const total = (quantity * UPSELL_PRICE).toFixed(2);
+            document.getElementById('total-price').textContent = '$' + total;
+            document.getElementById('accept-qty').textContent = quantity;
+            document.getElementById('accept-label').textContent = quantity === 1 ? 'Jar' : 'Jars';
+            document.getElementById('accept-price').textContent = total;
+            document.getElementById('quantity-display').textContent = quantity;
+            document.getElementById('quantity-label').textContent = quantity === 1 ? 'jar' : 'jars';
+            
+            // Update active button style
+            document.querySelectorAll('.qty-btn').forEach((btn, index) => {
+                if (index + 1 === quantity) {
+                    btn.className = 'qty-btn px-6 py-3 rounded-lg font-semibold transition-all bg-green-600 text-white shadow-lg scale-105';
+                } else {
+                    btn.className = 'qty-btn px-6 py-3 rounded-lg font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200';
+                }
+            });
         }
 
-        document.getElementById('increase-btn').addEventListener('click', () => {
-            if (quantity < 5) {
-                quantity++;
-                document.getElementById('quantity').textContent = quantity;
+        function setQuantity(num) {
+            if (!processing) {
+                quantity = num;
                 updateTotal();
             }
-        });
+        }
 
-        document.getElementById('decrease-btn').addEventListener('click', () => {
-            if (quantity > 1) {
-                quantity--;
-                document.getElementById('quantity').textContent = quantity;
+        function increaseQuantity() {
+            if (!processing) {
+                quantity++;
                 updateTotal();
             }
-        });
+        }
+
+        function decreaseQuantity() {
+            if (!processing && quantity > 1) {
+                quantity--;
+                updateTotal();
+            }
+        }
 
         // Timer countdown (2 minutes)
         let timeLeft = 120;
@@ -188,40 +291,60 @@
             
             if (timeLeft <= 0) {
                 clearInterval(countdown);
-                // Auto-decline and redirect to success
+                // Auto-redirect to success page
                 window.location.href = '/?token=' + orderToken;
             }
         }, 1000);
 
         // Accept upsell
-        document.getElementById('accept-btn').addEventListener('click', async () => {
-            const button = document.getElementById('accept-btn');
-            const messageDiv = document.getElementById('upsell-message');
+        async function acceptUpsell() {
+            if (processing) return;
             
+            const button = document.getElementById('accept-btn');
+            const errorDiv = document.getElementById('error-message');
+            
+            processing = true;
             button.disabled = true;
-            button.textContent = 'Processing...';
+            document.getElementById('accept-text').classList.add('hidden');
+            document.getElementById('accept-loading').classList.remove('hidden');
+            errorDiv.classList.add('hidden');
             
             try {
-                const total = quantity * unitPrice;
+                const total = quantity * UPSELL_PRICE;
                 
-                // Process upsell payment via your backend
-                const response = await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/process-upsell', {
+                console.log('🔄 Accepting upsell:', { orderToken, quantity, amount: total });
+                
+                // Process upsell payment via backend
+                const response = await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/upsell/accept-snow', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJncGNncmhmbm12YXhia2Z6Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NjY3MzAsImV4cCI6MjA3NjA0MjczMH0.eDun3lViK4XA--bTwRTqyCTBO40B8JU7m12mc4Jz2mo'
+                    },
                     body: JSON.stringify({
                         orderToken: orderToken,
-                        upsellType: 'snow',
-                        quantity: quantity,
-                        amount: total
+                        quantity: quantity
                     })
                 });
 
                 const result = await response.json();
+                console.log('📊 Upsell response:', result);
                 
                 if (result.success) {
                     clearInterval(countdown);
-                    messageDiv.textContent = '✅ Snow added to your order!';
-                    messageDiv.className = 'mt-6 text-center text-green-600 font-bold';
+                    
+                    // Fire Trackdesk upsell conversion
+                    if (window.trackdesk) {
+                        trackdesk("directwebinteractive", "conversion", {
+                            "conversionType": "sale",
+                            "event_id": 'upsell_' + Date.now() + '_' + Math.random(),
+                            "value": total
+                        });
+                        console.log('🔥 Trackdesk UPSELL pixel fired');
+                    }
+                    
+                    // Show success and redirect
+                    button.innerHTML = '✅ Snow Added!';
                     setTimeout(() => {
                         window.location.href = '/?token=' + orderToken;
                     }, 1500);
@@ -229,22 +352,96 @@
                     throw new Error(result.error || 'Payment failed');
                 }
             } catch (err) {
-                console.error('Upsell error:', err);
-                messageDiv.textContent = 'Error processing upsell. Please contact support.';
-                messageDiv.className = 'mt-6 text-center text-red-600';
+                console.error('❌ Upsell error:', err);
+                errorDiv.textContent = err.message || 'Error processing upsell. Please try again.';
+                errorDiv.classList.remove('hidden');
+                processing = false;
                 button.disabled = false;
-                button.textContent = '✅ YES! Add North Pole Snow';
+                document.getElementById('accept-text').classList.remove('hidden');
+                document.getElementById('accept-loading').classList.add('hidden');
             }
-        });
+        }
 
-        // Decline upsell
-        document.getElementById('decline-btn').addEventListener('click', () => {
+        // Decline upsell - show downsell
+        function declineUpsell() {
+            if (processing) return;
+            console.log('⬇️ Showing downsell page');
             clearInterval(countdown);
+            document.getElementById('upsell-page').classList.add('hidden');
+            document.getElementById('downsell-page').classList.remove('hidden');
+        }
+
+        // Accept downsell
+        async function acceptDownsell() {
+            if (processing) return;
+            
+            const button = document.getElementById('downsell-accept-btn');
+            const errorDiv = document.getElementById('downsell-error');
+            
+            processing = true;
+            button.disabled = true;
+            document.getElementById('downsell-accept-text').classList.add('hidden');
+            document.getElementById('downsell-loading').classList.remove('hidden');
+            errorDiv.classList.add('hidden');
+            
+            try {
+                console.log('🔄 Accepting downsell:', { orderToken, price: DOWNSELL_PRICE });
+                
+                // Process downsell payment (1 jar at $7.99)
+                const response = await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/upsell/accept-downsell', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJncGNncmhmbm12YXhia2Z6Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NjY3MzAsImV4cCI6MjA3NjA0MjczMH0.eDun3lViK4XA--bTwRTqyCTBO40B8JU7m12mc4Jz2mo'
+                    },
+                    body: JSON.stringify({
+                        orderToken: orderToken,
+                        quantity: 1 // Always 1 jar for downsell
+                    })
+                });
+
+                const result = await response.json();
+                console.log('📊 Downsell response:', result);
+                
+                if (result.success) {
+                    // Fire Trackdesk downsell conversion
+                    if (window.trackdesk) {
+                        trackdesk("directwebinteractive", "conversion", {
+                            "conversionType": "sale",
+                            "event_id": 'downsell_' + Date.now() + '_' + Math.random(),
+                            "value": DOWNSELL_PRICE
+                        });
+                        console.log('🔥 Trackdesk DOWNSELL pixel fired');
+                    }
+                    
+                    // Show success and redirect
+                    button.innerHTML = '✅ Snow Added!';
+                    setTimeout(() => {
+                        window.location.href = '/?token=' + orderToken;
+                    }, 1500);
+                } else {
+                    throw new Error(result.error || 'Payment failed');
+                }
+            } catch (err) {
+                console.error('❌ Downsell error:', err);
+                errorDiv.textContent = err.message || 'Error processing downsell. Please try again.';
+                errorDiv.classList.remove('hidden');
+                processing = false;
+                button.disabled = false;
+                document.getElementById('downsell-accept-text').classList.remove('hidden');
+                document.getElementById('downsell-loading').classList.add('hidden');
+            }
+        }
+
+        // Skip downsell - go to success
+        function skipDownsell() {
+            console.log('⏭️ Skipping downsell');
             window.location.href = '/?token=' + orderToken;
-        });
+        }
 
         // Check if order token exists
         if (!orderToken) {
+            console.error('❌ No order token found!');
             window.location.href = '/';
         }
     </script>

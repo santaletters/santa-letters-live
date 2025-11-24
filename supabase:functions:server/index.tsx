@@ -658,7 +658,10 @@ app.post("/make-server-cf244566/create-payment-intent", async (c) => {
     console.log("   Customer attached:", paymentIntent.customer || "NONE");
     console.log("   Setup future usage:", paymentIntent.setup_future_usage || "NONE");
 
-    return c.json({ clientSecret: paymentIntent.client_secret });
+    return c.json({ 
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id 
+    });
   } catch (error: any) {
     console.error('Payment intent creation error:', error);
     return c.json({ 

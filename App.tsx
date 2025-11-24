@@ -108,6 +108,21 @@ export default function App() {
     
     // Success page route (check for order token)
     if (urlParams.get('token')) {
+      // Check if this is specifically for the upsell funnel
+      const upsellStep = urlParams.get('upsell');
+      if (upsellStep === 'snow') {
+        console.log("  → Routing to snow upsell (found order token + upsell param)");
+        return 'snowupsell';
+      }
+      if (upsellStep === 'snowdownsell') {
+        console.log("  → Routing to snow downsell (found order token + upsell param)");
+        return 'snowdownsell';
+      }
+      if (upsellStep === 'subscription') {
+        console.log("  → Routing to subscription upsell (found order token + upsell param)");
+        return 'subscriptionupsell';
+      }
+      
       console.log("  → Routing to success page (found order token)");
       return 'success';
     }
@@ -165,6 +180,17 @@ export default function App() {
       }));
     }
   }, [selectedPackage, formData]);
+
+  // Extract order token from URL when on upsell pages
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenFromUrl = urlParams.get('token');
+    
+    if (tokenFromUrl && (currentStep === 'snowupsell' || currentStep === 'snowdownsell' || currentStep === 'subscriptionupsell')) {
+      console.log(`🎟️ Setting order token from URL: ${tokenFromUrl}`);
+      setCurrentOrderToken(tokenFromUrl);
+    }
+  }, [currentStep]);
 
   // Update URL when step changes (for better UX and bookmarking)
   useEffect(() => {

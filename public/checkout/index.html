@@ -461,10 +461,20 @@
             requestPayerName: true,
             requestPayerEmail: true,
             requestPayerPhone: true,
+            // Explicitly request all payment methods
+            requestShipping: false,
+            disableWallets: [], // Don't disable any wallets - show all available
         });
 
         const prButton = elements.create('paymentRequestButton', {
             paymentRequest: paymentRequest,
+            style: {
+                paymentRequestButton: {
+                    type: 'default', // Options: 'default', 'buy', 'donate', 'book'
+                    theme: 'dark', // Options: 'dark', 'light', 'light-outline'
+                    height: '48px',
+                },
+            },
         });
 
         // Check if Payment Request is available

@@ -255,9 +255,9 @@ export default function App() {
   }, [currentStep]);
 
   const handlePackageSelect = (packageType: 'basic' | 'deluxe' | 'premium' | null) => {
-    console.log("📦 Package selected:", packageType || 'funnel (no type)');
-    setSelectedPackage(packageType || 'funnel');
-    setCurrentStep("form");
+    console.log("📦 Package selected - redirecting to letterform.php");
+    // Always redirect to PHP letterform
+    window.location.href = '/letterform.php';
   };
 
   const handleFormComplete = (data: any) => {
@@ -474,19 +474,9 @@ export default function App() {
   };
 
   const handleCheckout = () => {
-    console.log("🛒 Proceeding to checkout with cart:", cartItems);
-    
-    // Convert cart items to legacy format for checkout
-    if (cartItems.length > 0) {
-      // Use the first item's package type
-      const firstItem = cartItems[0];
-      setSelectedPackage(firstItem.packageType);
-      
-      // Store cart in form data
-      setFormData({ cartItems });
-      
-      setCurrentStep("form");
-    }
+    console.log("🛒 Proceeding to checkout - redirecting to letterform.php");
+    // Always redirect to PHP letterform
+    window.location.href = '/letterform.php';
   };
 
   // Loading screen component for lazy-loaded routes

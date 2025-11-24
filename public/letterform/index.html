@@ -24,8 +24,9 @@
             font-family: 'Pacifico', cursive; 
         }
         .envelope-border {
-            border: 4px dashed #dc2626;
-            background-color: white;
+            border: 3px dashed #dc2626;
+            background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+            border-radius: 12px;
             position: relative;
         }
         .star {
@@ -130,17 +131,14 @@
             <!-- Letter Forms Container -->
             <div id="letters-container" class="space-y-8"></div>
 
-            <!-- Add Another Letter Button -->
-            <div class="text-center mt-8">
-                <button id="add-letter-btn" class="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-blue-600 border-2 border-blue-600 px-6 py-3 rounded-lg font-semibold transition-all shadow-md hover:shadow-lg">
+            <!-- Buttons Container - Positioned right after forms -->
+            <div class="mt-8 flex flex-col md:flex-row gap-4 justify-center items-center">
+                <button id="add-letter-btn" class="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-green-600 border-2 border-green-600 px-6 py-3 rounded-lg font-semibold transition-all shadow-md hover:shadow-lg">
                     <span class="text-xl">+</span>
                     Add Another Letter
                 </button>
-            </div>
-
-            <!-- Continue Button -->
-            <div class="text-center mt-8">
-                <button id="continue-btn" class="bg-green-600 hover:bg-green-700 text-white px-12 py-4 rounded-lg font-bold text-xl transition-all shadow-lg hover:shadow-xl">
+                
+                <button id="continue-btn" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-bold transition-all shadow-lg hover:shadow-xl">
                     Verify & Complete My Order →
                 </button>
             </div>
@@ -270,9 +268,18 @@
             packages.forEach((pkg, index) => {
                 const letterDiv = document.createElement('div');
                 letterDiv.className = 'envelope-border rounded-xl shadow-lg p-6 md:p-8';
+                letterDiv.id = `package-${index}`; // Add ID for scrolling
                 letterDiv.innerHTML = `
-                    <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-blue-900 text-center">Santa Package #${index + 1}</h2>
+                    <div class="mb-6 flex justify-between items-center">
+                        <h2 class="text-2xl font-bold text-blue-900">Santa Package #${index + 1}</h2>
+                        ${packages.length > 1 ? `
+                            <button class="delete-letter-btn flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-all" data-index="${index}">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                                Remove
+                            </button>
+                        ` : ''}
                     </div>
                     
                     <div class="space-y-4">
@@ -344,6 +351,16 @@
                     saveToLocalStorage();
                 });
             });
+
+            // Attach event listeners for delete buttons
+            document.querySelectorAll('.delete-letter-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.dataset.index);
+                    packages.splice(index, 1);
+                    saveToLocalStorage();
+                    renderLetters();
+                });
+            });
         }
 
         // Save to localStorage
@@ -368,7 +385,10 @@
             renderLetters();
             // Scroll to new letter
             setTimeout(() => {
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                const newPackage = document.getElementById(`package-${packages.length - 1}`);
+                if (newPackage) {
+                    newPackage.scrollIntoView({ behavior: 'smooth' });
+                }
             }, 100);
         });
 

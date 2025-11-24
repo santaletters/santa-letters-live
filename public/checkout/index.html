@@ -45,6 +45,15 @@
             0%, 100% { opacity: 0.3; }
             50% { opacity: 0.8; }
         }
+        /* Sticky sidebar on desktop */
+        @media (min-width: 1024px) {
+            .sticky-sidebar {
+                position: sticky;
+                top: 1rem;
+                max-height: calc(100vh - 2rem);
+                overflow-y: auto;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen bg-white">
@@ -135,46 +144,48 @@
     <div class="bg-gray-50 py-12">
         <div class="container mx-auto px-4 max-w-6xl">
             <div class="grid lg:grid-cols-3 gap-8">
-                <!-- Left Column: Order Summary -->
-                <div class="lg:col-span-1 order-2 lg:order-1">
-                    <div class="bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-lg p-6 border-2 border-blue-100">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Order Summary</h2>
-                        <div id="order-items" class="space-y-3 mb-6"></div>
-                        
-                        <div class="border-t-2 border-gray-200 pt-4 mb-4 space-y-2">
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-600">Sub Total (1 package):</span>
-                                <span class="font-semibold" id="subtotal">$0.00</span>
+                <!-- Left Column: Order Summary (Desktop sticky, mobile shows first) -->
+                <div class="lg:col-span-1 order-1 lg:order-1">
+                    <div class="sticky-sidebar">
+                        <div class="bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-lg p-6 border-2 border-blue-100">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Order Summary</h2>
+                            <div id="order-items" class="space-y-3 mb-6"></div>
+                            
+                            <div class="border-t-2 border-gray-200 pt-4 mb-4 space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Sub Total (<span id="package-count">1</span> package):</span>
+                                    <span class="font-semibold" id="subtotal">$0.00</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Shipping:</span>
+                                    <span class="font-semibold text-green-600">Free</span>
+                                </div>
+                                <div class="flex justify-between items-center font-bold text-gray-900">
+                                    <span>Total Today</span>
+                                    <span id="total">$0.00</span>
+                                </div>
                             </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-600">Shipping:</span>
-                                <span class="font-semibold text-green-600">Free</span>
-                            </div>
-                            <div class="flex justify-between items-center font-bold text-gray-900">
-                                <span>Total Today</span>
-                                <span id="total">$0.00</span>
-                            </div>
+
+                            <button id="edit-letters-btn" class="w-full bg-white hover:bg-gray-50 text-blue-600 border-2 border-blue-600 px-4 py-2.5 rounded-lg font-semibold transition-all mb-2 flex items-center justify-center gap-2">
+                                <span>✏️</span> Edit
+                            </button>
+                            <button id="add-another-btn" class="w-full bg-white hover:bg-gray-50 text-blue-600 border-2 border-blue-600 px-4 py-2.5 rounded-lg font-semibold transition-all flex items-center justify-center gap-2">
+                                + Add Another Letter
+                            </button>
                         </div>
 
-                        <button id="edit-letters-btn" class="w-full bg-white hover:bg-gray-50 text-blue-600 border-2 border-blue-600 px-4 py-2.5 rounded-lg font-semibold transition-all mb-2 flex items-center justify-center gap-2">
-                            <span>✏️</span> Edit
-                        </button>
-                        <button id="add-another-btn" class="w-full bg-white hover:bg-gray-50 text-blue-600 border-2 border-blue-600 px-4 py-2.5 rounded-lg font-semibold transition-all flex items-center justify-center gap-2">
-                            + Add Another Letter
-                        </button>
-                    </div>
-
-                    <!-- Money Back Guarantee Section -->
-                    <div class="bg-white rounded-xl shadow-lg p-6 border-2 border-gray-100 mt-6 text-center">
-                        <img src="https://images.unsplash.com/photo-1728057213505-775a6ebebf29?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25leSUyMGJhY2slMjBndWFyYW50ZWUlMjBiYWRnZXxlbnwxfHx8fDE3NjQwMTE3NDd8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="100% Money Back Guarantee" class="w-32 h-32 mx-auto mb-4 object-contain">
-                        <h3 class="font-bold text-gray-900 mb-2">100% Money Back Guarantee</h3>
-                        <p class="text-sm text-gray-600 mb-2">If your child doesn't absolutely love their letter, we'll issue you a full 100% refund</p>
-                        <p class="text-sm text-gray-500">No Questions - No Hassle - No Waiting</p>
+                        <!-- Money Back Guarantee Section - Desktop Only -->
+                        <div class="hidden lg:block bg-white rounded-xl shadow-lg p-6 border-2 border-gray-100 mt-6 text-center">
+                            <img src="https://images.unsplash.com/photo-1728057213505-775a6ebebf29?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25leSUyMGJhY2slMjBndWFyYW50ZWUlMjBiYWRnZXxlbnwxfHx8fDE3NjQwMTE3NDd8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="100% Money Back Guarantee" class="w-32 h-32 mx-auto mb-4 object-contain">
+                            <h3 class="font-bold text-gray-900 mb-2">100% Money Back Guarantee</h3>
+                            <p class="text-sm text-gray-600 mb-2">If your child doesn't absolutely love their letter, we'll issue you a full 100% refund</p>
+                            <p class="text-sm text-gray-500">No Questions - No Hassle - No Waiting</p>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Right Column: Payment Form -->
-                <div class="lg:col-span-2 order-1 lg:order-2">
+                <div class="lg:col-span-2 order-2 lg:order-2">
                     <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 border-2 border-gray-100">
                         
                         <!-- Guaranteed Safe Checkout Image -->
@@ -229,7 +240,7 @@
                                             </div>
                                             
                                             <div class="text-white text-sm">
-                                                Only <span class="font-bold text-xl">$12/month</span> (1 child x $12) starting in January. Cancel anytime with no hassle!
+                                                Only <span class="font-bold text-xl">$12/month</span> (<span id="sub-child-count">1</span> child x $12) starting in January. Cancel anytime with no hassle!
                                             </div>
                                         </label>
                                     </div>
@@ -243,14 +254,23 @@
                                 Payment Information
                             </h2>
                             
-                            <!-- We Accept Cards -->
-                            <div class="mb-6 flex items-center gap-3">
-                                <span class="font-semibold text-gray-700">We Accept:</span>
-                                <div class="flex gap-2">
-                                    <span class="text-xs bg-blue-600 text-white px-2 py-1 rounded">VISA</span>
-                                    <span class="text-xs bg-red-600 text-white px-2 py-1 rounded">MC</span>
-                                    <span class="text-xs bg-blue-400 text-white px-2 py-1 rounded">AMEX</span>
-                                    <span class="text-xs bg-orange-500 text-white px-2 py-1 rounded">DISC</span>
+                            <!-- We Accept Cards Image -->
+                            <div class="mb-6">
+                                <img src="https://images.unsplash.com/photo-1664490697404-5c84e8829f49?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjcmVkaXQlMjBjYXJkJTIwcGF5bWVudCUyMGxvZ29zfGVufDF8fHx8MTc2NDAxMjEyMHww&ixlib=rb-4.1.0&q=80&w=1080" alt="We Accept Visa, Mastercard, American Express, Discover" class="h-12 w-auto">
+                            </div>
+
+                            <!-- Express Checkout Options -->
+                            <div class="mb-6">
+                                <div id="payment-request-button" class="mb-4">
+                                    <!-- Stripe Payment Request Button will mount here -->
+                                </div>
+                                <div class="relative text-center my-6">
+                                    <div class="absolute inset-0 flex items-center">
+                                        <div class="w-full border-t border-gray-300"></div>
+                                    </div>
+                                    <div class="relative flex justify-center text-sm">
+                                        <span class="px-4 bg-white text-gray-500">Or pay with card</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -320,6 +340,14 @@
         </div>
     </div>
 
+    <!-- Money Back Guarantee Section - Mobile Only -->
+    <div class="lg:hidden bg-white rounded-xl shadow-lg p-6 border-2 border-gray-100 mx-4 mb-8 text-center">
+        <img src="https://images.unsplash.com/photo-1728057213505-775a6ebebf29?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb25leSUyMGJhY2slMjBndWFyYW50ZWUlMjBiYWRnZXxlbnwxfHx8fDE3NjQwMTE3NDd8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="100% Money Back Guarantee" class="w-32 h-32 mx-auto mb-4 object-contain">
+        <h3 class="font-bold text-gray-900 mb-2">100% Money Back Guarantee</h3>
+        <p class="text-sm text-gray-600 mb-2">If your child doesn't absolutely love their letter, we'll issue you a full 100% refund</p>
+        <p class="text-sm text-gray-500">No Questions - No Hassle - No Waiting</p>
+    </div>
+
     <!-- Footer Info -->
     <div class="bg-gray-100 py-8">
         <div class="container mx-auto px-4 text-center">
@@ -341,6 +369,8 @@
         // Initialize Stripe
         const stripe = Stripe('pk_live_51SIHQT2NsH2CKfRANHrn5PsrTTnvRY0t5QStLGW8W3ihy4dhFVhDX4ZIP3lrOYhA1HPtnflUgDAhDxEZ0TgNB1V000lsmZhQBB');
         const elements = stripe.elements();
+        
+        // Create card element
         const cardElement = elements.create('card', {
             style: {
                 base: {
@@ -413,9 +443,137 @@
 
             // Update totals
             const totals = calculateTotals();
+            document.getElementById('package-count').textContent = packages.length;
+            document.getElementById('sub-child-count').textContent = packages.length;
             document.getElementById('subtotal').textContent = `$${totals.subtotal.toFixed(2)}`;
             document.getElementById('total').textContent = `$${totals.total.toFixed(2)}`;
         }
+
+        // Create Payment Request for Express Checkout (Apple Pay, Google Pay, etc.)
+        const totals = calculateTotals();
+        const paymentRequest = stripe.paymentRequest({
+            country: 'US',
+            currency: 'usd',
+            total: {
+                label: 'Santa Letter Package',
+                amount: Math.round(totals.total * 100),
+            },
+            requestPayerName: true,
+            requestPayerEmail: true,
+            requestPayerPhone: true,
+        });
+
+        const prButton = elements.create('paymentRequestButton', {
+            paymentRequest: paymentRequest,
+        });
+
+        // Check if Payment Request is available
+        (async () => {
+            const result = await paymentRequest.canMakePayment();
+            if (result) {
+                prButton.mount('#payment-request-button');
+            } else {
+                document.getElementById('payment-request-button').style.display = 'none';
+            }
+        })();
+
+        // Handle Payment Request submission
+        paymentRequest.on('paymentmethod', async (ev) => {
+            try {
+                const shippingDate = document.querySelector('input[name="shippingDate"]:checked')?.value || 'dec15';
+                const monthlySubscription = document.getElementById('monthlySubscription').checked;
+
+                // Get affiliate data
+                const params = new URLSearchParams(window.location.search);
+                const affiliateId = params.get('ref') || localStorage.getItem('affiliate_id') || null;
+                const subIds = {};
+                ['sub', 'sub2', 'sub3', 'sub4', 'sub5'].forEach(key => {
+                    const value = params.get(key) || localStorage.getItem(`affiliate_${key}`);
+                    if (value) subIds[key] = value;
+                });
+
+                // Create payment intent
+                const response = await fetch('https://zwelkotxfftxlhwtswlr.supabase.co/functions/v1/make-server-cf244566/create-payment-intent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3ZWxrb3R4ZmZ0eGxod3Rzd2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI1NjQ4ODEsImV4cCI6MjA0ODE0MDg4MX0.RIYh6U2q7ZZOD11Nb_w3nOBDL8OUXRuFfjJqWZveFKo'
+                    },
+                    body: JSON.stringify({
+                        amount: Math.round(totals.total * 100),
+                        billingData: {
+                            firstName: ev.payerName?.split(' ')[0] || '',
+                            lastName: ev.payerName?.split(' ').slice(1).join(' ') || '',
+                            email: ev.payerEmail || '',
+                            phone: ev.payerPhone || '',
+                            shippingDate
+                        },
+                        monthlySubscription,
+                        letterPackages: packages,
+                        affiliateId,
+                        subIds
+                    })
+                });
+
+                const { clientSecret, paymentIntentId } = await response.json();
+
+                // Confirm payment
+                const {error: confirmError, paymentIntent} = await stripe.confirmCardPayment(
+                    clientSecret,
+                    {payment_method: ev.paymentMethod.id},
+                    {handleActions: false}
+                );
+
+                if (confirmError) {
+                    ev.complete('fail');
+                } else {
+                    ev.complete('success');
+                    
+                    // Confirm order on server
+                    const confirmResponse = await fetch('https://zwelkotxfftxlhwtswlr.supabase.co/functions/v1/make-server-cf244566/confirm-payment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3ZWxrb3R4ZmZ0eGxod3Rzd2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI1NjQ4ODEsImV4cCI6MjA0ODE0MDg4MX0.RIYh6U2q7ZZOD11Nb_w3nOBDL8OUXRuFfjJqWZveFKo'
+                        },
+                        body: JSON.stringify({
+                            paymentIntentId,
+                            letterPackages: packages,
+                            billingData: {
+                                firstName: ev.payerName?.split(' ')[0] || '',
+                                lastName: ev.payerName?.split(' ').slice(1).join(' ') || '',
+                                email: ev.payerEmail || '',
+                                phone: ev.payerPhone || '',
+                                shippingDate
+                            },
+                            monthlySubscription,
+                            total: totals.total,
+                            affiliateId,
+                            subIds
+                        })
+                    });
+
+                    const confirmData = await confirmResponse.json();
+                    if (confirmData.success) {
+                        localStorage.setItem('orderAccessToken', confirmData.accessToken);
+                        
+                        // Fire Trackdesk SALE pixel
+                        window.TrackdeskConversion = window.TrackdeskConversion || [];
+                        window.TrackdeskConversion.push({
+                            'conversion_id': 'SALE',
+                            'event_id': 'order_' + confirmData.orderId,
+                            'value': totals.total,
+                            'order_id': confirmData.orderId
+                        });
+                        
+                        window.location.href = '/upsell/';
+                    }
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                ev.complete('fail');
+            }
+        });
 
         // Edit letters button
         document.getElementById('edit-letters-btn').addEventListener('click', () => {

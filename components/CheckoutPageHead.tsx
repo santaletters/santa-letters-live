@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { useEffect } from 'react';
 
 /**
  * CheckoutPageHead - HTML Header for Checkout Page
@@ -7,18 +8,38 @@ import { Helmet } from 'react-helmet-async';
  * This component is used in the Checkout page component.
  */
 export function CheckoutPageHead() {
+  useEffect(() => {
+    // Wait for Trackdesk script to load, then fire the LEAD pixel
+    const checkTrackdesk = setInterval(() => {
+      if (typeof window.trackdesk === 'function') {
+        clearInterval(checkTrackdesk);
+        
+        console.log('🎯 Firing LEAD pixel');
+        window.trackdesk("directwebinteractive", "conversion", {
+          "conversionType": "lead"
+        });
+      }
+    }, 100);
+
+    // Cleanup after 10 seconds
+    setTimeout(() => clearInterval(checkTrackdesk), 10000);
+
+    return () => clearInterval(checkTrackdesk);
+  }, []);
+
   return (
     <Helmet>
       {/* Trackdesk tracker begin */}
       <script async src="//cdn.trackdesk.com/tracking.js"></script>
-      <script>{`
-        (function(t,d,k){(t[k]=t[k]||[]).push(d);t[d]=t[d]||t[k].f||function(){(t[d].q=t[d].q||[]).push(arguments)}})(window,"trackdesk","TrackdeskObject");
-        
-        trackdesk("directwebinteractive", "conversion", {
-          "conversionType": "lead"
-        });
-      `}</script>
       {/* Trackdesk tracker end */}
     </Helmet>
   );
+}
+
+// Extend Window interface for TypeScript
+declare global {
+  interface Window {
+    trackdesk?: any;
+    TrackdeskObject?: string[];
+  }
 }

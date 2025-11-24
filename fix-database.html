@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>🔧 Database Fix Tool</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    .card {
+      background: #2a2a2a;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      margin-bottom: 20px;
+    }
+    h1 { color: #dc2626; margin-top: 0; }
+    h2 { color: #f59e0b; font-size: 20px; }
+    button {
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    button:hover { background: #b91c1c; }
+    button:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+    button.secondary {
+      background: #3b82f6;
+    }
+    button.secondary:hover {
+      background: #2563eb;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      background: #1a1a1a;
+      border: 2px solid #444;
+    }
+    .success { border-color: #10b981; background: #064e3b; }
+    .error { border-color: #ef4444; background: #7f1d1d; }
+    .warning { border-color: #f59e0b; background: #78350f; }
+    pre {
+      background: #1a1a1a;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 12px;
+      border: 1px solid #444;
+    }
+    .status { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 14px; margin: 5px; }
+    .status.ok { background: #064e3b; color: #10b981; }
+    .status.bad { background: #7f1d1d; color: #ef4444; }
+  </style>
+</head>
+<body>
+  <h1>🔧 Database Diagnostic & Fix Tool</h1>
+  
+  <div class="card">
+    <h2>📊 Step 1: Check Database Status</h2>
+    <p>This will check if the Supabase table exists and show what's in it.</p>
+    <button onclick="checkDatabase()" id="checkBtn">🔍 Check Database</button>
+    <div id="checkResult"></div>
+  </div>
+
+  <div class="card">
+    <h2>🎯 Step 2: Create Test Order</h2>
+    <p>This will create a test order directly in the database.</p>
+    <button onclick="createTestOrder()" id="createBtn">➕ Create Test Order</button>
+    <div id="createResult"></div>
+  </div>
+
+  <div class="card">
+    <h2>🔄 Step 3: Verify Admin Dashboard</h2>
+    <p>This simulates what the admin dashboard does when loading orders.</p>
+    <button onclick="fetchOrders()" id="fetchBtn">📥 Fetch Orders</button>
+    <button onclick="openAdmin()" class="secondary">🚀 Open Admin Dashboard</button>
+    <div id="fetchResult"></div>
+  </div>
+
+  <div class="card">
+    <h2>🧹 Emergency: Clear All Data</h2>
+    <p style="color: #f59e0b;">⚠️ Only use this if you need to start fresh. This will delete ALL orders.</p>
+    <button onclick="clearDatabase()" style="background: #7f1d1d;">🗑️ Clear Database</button>
+    <div id="clearResult"></div>
+  </div>
+
+  <script>
+    const API_URL = "https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566";
+    const PUBLIC_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJncGNncmhmbm12YXhia2Z6Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI0OTI3MDYsImV4cCI6MjA0ODA2ODcwNn0.q-dGfqMZ80h3I1Usu1VITHmTaBJ4OtA9hWZCk6OOkUg";
+
+    async function checkDatabase() {
+      const btn = document.getElementById('checkBtn');
+      const resultDiv = document.getElementById('checkResult');
+      
+      btn.disabled = true;
+      resultDiv.innerHTML = '<p>🔄 Checking database...</p>';
+      
+      try {
+        const response = await fetch(API_URL + "/debug/database", {
+          headers: { 'Authorization': 'Bearer ' + PUBLIC_KEY }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          const isEmpty = data.totalOrderIds === 0;
+          resultDiv.innerHTML = `
+            <div class="result ${isEmpty ? 'warning' : 'success'}">
+              <h3 style="margin-top:0">${isEmpty ? '⚠️ Database Empty' : '✅ Database Active'}</h3>
+              <div>
+                <span class="status ${data.totalOrderIds > 0 ? 'ok' : 'bad'}">
+                  Orders: ${data.totalOrderIds}
+                </span>
+              </div>
+              <pre>${JSON.stringify(data, null, 2)}</pre>
+              ${isEmpty ? '<p><strong>➡️ Proceed to Step 2 to create a test order</strong></p>' : ''}
+            </div>
+          `;
+        } else {
+          throw new Error(data.error || 'Unknown error');
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `
+          <div class="result error">
+            <h3 style="margin-top:0">❌ Error</h3>
+            <p>${error.message}</p>
+          </div>
+        `;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function createTestOrder() {
+      const btn = document.getElementById('createBtn');
+      const resultDiv = document.getElementById('createResult');
+      
+      btn.disabled = true;
+      resultDiv.innerHTML = '<p>🔄 Creating test order...</p>';
+      
+      try {
+        const response = await fetch(API_URL + "/debug/create-test-order", {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + PUBLIC_KEY,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+          const v = data.verification || {};
+          resultDiv.innerHTML = `
+            <div class="result success">
+              <h3 style="margin-top:0">✅ Test Order Created!</h3>
+              <p><strong>Order ID:</strong> <code>${data.orderId}</code></p>
+              <div>
+                <span class="status ${v.orderSaved ? 'ok' : 'bad'}">
+                  ${v.orderSaved ? '✅' : '❌'} Order Saved
+                </span>
+                <span class="status ${v.listUpdated ? 'ok' : 'bad'}">
+                  ${v.listUpdated ? '✅' : '❌'} Index Updated
+                </span>
+                <span class="status ok">
+                  📊 Total: ${v.totalInDatabase}
+                </span>
+              </div>
+              <p><strong>➡️ Now go to Step 3 and click "Fetch Orders"</strong></p>
+            </div>
+          `;
+        } else {
+          throw new Error(data.error || 'Unknown error');
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `
+          <div class="result error">
+            <h3 style="margin-top:0">❌ Error</h3>
+            <p>${error.message}</p>
+          </div>
+        `;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function fetchOrders() {
+      const btn = document.getElementById('fetchBtn');
+      const resultDiv = document.getElementById('fetchResult');
+      
+      btn.disabled = true;
+      resultDiv.innerHTML = '<p>🔄 Fetching orders (like admin dashboard does)...</p>';
+      
+      try {
+        const response = await fetch(API_URL + "/orders", {
+          headers: { 'Authorization': 'Bearer ' + PUBLIC_KEY }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          const orders = data.orders || [];
+          
+          if (orders.length === 0) {
+            resultDiv.innerHTML = `
+              <div class="result error">
+                <h3 style="margin-top:0">❌ No Orders Found</h3>
+                <p>The admin dashboard would show empty because no orders exist.</p>
+                <p><strong>➡️ Go back to Step 2 and create a test order</strong></p>
+              </div>
+            `;
+          } else {
+            let ordersHtml = '<div class="result success"><h3 style="margin-top:0">✅ Orders Retrieved!</h3>';
+            ordersHtml += `<p><strong>Found ${orders.length} order(s) - Admin dashboard should show these!</strong></p>`;
+            
+            orders.forEach(order => {
+              ordersHtml += `
+                <div style="border: 1px solid #444; padding: 10px; margin: 10px 0; border-radius: 6px;">
+                  <div><strong>ID:</strong> ${order.orderId}</div>
+                  <div><strong>Email:</strong> ${order.customerInfo?.email}</div>
+                  <div><strong>Total:</strong> $${order.total}</div>
+                  <div><strong>Status:</strong> ${order.status}</div>
+                </div>
+              `;
+            });
+            
+            ordersHtml += '<p><strong>✅ If admin dashboard is empty, try refreshing it!</strong></p>';
+            ordersHtml += '</div>';
+            resultDiv.innerHTML = ordersHtml;
+          }
+        } else {
+          throw new Error(data.error || 'Unknown error');
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `
+          <div class="result error">
+            <h3 style="margin-top:0">❌ Error</h3>
+            <p>${error.message}</p>
+          </div>
+        `;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function openAdmin() {
+      window.open('https://lettersfromsantaclaus.org/admin', '_blank');
+    }
+
+    async function clearDatabase() {
+      if (!confirm('⚠️ WARNING: This will delete ALL orders from the database!\n\nAre you ABSOLUTELY sure?')) {
+        return;
+      }
+      
+      if (!confirm('This cannot be undone. Really delete everything?')) {
+        return;
+      }
+      
+      const resultDiv = document.getElementById('clearResult');
+      resultDiv.innerHTML = '<p>🔄 Clearing database...</p>';
+      
+      try {
+        // This would need a server endpoint to actually clear data
+        resultDiv.innerHTML = `
+          <div class="result warning">
+            <h3 style="margin-top:0">⚠️ Manual Clear Required</h3>
+            <p>To clear the database, go to Supabase Dashboard:</p>
+            <ol style="text-align: left;">
+              <li>Open: <a href="https://supabase.com/dashboard/project/bgpcgrhfnmvaxbkfzcxo/editor" target="_blank" style="color: #3b82f6;">Supabase Table Editor</a></li>
+              <li>Find table: <code>kv_store_cf244566</code></li>
+              <li>Delete all rows</li>
+            </ol>
+          </div>
+        `;
+      } catch (error) {
+        resultDiv.innerHTML = `
+          <div class="result error">
+            <h3 style="margin-top:0">❌ Error</h3>
+            <p>${error.message}</p>
+          </div>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>

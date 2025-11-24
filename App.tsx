@@ -262,11 +262,21 @@ export default function App() {
 
   const handleFormComplete = (data: any) => {
     console.log("✍️ Form completed:", data);
-    // Clear scrollToPackage flag when moving to checkout
-    const cleanedData = { ...data };
-    delete cleanedData.scrollToPackage;
-    setFormData(cleanedData);
-    setCurrentStep("checkout");
+    // Store package data and redirect to standalone HTML checkout page
+    localStorage.setItem('santaLetterPackages', JSON.stringify(data.packages));
+    
+    // Convert packages to cart format for checkout page
+    const cartItems = data.packages.map((pkg: any, index: number) => ({
+      id: `pkg-${index}`,
+      name: pkg.packageName || 'Santa Letter',
+      price: pkg.packageType === 'basic' ? 19.99 : pkg.packageType === 'deluxe' ? 29.99 : 59.99,
+      quantity: 1,
+      packageType: pkg.packageType
+    }));
+    localStorage.setItem('santaCart', JSON.stringify(cartItems));
+    
+    // Redirect to hardcoded HTML checkout page with Trackdesk LEAD pixel
+    window.location.href = '/checkout.html';
   };
 
   const handleCheckoutSuccess = (orderToken: string, subscriptionAccepted: boolean) => {

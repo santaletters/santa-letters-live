@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Offer - Santa's Certified Letters</title>
+    
+  <!-- Trackdesk tracker begin -->
+  <script async src="//cdn.trackdesk.com/tracking.js"></script>
+  <script>
+    (function(t,d,k){(t[k]=t[k]||[]).push(d);t[d]=t[d]||t[k].f||function(){(t[d].q=t[d].q||[]).push(arguments)}})(window,"trackdesk","TrackdeskObject");
+  
+    trackdesk("directwebinteractive", "conversion", {
+      "conversionType": "sale"
+    });
+  </script>
+  <!-- Trackdesk tracker end -->
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .snowflake {
+            position: absolute;
+            color: white;
+            font-size: 1.5em;
+            animation: fall 10s linear infinite;
+        }
+        @keyframes fall {
+            0% { top: -10%; }
+            100% { top: 110%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated snowflakes -->
+    <div class="snowflake" style="left: 10%; animation-delay: 0s;">❄</div>
+    <div class="snowflake" style="left: 30%; animation-delay: 2s;">❄</div>
+    <div class="snowflake" style="left: 50%; animation-delay: 4s;">❄</div>
+    <div class="snowflake" style="left: 70%; animation-delay: 1s;">❄</div>
+    <div class="snowflake" style="left: 90%; animation-delay: 3s;">❄</div>
+
+    <div class="container">
+        <div class="bg-white rounded-lg shadow-2xl p-8 mt-10 relative">
+            <!-- Success Message -->
+            <div class="text-center mb-8">
+                <div class="inline-block bg-green-100 rounded-full p-4 mb-4">
+                    <svg class="w-16 h-16 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">Order Confirmed! 🎅</h1>
+                <p class="text-xl text-gray-600">Your magical letter is being prepared...</p>
+            </div>
+
+            <!-- UPSELL OFFER -->
+            <div class="bg-gradient-to-r from-red-50 to-green-50 rounded-lg p-8 mb-6 border-4 border-red-300">
+                <div class="text-center mb-6">
+                    <span class="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold inline-block mb-4">
+                        ⏰ LIMITED TIME OFFER
+                    </span>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Wait! Add Magic Snow Globe Video! ❄️</h2>
+                    <p class="text-xl text-gray-700">Make your letter EXTRA magical with a personalized snow globe video!</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-lg p-6 shadow-lg">
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">What You Get:</h3>
+                        <ul class="space-y-2 text-gray-700">
+                            <li class="flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Animated snow globe with child's name</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Santa's personal video message</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Downloadable & shareable</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Perfect for social media</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow-lg flex flex-col justify-center items-center">
+                        <div class="text-center">
+                            <p class="text-gray-500 line-through text-2xl mb-2">Regular: $29.99</p>
+                            <p class="text-5xl font-bold text-red-600 mb-2">$14.99</p>
+                            <p class="text-green-600 font-bold text-xl">SAVE 50% TODAY!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <button id="accept-upsell" class="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-5 rounded-lg text-2xl font-bold hover:from-green-700 hover:to-green-800 transition shadow-lg">
+                        YES! Add Snow Globe Video For $14.99 🎁
+                    </button>
+                    <button id="decline-upsell" class="w-full bg-gray-300 text-gray-700 py-3 rounded-lg text-lg hover:bg-gray-400 transition">
+                        No thanks, continue to my order summary
+                    </button>
+                </div>
+                
+                <div id="upsell-status" class="mt-4 text-center"></div>
+            </div>
+
+            <!-- Order Summary -->
+            <div id="order-details" class="bg-gray-50 rounded-lg p-6">
+                <h3 class="text-xl font-bold mb-4">Order Details</h3>
+                <div id="order-items"></div>
+                <div class="border-t pt-4 mt-4">
+                    <div class="flex justify-between text-2xl font-bold">
+                        <span>Total Paid:</span>
+                        <span id="total-paid">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Stripe
+        const stripe = Stripe('pk_live_51SIHQT2NsH2CKfRANHrn5PsrTTnvRY0t5QStLGW8W3ihy4dhFVhDX4ZIP3lrOYhA1HPtnflUgDAhDxEZ0TgNB1V000lsmZhQBB');
+        
+        // Get order data
+        const orderToken = localStorage.getItem('orderToken');
+        const orderAmount = parseFloat(localStorage.getItem('orderAmount') || '0');
+        const cartData = JSON.parse(localStorage.getItem('santaCart') || '[]');
+        
+        // Display order summary
+        const orderItems = document.getElementById('order-items');
+        cartData.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'flex justify-between mb-2';
+            itemDiv.innerHTML = `
+                <span>${item.name} x ${item.quantity}</span>
+                <span>$${(item.price * item.quantity).toFixed(2)}</span>
+            `;
+            orderItems.appendChild(itemDiv);
+        });
+        document.getElementById('total-paid').textContent = `$${orderAmount.toFixed(2)}`;
+
+        // Handle Accept Upsell
+        document.getElementById('accept-upsell').addEventListener('click', async function() {
+            const button = this;
+            const statusDiv = document.getElementById('upsell-status');
+            
+            button.disabled = true;
+            button.textContent = 'Processing...';
+            statusDiv.innerHTML = '<div class="text-blue-600 font-bold">Processing your upgrade...</div>';
+
+            try {
+                // Create payment intent for upsell
+                const response = await fetch('https://zdufkwflqbfppldctjdh.supabase.co/functions/v1/make-server-cf244566/create-upsell-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        orderToken: orderToken,
+                        upsellAmount: 14.99
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    statusDiv.innerHTML = '<div class="text-green-600 font-bold text-xl">✅ Snow Globe Video Added! Redirecting...</div>';
+                    setTimeout(() => {
+                        window.location.href = '/success?order=' + orderToken;
+                    }, 2000);
+                } else {
+                    throw new Error(data.error || 'Payment failed');
+                }
+
+            } catch (error) {
+                console.error('Upsell error:', error);
+                statusDiv.innerHTML = `<div class="text-red-600">Error: ${error.message}</div>`;
+                button.disabled = false;
+                button.textContent = 'YES! Add Snow Globe Video For $14.99 🎁';
+            }
+        });
+
+        // Handle Decline Upsell
+        document.getElementById('decline-upsell').addEventListener('click', function() {
+            window.location.href = '/success?order=' + orderToken;
+        });
+    </script>
+</body>
+</html>

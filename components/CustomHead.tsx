@@ -31,15 +31,7 @@ export function CustomHead({
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
-      
-      {/* Trackdesk Click Tracking Pixel - Hardcoded in Head */}
-      {/* Trackdesk tracker begin */}
-      <script async src="https://cdn.trackdesk.com/tracking.js"></script>
-      <script>{`
-        (function(t,d,k){(t[k]=t[k]||[]).push(d);t[d]=t[d]||t[k].f||function(){(t[d].q=t[d].q||[]).push(arguments)}})(window,"trackdesk","TrackdeskObject");
-        trackdesk("directwebinteractive", "click");
-      `}</script>
-      {/* Trackdesk tracker end */}
+   
     </Helmet>
   );
 }

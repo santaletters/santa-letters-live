@@ -4,6 +4,7 @@ import { Elements, useStripe, PaymentRequestButtonElement } from '@stripe/react-
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { EmbeddedPaymentForm } from "./EmbeddedPaymentForm";
 import { Footer } from "./Footer";
+import { CheckoutPageHead } from "./CheckoutPageHead";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -28,46 +29,6 @@ const cardLogos = "https://images.unsplash.com/photo-1658842244540-883aff68fb78?
 // Stripe Publishable Key (safe to expose in frontend)
 const STRIPE_PUBLISHABLE_KEY = 'pk_live_51SIHQT2NsH2CKfRANHrn5PsrTTnvRY0t5QStLGW8W3ihy4dhFVhDX4ZIP3lrOYhA1HPtnflUgDAhDxEZ0TgNB1V000lsmZhQBB';
 const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
-
-// Trackdesk Pixel Conversion Tracking - Fire using frontend pixel
-function fireTrackdeskConversion(
-  orderId: string, 
-  customerEmail: string, 
-  totalRevenue: number, 
-  numberOfPackages: number,
-  hasSubscription: boolean
-) {
-  console.log('📊 Firing Trackdesk SALE conversion via pixel...');
-  
-  // Check if conversion already fired for this order (prevent duplicates)
-  const conversionKey = `trackdesk_conversion_${orderId}`;
-  if (sessionStorage.getItem(conversionKey)) {
-    console.log('✅ Trackdesk conversion already fired for this order');
-    return;
-  }
-
-  // Check if trackdesk function is available
-  if (typeof (window as any).trackdesk !== 'function') {
-    console.warn('⚠️ Trackdesk pixel not loaded - skipping conversion tracking');
-    return;
-  }
-
-  try {
-    // Fire SALE conversion using Trackdesk pixel (BEFORE upsell)
-    // Value is passed directly as the transaction amount
-    (window as any).trackdesk('directwebinteractive', 'conversion', {
-      conversionType: 'sale',
-      amount: totalRevenue  // Transaction value in dollars
-    });
-
-    console.log(`✅ Trackdesk SALE conversion fired - Amount: $${totalRevenue.toFixed(2)}`);
-    
-    // Mark as fired
-    sessionStorage.setItem(conversionKey, 'true');
-  } catch (error) {
-    console.error('❌ Error firing Trackdesk conversion:', error);
-  }
-}
 
 interface CheckoutProps {
   letterPackages: LetterPackage[];
@@ -210,15 +171,6 @@ function ExpressCheckoutButton({
         const { success, error, accessToken, orderId } = await saveResponse.json();
 
         if (success) {
-          // 🎯 FIRE TRACKDESK CONVERSION IMMEDIATELY AFTER PAYMENT SUCCESS (Express Checkout)
-          fireTrackdeskConversion(
-            orderId || 'express-checkout',
-            e.payerEmail || '',
-            grandTotal,
-            letterPackages.length,
-            monthlySubscription
-          );
-          
           // Save access token and update URL to trigger upsells
           localStorage.setItem('orderAccessToken', accessToken);
           window.history.replaceState({}, '', `/?token=${accessToken}&fromCheckout=true`);
@@ -544,39 +496,6 @@ function CheckoutInner({ letterPackages, onBack, onAddAnotherLetter, onEditPacka
     }
   }, []);
 
-  // 🎯 TRACKDESK LEAD CONVERSION - Fire when checkout page loads (customer reached checkout)
-  useEffect(() => {
-    console.log('📊 Firing Trackdesk LEAD conversion via pixel...');
-    
-    // Check if we already fired the lead conversion for this session
-    const leadKey = `trackdesk_lead_fired`;
-    if (sessionStorage.getItem(leadKey)) {
-      console.log('✅ Trackdesk lead conversion already fired for this session');
-      return;
-    }
-
-    // Check if trackdesk function is available
-    if (typeof (window as any).trackdesk !== 'function') {
-      console.warn('⚠️ Trackdesk pixel not loaded - skipping lead tracking');
-      return;
-    }
-
-    try {
-      // Fire LEAD conversion using Trackdesk pixel (when customer fills out info)
-      // NO value passed - just fire the pixel
-      (window as any).trackdesk('directwebinteractive', 'conversion', {
-        conversionType: 'lead'
-      });
-
-      console.log('✅ Trackdesk LEAD conversion fired (no value passed)');
-      
-      // Mark as fired
-      sessionStorage.setItem(leadKey, 'true');
-    } catch (error) {
-      console.error('❌ Error firing Trackdesk lead:', error);
-    }
-  }, []); // Fire once on mount
-
   // Handle payment success
   const handlePaymentSuccess = async (intentId: string) => {
     console.log("✅ Payment succeeded, saving order...");
@@ -616,15 +535,6 @@ function CheckoutInner({ letterPackages, onBack, onAddAnotherLetter, onEditPacka
       const data = await response.json();
       console.log("✅ Order saved:", data.orderId);
       console.log("🔐 Access token generated");
-      
-      // 🎯 FIRE TRACKDESK CONVERSION IMMEDIATELY AFTER PAYMENT SUCCESS
-      fireTrackdeskConversion(
-        data.orderId,
-        billingData.email,
-        grandTotal,
-        letterPackages.length,
-        monthlySubscription
-      );
       
       // Save access token to localStorage for success page access
       localStorage.setItem('orderAccessToken', data.accessToken);
@@ -1396,8 +1306,11 @@ function CheckoutInner({ letterPackages, onBack, onAddAnotherLetter, onEditPacka
 // Wrapper component with Elements provider
 export function Checkout(props: CheckoutProps) {
   return (
-    <Elements stripe={stripePromise}>
-      <CheckoutInner {...props} />
-    </Elements>
+    <>
+      <CheckoutPageHead />
+      <Elements stripe={stripePromise}>
+        <CheckoutInner {...props} />
+      </Elements>
+    </>
   );
 }

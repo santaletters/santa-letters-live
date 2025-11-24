@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Offer - Letters From Santa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Trackdesk SALE Pixel - Will fire with order amount -->
+    <script>
+    // Get order total from localStorage
+    const numberOfLetters = parseInt(localStorage.getItem('numberOfLetters') || '1');
+    const basePrice = 29.99; // Average price per letter
+    const orderValue = (numberOfLetters * basePrice).toFixed(2);
+
+    window.TrackdeskConversion = window.TrackdeskConversion || [];
+    window.TrackdeskConversion.push({
+        'conversion_id': 'SALE',
+        'event_id': 'upsell_' + Date.now() + '_' + Math.random(),
+        'value': parseFloat(orderValue)
+    });
+    console.log('🔥 SALE PIXEL FIRED - Order value: $' + orderValue);
+    </script>
+    
+    <!-- Trackdesk Main Script -->
+    <script>
+    (function() {
+        var td = document.createElement('script'); td.type = 'text/javascript'; td.async = true;
+        td.src = 'https://i.trackdesk.com/tracking.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(td, s);
+    })();
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .pacifico { font-family: 'Pacifico', cursive; }
+        .timer {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-blue-50 via-white to-blue-100 min-h-screen">
+    
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Timer Section -->
+        <div class="bg-red-600 text-white rounded-2xl shadow-2xl p-8 mb-8 text-center">
+            <h1 class="pacifico text-4xl mb-4">⏰ WAIT! Special Offer!</h1>
+            <p class="text-xl mb-4">This exclusive offer expires in:</p>
+            <div class="timer mb-4" id="timer">2:00</div>
+            <p class="text-lg">Don't miss this one-time opportunity!</p>
+        </div>
+
+        <!-- Offer Section -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-6">
+            <div class="text-center mb-8">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">❄️ Add Certified North Pole Snow!</h2>
+                <p class="text-xl text-gray-600 mb-2">Make your letter even more magical with authentic snow from the North Pole</p>
+                <div class="inline-block bg-yellow-100 text-yellow-800 px-6 py-2 rounded-full font-bold text-lg">
+                    Save 50% Today Only!
+                </div>
+            </div>
+
+            <!-- Product Image Placeholder -->
+            <div class="bg-gradient-to-b from-blue-100 to-white rounded-xl p-12 mb-8 text-center">
+                <div class="text-8xl mb-4">❄️</div>
+                <p class="text-gray-600">Authentic North Pole Snow in a sealed tube</p>
+            </div>
+
+            <!-- Features -->
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <div class="flex items-start gap-4">
+                    <div class="text-3xl">✓</div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-2">100% Authentic</h3>
+                        <p class="text-gray-600">Real snow from the North Pole, certified and sealed</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="text-3xl">✓</div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-2">Magical Addition</h3>
+                        <p class="text-gray-600">Makes the Santa experience even more real for kids</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="text-3xl">✓</div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-2">Keepsake Quality</h3>
+                        <p class="text-gray-600">Beautifully packaged tube they can keep forever</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="text-3xl">✓</div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-2">Limited Quantity</h3>
+                        <p class="text-gray-600">Only available during holiday season</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing -->
+            <div class="bg-gradient-to-r from-red-50 to-green-50 rounded-xl p-8 mb-8 text-center">
+                <div class="flex justify-center items-center gap-6 mb-4">
+                    <div>
+                        <p class="text-gray-500 line-through text-2xl">$29.99</p>
+                        <p class="text-sm text-gray-600">Regular Price</p>
+                    </div>
+                    <div class="text-4xl font-bold">→</div>
+                    <div>
+                        <p class="text-5xl font-bold text-red-600">$14.99</p>
+                        <p class="text-sm text-green-600 font-semibold">50% OFF TODAY!</p>
+                    </div>
+                </div>
+                
+                <!-- Quantity Selector -->
+                <div class="flex justify-center items-center gap-4 mb-6">
+                    <label class="font-semibold text-lg">Quantity:</label>
+                    <button id="decrease-btn" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg font-bold text-xl">-</button>
+                    <span id="quantity" class="text-2xl font-bold w-12 text-center">1</span>
+                    <button id="increase-btn" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg font-bold text-xl">+</button>
+                </div>
+
+                <p class="text-gray-600 mb-2">Total: <span id="upsell-total" class="text-2xl font-bold text-red-600">$14.99</span></p>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="space-y-4">
+                <button id="accept-btn" class="w-full bg-green-600 hover:bg-green-700 text-white px-8 py-5 rounded-full text-2xl font-bold transition-all shadow-lg">
+                    ✅ YES! Add North Pole Snow
+                </button>
+                <button id="decline-btn" class="w-full bg-gray-300 hover:bg-gray-400 text-gray-700 px-8 py-3 rounded-full text-lg font-semibold transition-all">
+                    No thanks, continue to my order
+                </button>
+            </div>
+
+            <div id="upsell-message" class="mt-6 text-center"></div>
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="flex justify-center items-center gap-6 text-gray-500 text-sm">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                </svg>
+                Secure Payment
+            </div>
+            <div>Money-Back Guarantee</div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Stripe
+        const stripe = Stripe('pk_live_51SIHQT2NsH2CKfRANHrn5PsrTTnvRY0t5QStLGW8W3ihy4dhFVhDX4ZIP3lrOYhA1HPtnflUgDAhDxEZ0TgNB1V000lsmZhQBB');
+        
+        // Get order token
+        const orderToken = localStorage.getItem('currentOrderToken');
+        
+        // Quantity management
+        let quantity = 1;
+        const unitPrice = 14.99;
+
+        function updateTotal() {
+            const total = (quantity * unitPrice).toFixed(2);
+            document.getElementById('upsell-total').textContent = '$' + total;
+        }
+
+        document.getElementById('increase-btn').addEventListener('click', () => {
+            if (quantity < 5) {
+                quantity++;
+                document.getElementById('quantity').textContent = quantity;
+                updateTotal();
+            }
+        });
+
+        document.getElementById('decrease-btn').addEventListener('click', () => {
+            if (quantity > 1) {
+                quantity--;
+                document.getElementById('quantity').textContent = quantity;
+                updateTotal();
+            }
+        });
+
+        // Timer countdown (2 minutes)
+        let timeLeft = 120;
+        const timerDisplay = document.getElementById('timer');
+        
+        const countdown = setInterval(() => {
+            timeLeft--;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                // Auto-decline and redirect to success
+                window.location.href = '/?token=' + orderToken;
+            }
+        }, 1000);
+
+        // Accept upsell
+        document.getElementById('accept-btn').addEventListener('click', async () => {
+            const button = document.getElementById('accept-btn');
+            const messageDiv = document.getElementById('upsell-message');
+            
+            button.disabled = true;
+            button.textContent = 'Processing...';
+            
+            try {
+                const total = quantity * unitPrice;
+                
+                // Process upsell payment via your backend
+                const response = await fetch('https://hzxntslfsgnibpmgsulg.supabase.co/functions/v1/make-server-cf244566/process-upsell', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        orderToken: orderToken,
+                        upsellType: 'snow',
+                        quantity: quantity,
+                        amount: total
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    clearInterval(countdown);
+                    messageDiv.textContent = '✅ Snow added to your order!';
+                    messageDiv.className = 'mt-6 text-center text-green-600 font-bold';
+                    setTimeout(() => {
+                        window.location.href = '/?token=' + orderToken;
+                    }, 1500);
+                } else {
+                    throw new Error(result.error || 'Payment failed');
+                }
+            } catch (err) {
+                console.error('Upsell error:', err);
+                messageDiv.textContent = 'Error processing upsell. Please contact support.';
+                messageDiv.className = 'mt-6 text-center text-red-600';
+                button.disabled = false;
+                button.textContent = '✅ YES! Add North Pole Snow';
+            }
+        });
+
+        // Decline upsell
+        document.getElementById('decline-btn').addEventListener('click', () => {
+            clearInterval(countdown);
+            window.location.href = '/?token=' + orderToken;
+        });
+
+        // Check if order token exists
+        if (!orderToken) {
+            window.location.href = '/';
+        }
+    </script>
+
+</body>
+</html>

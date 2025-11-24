@@ -8,25 +8,16 @@
     <script src="https://js.stripe.com/v3/"></script>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Trackdesk LEAD Pixel - Fires when checkout page loads -->
-    <script>
-    window.TrackdeskConversion = window.TrackdeskConversion || [];
-    window.TrackdeskConversion.push({
-        'conversion_id': 'LEAD',
-        'event_id': 'checkout_' + Date.now() + '_' + Math.random(),
-        'value': 0
-    });
-    console.log('🔥 LEAD PIXEL FIRED - Checkout page loaded');
-    </script>
-    
-    <!-- Trackdesk Main Script -->
-    <script>
-    (function() {
-        var td = document.createElement('script'); td.type = 'text/javascript'; td.async = true;
-        td.src = 'https://i.trackdesk.com/tracking.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(td, s);
-    })();
-    </script>
+   <!-- Trackdesk tracker begin -->
+<script async src="//cdn.trackdesk.com/tracking.js"></script>
+<script>
+  (function(t,d,k){(t[k]=t[k]||[]).push(d);t[d]=t[d]||t[k].f||function(){(t[d].q=t[d].q||[]).push(arguments)}})(window,"trackdesk","TrackdeskObject");
+
+  trackdesk("directwebinteractive", "conversion", {
+    "conversionType": "lead"
+  });
+</script>
+<!-- Trackdesk tracker end -->
     
     <style>
         body {

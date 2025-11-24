@@ -517,8 +517,10 @@
         }
 
         function editPackage(idx) {
-            alert('To edit this package, please go back to the previous page.');
-            // In a real implementation, you'd redirect back to the form with the package index
+            // Set flag to edit this specific package
+            localStorage.setItem('editingPackageIndex', idx);
+            // Go back to React app
+            window.location.href = '/';
         }
 
         function deletePackage(idx) {
@@ -526,8 +528,8 @@
                 letterPackages.splice(idx, 1);
                 localStorage.setItem('santaLetterPackages', JSON.stringify(letterPackages));
                 if (letterPackages.length === 0) {
-                    alert('You must have at least one package. Redirecting back...');
-                    window.history.back();
+                    // Redirect back to start a new letter
+                    window.location.href = '/';
                 } else {
                     renderOrderItems();
                 }
@@ -535,8 +537,8 @@
         }
 
         function addAnotherLetter() {
-            alert('To add another letter, please go back to the previous page.');
-            // In a real implementation, you'd redirect back to the form
+            // Go back to React app to add another letter
+            window.location.href = '/';
         }
 
         // Initialize order display

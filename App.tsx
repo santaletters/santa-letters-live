@@ -254,10 +254,11 @@ export default function App() {
     }
   }, [currentStep]);
 
-  const handleSelectPackage = (packageType?: 'basic' | 'deluxe' | 'premium') => {
+  const handlePackageSelect = (packageType: 'basic' | 'deluxe' | 'premium' | null) => {
     console.log("📦 Package selected:", packageType || 'funnel (no type)');
     setSelectedPackage(packageType || 'funnel');
-    setCurrentStep("form");
+    // Redirect to PHP letterform
+    window.location.href = '/letterform.php';
   };
 
   const handleFormComplete = (data: any) => {

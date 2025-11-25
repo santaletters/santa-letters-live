@@ -286,7 +286,7 @@
                             onclick="acceptUpsell()"
                             class="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-xl font-bold shadow-lg rounded-lg transition-colors"
                         >
-                            <span id="accept-text">✓ Yes! Add <span id="accept-qty">1</span> <span id="accept-label">Jar</span> for $<span id="accept-price">9.99</span></span>
+                            <span id="accept-text">✓ Yes! Add <span id="accept-qty">1</span> <span id="accept-label">Jar</span></span>
                             <span id="accept-loading" class="hidden">Adding to Order...</span>
                         </button>
 
@@ -437,6 +437,7 @@
                     console.log('⏱️ Timer expired, showing next offer');
                     document.getElementById('subscription-page').classList.add('hidden');
                     document.getElementById('upsell-page').classList.remove('hidden');
+                    initializeSnowQuantity(); // Auto-select quantity
                     startUpsellTimer();
                 }
             }, 1000);
@@ -457,7 +458,10 @@
                 
                 if (timeLeft <= 0) {
                     clearInterval(currentTimer);
-                    window.location.href = '/?token=' + orderToken;
+                    // Show downsell instead of going to success page
+                    console.log('⏱️ Snow timer expired, showing downsell');
+                    document.getElementById('upsell-page').classList.add('hidden');
+                    document.getElementById('downsell-page').classList.remove('hidden');
                 }
             }, 1000);
         }
@@ -468,7 +472,7 @@
             document.getElementById('upsell-total-price').textContent = '$' + total;
             document.getElementById('accept-qty').textContent = upsellQuantity;
             document.getElementById('accept-label').textContent = upsellQuantity === 1 ? 'Jar' : 'Jars';
-            document.getElementById('accept-price').textContent = total;
+            // Removed price from button text
             document.getElementById('upsell-quantity-display').textContent = upsellQuantity;
             document.getElementById('upsell-quantity-label').textContent = upsellQuantity === 1 ? 'jar' : 'jars';
             
@@ -744,6 +748,7 @@
                         clearInterval(currentTimer);
                         document.getElementById('subscription-page').classList.add('hidden');
                         document.getElementById('upsell-page').classList.remove('hidden');
+                        initializeSnowQuantity(); // Auto-select quantity
                         startUpsellTimer();
                     }, 1500);
                 } else {
@@ -767,6 +772,7 @@
             clearInterval(currentTimer);
             document.getElementById('subscription-page').classList.add('hidden');
             document.getElementById('upsell-page').classList.remove('hidden');
+            initializeSnowQuantity(); // Auto-select quantity
             startUpsellTimer();
         }
 
@@ -827,6 +833,22 @@
         // Initialize on page load
         initializeSubscriptionQuantity();
         startSubscriptionTimer();
+        
+        // Initialize snow upsell quantity when the page switches to it
+        function initializeSnowQuantity() {
+            try {
+                const packages = JSON.parse(localStorage.getItem('santaLetterPackages') || '[]');
+                const letterCount = packages.length || 1;
+                
+                console.log('❄️ Auto-selecting', letterCount, 'jars based on order');
+                
+                // Set the upsell quantity to match letter count
+                upsellQuantity = letterCount;
+                updateUpsellTotal();
+            } catch (error) {
+                console.error('Error auto-selecting snow quantity:', error);
+            }
+        }
     </script>
 
 </body>

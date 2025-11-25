@@ -125,6 +125,42 @@ interface AdminDashboardProps {
 }
 
 export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUpsellManage, onLogout }: AdminDashboardProps) {
+  // ===========================
+  // AUTHENTICATION CHECK - CRITICAL SECURITY
+  // ===========================
+  useEffect(() => {
+    const checkAuth = () => {
+      const sessionData = localStorage.getItem('adminSession');
+      
+      if (!sessionData) {
+        console.log('❌ No admin session found - redirecting to login');
+        window.location.href = '/admin/login';
+        return;
+      }
+      
+      try {
+        const session = JSON.parse(sessionData);
+        const now = Date.now();
+        const expiresAt = session.timestamp + session.expiresIn;
+        
+        if (!session.authenticated || now > expiresAt) {
+          console.log('❌ Admin session expired - redirecting to login');
+          localStorage.removeItem('adminSession');
+          window.location.href = '/admin/login';
+          return;
+        }
+        
+        console.log('✅ Admin session valid');
+      } catch (error) {
+        console.error('❌ Invalid session data - redirecting to login');
+        localStorage.removeItem('adminSession');
+        window.location.href = '/admin/login';
+      }
+    };
+    
+    checkAuth();
+  }, []);
+  
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);

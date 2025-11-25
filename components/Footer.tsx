@@ -42,24 +42,6 @@ export function Footer() {
       </p>
       <p className="mb-4">Santa's Certified Letter © 2025</p>
       
-      {/* Debug & Admin Links */}
-      <div className="mt-4 space-x-3">
-        <a 
-          href="/affiliates"
-          className="text-gray-400 hover:text-gray-600 text-xs underline"
-        >
-          Affiliate Partners
-        </a>
-        <span className="text-gray-300">|</span>
-        <a 
-          href="#"
-          onClick={handleTestUpsellClick}
-          className="text-gray-400 hover:text-gray-600 text-xs underline"
-          title="Test upsell flow with an existing order"
-        >
-          🔧 Test Upsells
-        </a>
-      </div>
     </div>
   );
 }

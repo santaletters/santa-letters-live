@@ -44,6 +44,31 @@ export default function App() {
     }
   }, []);
 
+  // Helper function to check admin authentication
+  const isAdminAuthenticated = (): boolean => {
+    const sessionData = localStorage.getItem('adminSession');
+    
+    if (!sessionData) {
+      return false;
+    }
+    
+    try {
+      const session = JSON.parse(sessionData);
+      const now = Date.now();
+      const expiresAt = session.timestamp + session.expiresIn;
+      
+      if (!session.authenticated || now > expiresAt) {
+        localStorage.removeItem('adminSession');
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      localStorage.removeItem('adminSession');
+      return false;
+    }
+  };
+
   const [currentStep, setCurrentStep] = useState<Step>(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const path = window.location.pathname;
@@ -52,9 +77,13 @@ export default function App() {
     console.log("  - Path:", path);
     console.log("  - Search params:", urlParams.toString());
     
-    // Admin routes
+    // Admin routes - CHECK AUTHENTICATION FIRST
     if (path === '/admin' || urlParams.get('page') === 'admin') {
-      console.log("  → Routing to admin dashboard");
+      if (!isAdminAuthenticated()) {
+        console.log("  → No admin session, redirecting to login");
+        return 'adminlogin';
+      }
+      console.log("  → Valid admin session, routing to admin dashboard");
       return 'admin';
     }
     if (path === '/admin/login' || urlParams.get('page') === 'adminlogin') {
@@ -62,10 +91,18 @@ export default function App() {
       return 'adminlogin';
     }
     if (path === '/admin/affiliates' || urlParams.get('page') === 'affiliatemanage') {
+      if (!isAdminAuthenticated()) {
+        console.log("  → No admin session, redirecting to login");
+        return 'adminlogin';
+      }
       console.log("  → Routing to affiliate management");
       return 'affiliatemanage';
     }
     if (path === '/admin/upsells' || urlParams.get('page') === 'upsellmanage') {
+      if (!isAdminAuthenticated()) {
+        console.log("  → No admin session, redirecting to login");
+        return 'adminlogin';
+      }
       console.log("  → Routing to upsell management");
       return 'upsellmanage';
     }
@@ -400,6 +437,8 @@ export default function App() {
 
   const handleBackFromAdminDashboard = () => {
     console.log("⬅️ Logging out of admin");
+    // Clear admin session
+    localStorage.removeItem("adminSession");
     setCurrentStep("adminlogin");
   };
 
@@ -619,7 +658,7 @@ export default function App() {
           <Suspense fallback={<LoadingScreen />}>
             <AdminLogin
               onLoginSuccess={() => setCurrentStep("admin")}
-              onBack={handleReturnHome}
+              onBackToSales={handleReturnHome}
             />
           </Suspense>
         )}

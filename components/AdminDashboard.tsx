@@ -1519,6 +1519,26 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
     setBulkActionInProgress(true);
     try {
       switch (action) {
+        case "delete":
+          // Bulk delete orders
+          for (const orderId of selectedIds) {
+            try {
+              const response = await fetch(API_URL + "/orders/" + orderId, {
+                method: "DELETE",
+                headers: {
+                  Authorization: "Bearer " + publicAnonKey,
+                },
+              });
+              if (!response.ok) {
+                console.error(`Failed to delete order ${orderId}`);
+              }
+            } catch (error) {
+              console.error(`Error deleting order ${orderId}:`, error);
+            }
+          }
+          alert(`✅ Deleted ${selectedIds.length} order(s)!`);
+          break;
+        
         case "archive":
           // Bulk archive without individual alerts
           for (const orderId of selectedIds) {
@@ -1598,6 +1618,26 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
     setBulkActionInProgress(true);
     try {
       switch (action) {
+        case "delete":
+          // Bulk delete subscription orders
+          for (const orderId of selectedIds) {
+            try {
+              const response = await fetch(API_URL + "/orders/" + orderId, {
+                method: "DELETE",
+                headers: {
+                  Authorization: "Bearer " + publicAnonKey,
+                },
+              });
+              if (!response.ok) {
+                console.error(`Failed to delete order ${orderId}`);
+              }
+            } catch (error) {
+              console.error(`Error deleting order ${orderId}:`, error);
+            }
+          }
+          alert(`✅ Deleted ${selectedIds.length} subscription order(s)!`);
+          break;
+        
         case "cancel":
           let successCount = 0;
           for (const orderId of selectedIds) {
@@ -2218,6 +2258,16 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
                         Archive
                       </Button>
                       <Button
+                        onClick={() => handleBulkRegularAction("delete")}
+                        disabled={bulkActionInProgress}
+                        size="sm"
+                        variant="outline"
+                        className="bg-red-50 hover:bg-red-100 text-red-700"
+                      >
+                        <Trash2 className="w-4 h-4 mr-1" />
+                        Delete
+                      </Button>
+                      <Button
                         onClick={() => handleBulkRegularAction("export")}
                         disabled={bulkActionInProgress}
                         size="sm"
@@ -2829,6 +2879,16 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
                       >
                         <Archive className="w-4 h-4 mr-1" />
                         Archive
+                      </Button>
+                      <Button
+                        onClick={() => handleBulkSubscriptionAction("delete")}
+                        disabled={bulkActionInProgress}
+                        size="sm"
+                        variant="outline"
+                        className="bg-red-50 hover:bg-red-100 text-red-700"
+                      >
+                        <Trash2 className="w-4 h-4 mr-1" />
+                        Delete
                       </Button>
                       <Button
                         onClick={() => handleBulkSubscriptionAction("export")}

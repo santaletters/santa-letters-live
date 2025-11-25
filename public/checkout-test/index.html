@@ -397,7 +397,6 @@
             // Update totals
             const totals = calculateTotals();
             document.getElementById('package-count').textContent = packages.length;
-            document.getElementById('sub-child-count').textContent = packages.length;
             document.getElementById('subtotal').textContent = `$${totals.subtotal.toFixed(2)}`;
             document.getElementById('total').textContent = `$${totals.total.toFixed(2)}`;
         }
@@ -414,6 +413,10 @@
 
         // Initialize: Render order summary on page load
         renderOrderSummary();
+        
+        // Debug: Log packages to console
+        console.log('🎁 Packages loaded from localStorage:', packages);
+        console.log('💰 Calculated totals:', calculateTotals());
 
         // Handle form submission
         const form = document.getElementById('payment-form');

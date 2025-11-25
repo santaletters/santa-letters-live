@@ -496,6 +496,37 @@
                 });
 
                 if (result.error) {
+                    // Log the declined payment to backend for admin tracking
+                    try {
+                        console.log('💳❌ Payment declined, logging to backend:', result.error);
+                        
+                        await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/confirm-payment', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJncGNncmhmbm12YXhia2Z6Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NjY3MzAsImV4cCI6MjA3NjA0MjczMH0.eDun3lViK4XA--bTwRTqyCTBO40B8JU7m12mc4Jz2mo'
+                            },
+                            body: JSON.stringify({
+                                paymentIntentId,
+                                letterPackages: packages,
+                                billingData: {
+                                    firstName,
+                                    lastName,
+                                    email,
+                                    phone,
+                                    shippingDate
+                                },
+                                monthlySubscription,
+                                total: totals.total,
+                                affiliateId,
+                                subIds
+                            })
+                        });
+                        console.log('✅ Declined payment logged to backend');
+                    } catch (logError) {
+                        console.error('Failed to log declined payment:', logError);
+                    }
+                    
                     // Show error to customer
                     document.getElementById('payment-message').textContent = result.error.message;
                     document.getElementById('payment-message').classList.add('text-red-600');

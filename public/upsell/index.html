@@ -432,31 +432,33 @@
         }
         console.log('🧹 Cleared all existing timers/intervals');
         
-        // Generate unique session ID for this upsell flow
-        const currentSessionId = 'upsell_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        const lastSessionId = sessionStorage.getItem('lastUpsellSessionId');
-        
-        console.log('🆔 Current Session ID:', currentSessionId);
-        console.log('🆔 Last Session ID:', lastSessionId);
-        
-        // Check if this is a new session (different from last time)
-        if (lastSessionId && lastSessionId !== currentSessionId) {
-            console.log('🔄 NEW ORDER DETECTED - Performing complete reset');
-            // Clear any cached state from previous order
-            sessionStorage.removeItem('upsellCompleted');
-            sessionStorage.removeItem('downsellShown');
+        // CRITICAL FIX: Read token from URL parameter (not localStorage)
+        // This ensures each order has its own unique token in the URL
+        function getOrderTokenFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get('token');
+            console.log('🎯 Order Token from URL:', token ? token.substring(0, 20) + '...' : 'NOT FOUND');
+            return token;
         }
         
-        // Save current session ID
-        sessionStorage.setItem('lastUpsellSessionId', currentSessionId);
+        // Get the CURRENT order token from URL
+        const orderToken = getOrderTokenFromURL();
+        
+        if (!orderToken) {
+            console.error('❌ No order token in URL! Redirecting to homepage...');
+            alert('No order found. Please complete checkout first.');
+            window.location.href = '/';
+            throw new Error('No order token - stopping execution');
+        }
+        
+        // Also save to localStorage for compatibility with other pages
+        localStorage.setItem('orderAccessToken', orderToken);
+        
+        console.log('✅ Fresh upsell session initialized for order:', orderToken.substring(0, 20) + '...');
         
         // Initialize Stripe
         const stripe = Stripe('pk_live_51SIHQT2NsH2CKfRANHrn5PsrTTnvRY0t5QStLGW8W3ihy4dhFVhDX4ZIP3lrOYhA1HPtnflUgDAhDxEZ0TgNB1V000lsmZhQBB');
         
-        // Get orderToken from localStorage
-        const orderToken = localStorage.getItem('orderAccessToken');
-        console.log('🎯 Order Token:', orderToken);
-
         // State Management (reset for each new session)
         let upsellQuantity = 1;
         let downsellQuantity = 1;
@@ -750,12 +752,6 @@
         function skipDownsell() {
             console.log('⏭️ Skipping downsell');
             window.location.href = '/?token=' + orderToken;
-        }
-
-        // Check if order token exists
-        if (!orderToken) {
-            console.error('❌ No order token found!');
-            window.location.href = '/';
         }
 
         // Subscription functions

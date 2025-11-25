@@ -575,7 +575,7 @@
                     const confirmData = await confirmResponse.json();
 
                     if (confirmData.success) {
-                        // Save order token and redirect to upsell
+                        // Save order token and redirect to upsell WITH TOKEN IN URL
                         localStorage.setItem('orderAccessToken', confirmData.accessToken);
                         
                         // Fire Trackdesk SALE pixel
@@ -588,8 +588,8 @@
                         });
                         console.log('🔥 SALE PIXEL FIRED - Order completed:', confirmData.orderId);
                         
-                        // Redirect to upsell page
-                        window.location.href = '/upsell/';
+                        // Redirect to upsell page WITH TOKEN IN URL (prevents cache issues on multiple orders)
+                        window.location.href = '/upsell/?token=' + confirmData.accessToken;
                     } else {
                         throw new Error(confirmData.error || 'Failed to confirm order');
                     }

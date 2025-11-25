@@ -306,7 +306,7 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
   // Fetch declined orders
   const fetchDeclinedOrders = async () => {
     try {
-      const response = await fetch(API_URL + "/admin/declined-orders", {
+      const response = await fetch(API_URL + "/declined-orders", {
         headers: {
           Authorization: "Bearer " + publicAnonKey,
         },
@@ -315,7 +315,8 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
       if (!response.ok) throw new Error("Failed to fetch declined orders");
 
       const data = await response.json();
-      setDeclinedOrders(data.declinedOrders || []);
+      console.log('📋 Fetched declined orders:', data);
+      setDeclinedOrders(data.declines || []);
     } catch (error) {
       console.error("Error fetching declined orders:", error);
     }

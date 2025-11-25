@@ -499,8 +499,10 @@
                     // Log the declined payment to backend for admin tracking
                     try {
                         console.log('💳❌ Payment declined, logging to backend:', result.error);
+                        console.log('📋 Payment Intent ID:', paymentIntentId);
+                        console.log('📦 Order details:', { packages, email, total: totals.total });
                         
-                        await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/confirm-payment', {
+                        const declineResponse = await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/confirm-payment', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -522,9 +524,21 @@
                                 subIds
                             })
                         });
-                        console.log('✅ Declined payment logged to backend');
+                        
+                        const declineData = await declineResponse.json();
+                        console.log('🔍 Backend response status:', declineResponse.status);
+                        console.log('🔍 Backend response data:', declineData);
+                        
+                        if (declineResponse.status === 400 && declineData.error) {
+                            console.log('✅ Declined payment logged to backend (400 expected for declined payments)');
+                        } else if (declineResponse.ok) {
+                            console.log('✅ Backend processed the decline log');
+                        } else {
+                            console.error('❌ Unexpected backend response:', declineResponse.status, declineData);
+                        }
                     } catch (logError) {
-                        console.error('Failed to log declined payment:', logError);
+                        console.error('❌ Failed to log declined payment:', logError);
+                        console.error('Error details:', logError.message, logError.stack);
                     }
                     
                     // Show error to customer

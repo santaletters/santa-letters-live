@@ -412,6 +412,9 @@
             window.location.href = '/letterform/';
         });
 
+        // Initialize: Render order summary on page load
+        renderOrderSummary();
+
         // Handle form submission
         const form = document.getElementById('payment-form');
         form.addEventListener('submit', async (e) => {
@@ -566,9 +569,6 @@
                 document.getElementById('spinner').classList.add('hidden');
             }
         });
-
-        // Initial render
-        renderOrderSummary();
     </script>
 
 </body>

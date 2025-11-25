@@ -13,16 +13,20 @@
 <script>
   (function(t,d,k){(t[k]=t[k]||[]).push(d);t[d]=t[d]||t[k].f||function(){(t[d].q=t[d].q||[]).push(arguments)}})(window,"trackdesk","TrackdeskObject");
 
-  // Calculate order value and get order ID from localStorage
+  // Calculate order value from santaLetterPackages (the actual order data)
   var orderToken = localStorage.getItem('orderAccessToken') || "";
-  var cartItems = JSON.parse(localStorage.getItem('santaCart') || '[]');
+  var packages = JSON.parse(localStorage.getItem('santaLetterPackages') || '[]');
   var orderValue = 0;
   
-  if (cartItems.length > 0) {
-    orderValue = cartItems.reduce(function(sum, item) { 
-      return sum + (item.price * item.quantity); 
+  // Calculate total from packages
+  if (packages.length > 0) {
+    orderValue = packages.reduce(function(sum, pkg) { 
+      var price = parseFloat(pkg.packagePrice) || 0;
+      return sum + price;
     }, 0);
   }
+  
+  console.log('🔥 Trackdesk pixel data:', { orderToken: orderToken, orderValue: orderValue.toFixed(2), packageCount: packages.length });
 
   trackdesk("directwebinteractive", "conversion", {
     "conversionType": "sale",

@@ -9,9 +9,9 @@ import { Edit, Save, X, Package, CheckCircle2, Truck, Plus, CreditCard } from "l
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 
 // Unsplash Images
-const santaGiftsImage = "https://images.unsplash.com/photo-1703753936800-593a07d2285b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW50YSUyMGNsYXVzJTIwZ2lmdHMlMjBwcmVzZW50c3xlbnwxfHx8fDE3NjM3NjIzNzV8MA&ixlib=rb-4.1.0&q=80&w=1080";
-const northPoleSnowImage = "https://images.unsplash.com/photo-1673298062288-2df0ce037a1a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxub3J0aCUyMHBvbGUlMjBzbm93JTIwd2ludGVyfGVufDF8fHx8MTc2Mzc2MjM3Nnww&ixlib=rb-4.1.0&q=80&w=1080";
-const santaMagicalJourneyProduct = "https://images.unsplash.com/photo-1699369398947-f3779c75bbf2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW50YSUyMG1hZ2ljYWwlMjBqb3VybmV5JTIwYm9va3xlbnwxfHx8fDE3NjM3NjIzODB8MA&ixlib=rb-4.1.0&q=80&w=1080";
+const santaGiftsImage = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/15f4b3cb26c39fe064d874b5ddeae3c4249b7de1_2.avif?v=1763927948";
+const northPoleSnowImage = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/Subscription-upsell-image.png?v=1764064941";
+const santaMagicalJourneyProduct = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/Subscription-upsell-image.png?v=1764064941";
 import { UpsellOffer } from "./UpsellOffer";
 import { AddAnotherChild } from "./AddAnotherChild";
 import { Card } from "./ui/card";

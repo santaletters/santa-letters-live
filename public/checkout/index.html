@@ -213,30 +213,7 @@
                                 </div>
                             </div>
 
-                            <!-- Monthly Subscription Upsell -->
-                            <div class="mb-6 p-5 bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow-lg">
-                                <div class="flex items-start gap-3">
-                                    <input type="checkbox" id="monthlySubscription" class="mt-1 w-6 h-6 accent-white">
-                                    <div class="flex-1">
-                                        <label for="monthlySubscription" class="cursor-pointer">
-                                            <div class="font-bold text-white text-lg mb-2">🎁 YES! Add Santa's Magical Journey + Get 2 FREE GIFTS!</div>
-                                            <div class="text-white mb-3">Keep the magic alive all year! Get a personalized letter from Santa every month.</div>
-                                            
-                                            <!-- Bonus Gifts Box -->
-                                            <div class="bg-white bg-opacity-20 rounded-lg p-3 mb-3 text-white">
-                                                <p class="font-semibold mb-2">✨ Your 2 FREE Bonus Gifts:</p>
-                                                <p class="text-sm">🏭 Santa's Workshop VIP Badge</p>
-                                                <p class="text-sm">😇 Nice List Gold Pass</p>
-                                                <p class="text-xs mt-2 italic">Both authorized with a personalized Autographed Photo of Santa!</p>
-                                            </div>
-                                            
-                                            <div class="text-white text-sm">
-                                                Only <span class="font-bold text-xl">$12/month</span> (<span id="sub-child-count">1</span> child x $12) starting in January. Cancel anytime with no hassle!
-                                            </div>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
+                            <!-- Monthly Subscription moved to upsell page -->
 
                             <h2 class="text-2xl font-bold text-gray-800 mb-6 bg-blue-900 text-white p-4 rounded-lg flex items-center gap-2">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -452,7 +429,7 @@
             const email = document.getElementById('email').value;
             const phone = document.getElementById('phone').value;
             const shippingDate = document.querySelector('input[name="shippingDate"]:checked').value;
-            const monthlySubscription = document.getElementById('monthlySubscription').checked;
+            const monthlySubscription = false; // Moved to upsell page
 
             // Get affiliate data from URL or localStorage
             const params = new URLSearchParams(window.location.search);
@@ -470,8 +447,7 @@
                 console.log('🔄 Creating payment intent for amount:', totals.total);
                 console.log('📦 Packages:', packages);
                 console.log('📧 Email:', email);
-                console.log('🔄 Monthly Subscription:', monthlySubscription);
-                console.log('✅ Subscription checkbox checked:', document.getElementById('monthlySubscription').checked);
+                console.log('🔄 Monthly Subscription: false - Moved to upsell page');
                 
                 const response = await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/create-payment-intent', {
                     method: 'POST',

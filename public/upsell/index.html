@@ -393,6 +393,51 @@
         const DOWNSELL_PRICE = 7.99;
         let processing = false;
 
+        // Timer Management
+        let timeLeft = 120; // 2 minutes
+        let currentTimer = null;
+
+        // Start subscription page timer
+        function startSubscriptionTimer() {
+            const timerDisplay = document.getElementById('sub-timer');
+            if (!timerDisplay) return;
+            
+            timeLeft = 120;
+            if (currentTimer) clearInterval(currentTimer);
+            
+            currentTimer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(currentTimer);
+                    window.location.href = '/?token=' + orderToken;
+                }
+            }, 1000);
+        }
+
+        // Start upsell page timer
+        function startUpsellTimer() {
+            const timerDisplay = document.getElementById('timer');
+            if (!timerDisplay) return;
+            
+            if (currentTimer) clearInterval(currentTimer);
+            
+            currentTimer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(currentTimer);
+                    window.location.href = '/?token=' + orderToken;
+                }
+            }, 1000);
+        }
+
         // Upsell quantity functions
         function updateUpsellTotal() {
             const total = (upsellQuantity * UPSELL_PRICE).toFixed(2);
@@ -475,23 +520,6 @@
             }
         }
 
-        // Timer countdown (2 minutes)
-        let timeLeft = 120;
-        const timerDisplay = document.getElementById('timer');
-        
-        const countdown = setInterval(() => {
-            timeLeft--;
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            
-            if (timeLeft <= 0) {
-                clearInterval(countdown);
-                // Auto-redirect to success page
-                window.location.href = '/?token=' + orderToken;
-            }
-        }, 1000);
-
         // Accept upsell
         async function acceptUpsell() {
             if (processing) return;
@@ -527,7 +555,7 @@
                 console.log('📊 Upsell response:', result);
                 
                 if (result.success) {
-                    clearInterval(countdown);
+                    clearInterval(currentTimer);
                     
                     // Fire Trackdesk upsell conversion
                     if (window.trackdesk) {
@@ -562,7 +590,7 @@
         function declineUpsell() {
             if (processing) return;
             console.log('⬇️ Showing downsell page');
-            clearInterval(countdown);
+            clearInterval(currentTimer);
             document.getElementById('upsell-page').classList.add('hidden');
             document.getElementById('downsell-page').classList.remove('hidden');
         }
@@ -708,9 +736,10 @@
         function declineSubscription() {
             if (processing) return;
             console.log('⬇️ Showing upsell page');
-            clearInterval(countdown);
+            clearInterval(currentTimer);
             document.getElementById('subscription-page').classList.add('hidden');
             document.getElementById('upsell-page').classList.remove('hidden');
+            startUpsellTimer();
         }
 
         // Initialize subscription quantity based on number of letters
@@ -734,6 +763,7 @@
 
         // Initialize on page load
         initializeSubscriptionQuantity();
+        startSubscriptionTimer();
     </script>
 
 </body>

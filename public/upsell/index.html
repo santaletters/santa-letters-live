@@ -114,9 +114,29 @@
                     <!-- Quantity Auto-Selected Message -->
                     <div class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4 mb-4 text-center">
                         <p class="text-blue-900 font-semibold">
-                            ✅ Auto-selected for <span id="sub-quantity-display">1</span> child
+                            ✅ Auto-selected for <span id="sub-quantity-display">1</span> <span id="sub-children-text">child</span>
                         </p>
                         <p class="text-sm text-blue-700 mt-1">Based on your order</p>
+                    </div>
+
+                    <!-- Subscription Quantity Adjuster (for 5+ children) -->
+                    <div id="sub-quantity-adjuster" class="hidden mb-4">
+                        <div class="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4">
+                            <p class="text-sm text-gray-700 mb-3 text-center">
+                                💡 <strong>Tip:</strong> You can adjust the number of subscriptions:
+                            </p>
+                            <div class="flex items-center justify-center gap-4">
+                                <button onclick="decreaseSubscriptionQuantity()" class="px-6 py-2 text-lg font-bold border-2 border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">−</button>
+                                <div class="text-center">
+                                    <div id="sub-qty-adjust-display" class="text-2xl font-bold text-green-700">5</div>
+                                    <div class="text-xs text-gray-600">subscriptions</div>
+                                </div>
+                                <button onclick="increaseSubscriptionQuantity()" class="px-6 py-2 text-lg font-bold border-2 border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">+</button>
+                            </div>
+                            <p class="text-center text-sm text-gray-600 mt-2">
+                                $<span id="sub-monthly-total">60</span>/month starting January
+                            </p>
+                        </div>
                     </div>
 
                     <!-- Error Message -->
@@ -413,7 +433,11 @@
                 
                 if (timeLeft <= 0) {
                     clearInterval(currentTimer);
-                    window.location.href = '/?token=' + orderToken;
+                    // Show next offer instead of going to success page
+                    console.log('⏱️ Timer expired, showing next offer');
+                    document.getElementById('subscription-page').classList.add('hidden');
+                    document.getElementById('upsell-page').classList.remove('hidden');
+                    startUpsellTimer();
                 }
             }, 1000);
         }
@@ -713,10 +737,14 @@
                         console.log('🔥 Trackdesk SUBSCRIPTION pixel fired');
                     }
                     
-                    // Show success and redirect
+                    // Show success and redirect to NEXT OFFER (snow upsell)
                     button.innerHTML = '✅ Subscription Added!';
                     setTimeout(() => {
-                        window.location.href = '/?token=' + orderToken;
+                        // Show next offer instead of going to success page
+                        clearInterval(currentTimer);
+                        document.getElementById('subscription-page').classList.add('hidden');
+                        document.getElementById('upsell-page').classList.remove('hidden');
+                        startUpsellTimer();
                     }, 1500);
                 } else {
                     throw new Error(result.error || 'Payment failed');
@@ -751,13 +779,48 @@
                 console.log('📦 Found', letterCount, 'letters in order');
                 
                 // Update subscription display
-                document.getElementById('sub-child-count').textContent = letterCount;
                 document.getElementById('sub-quantity-display').textContent = letterCount;
+                document.getElementById('sub-children-text').textContent = letterCount === 1 ? 'child' : 'children';
                 
                 // Set the subscription quantity (used when accepting)
                 subscriptionQuantity = letterCount;
+                
+                // Show quantity adjuster if 5+ children
+                if (letterCount >= 5) {
+                    document.getElementById('sub-quantity-adjuster').classList.remove('hidden');
+                    document.getElementById('sub-qty-adjust-display').textContent = letterCount;
+                    document.getElementById('sub-monthly-total').textContent = (letterCount * 12).toFixed(2);
+                }
             } catch (error) {
                 console.error('Error loading letter count:', error);
+            }
+        }
+
+        // Adjust subscription quantity
+        function updateSubscriptionTotal() {
+            const total = (subscriptionQuantity * 12).toFixed(2);
+            document.getElementById('sub-monthly-total').textContent = total;
+            document.getElementById('sub-qty-adjust-display').textContent = subscriptionQuantity;
+        }
+
+        function setSubscriptionQuantity(num) {
+            if (!processing) {
+                subscriptionQuantity = num;
+                updateSubscriptionTotal();
+            }
+        }
+
+        function increaseSubscriptionQuantity() {
+            if (!processing) {
+                subscriptionQuantity++;
+                updateSubscriptionTotal();
+            }
+        }
+
+        function decreaseSubscriptionQuantity() {
+            if (!processing && subscriptionQuantity > 1) {
+                subscriptionQuantity--;
+                updateSubscriptionTotal();
             }
         }
 

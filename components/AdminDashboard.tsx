@@ -64,6 +64,7 @@ interface Order {
   shippingDate: string;
   monthlySubscription: boolean;
   subscriptionId: string | null;
+  stripeSubscriptionUrl?: string;
   subscriptionMonthsActive?: number;
   subscriptionStartDate?: string;
   subscriptionNextBillingDate?: string;
@@ -2337,11 +2338,22 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
                               </div>
                             )}
                             {order.monthlySubscription && order.subscriptionId && (
-                              <div className="mt-2 inline-flex items-center gap-2 bg-blue-100 border-2 border-blue-400 rounded-lg px-3 py-1.5">
-                                <Calendar className="w-4 h-4 text-blue-700" />
-                                <span className="text-sm text-blue-900">
-                                  <strong>Active Subscription:</strong> {(order as any).subscriptionQuantity || order.numberOfPackages} × $12 = ${((order as any).subscriptionPrice || (order.numberOfPackages * 12)).toFixed(2)}/month
-                                </span>
+                              <div className="mt-2 flex items-center gap-2">
+                                <div className="inline-flex items-center gap-2 bg-blue-100 border-2 border-blue-400 rounded-lg px-3 py-1.5">
+                                  <Calendar className="w-4 h-4 text-blue-700" />
+                                  <span className="text-sm text-blue-900">
+                                    <strong>Active Subscription:</strong> {(order as any).subscriptionQuantity || order.numberOfPackages} × $12 = ${((order as any).subscriptionPrice || (order.numberOfPackages * 12)).toFixed(2)}/month
+                                  </span>
+                                </div>
+                                {order.stripeSubscriptionUrl && (
+                                  <button
+                                    onClick={() => window.open(order.stripeSubscriptionUrl, '_blank')}
+                                    className="inline-flex items-center gap-1 bg-purple-100 hover:bg-purple-200 border border-purple-400 rounded px-2 py-1 text-xs text-purple-900 transition-colors"
+                                  >
+                                    <ExternalLink className="w-3 h-3" />
+                                    View in Stripe
+                                  </button>
+                                )}
                               </div>
                             )}
                           </div>

@@ -8,13 +8,32 @@
     <script src="https://js.stripe.com/v3/"></script>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Trackdesk tracker begin -->
-    <script async src="//cdn.trackdesk.com/tracking.js"></script>
-    <script>
-      (function(t,d,k){(t[k]=t[k]||[]).push(d);t[d]=t[d]||t[k].f||function(){(t[d].q=t[d].q||[]).push(arguments)}})(window,"trackdesk","TrackdeskObject");
-    </script>
-    <!-- Trackdesk tracker end -->
+  <!-- Trackdesk tracker begin -->
+<script async src="//cdn.trackdesk.com/tracking.js"></script>
+<script>
+  (function(t,d,k){(t[k]=t[k]||[]).push(d);t[d]=t[d]||t[k].f||function(){(t[d].q=t[d].q||[]).push(arguments)}})(window,"trackdesk","TrackdeskObject");
 
+  // Calculate order value and get order ID from localStorage
+  var orderToken = localStorage.getItem('orderAccessToken') || "";
+  var cartItems = JSON.parse(localStorage.getItem('santaCart') || '[]');
+  var orderValue = 0;
+  
+  if (cartItems.length > 0) {
+    orderValue = cartItems.reduce(function(sum, item) { 
+      return sum + (item.price * item.quantity); 
+    }, 0);
+  }
+
+  trackdesk("directwebinteractive", "conversion", {
+    "conversionType": "sale",
+    "externalId": orderToken,
+    "customParams": {
+      "advS1": orderValue.toFixed(2)
+    }
+  });
+</script>
+<!-- Trackdesk tracker end -->
+  
     <style>
         body {
             font-family: 'Inter', sans-serif;

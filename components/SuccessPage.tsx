@@ -10,7 +10,7 @@ import { projectId, publicAnonKey } from "../utils/supabase/info";
 
 // Unsplash Images
 const santaGiftsImage = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/15f4b3cb26c39fe064d874b5ddeae3c4249b7de1_2.avif?v=1763927948";
-const northPoleSnowImage = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/Subscription-upsell-image.png?v=1764064941";
+const northPoleSnowImage = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/North-Pole-Snow.png?v=1764063951";
 const santaMagicalJourneyProduct = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/Subscription-upsell-image.png?v=1764064941";
 import { UpsellOffer } from "./UpsellOffer";
 import { AddAnotherChild } from "./AddAnotherChild";

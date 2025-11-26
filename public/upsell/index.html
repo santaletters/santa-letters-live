@@ -9,35 +9,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
   <!-- Trackdesk tracker begin -->
-<script async src="//cdn.trackdesk.com/tracking.js"></script>
-<script>
-  (function(t,d,k){(t[k]=t[k]||[]).push(d);t[d]=t[d]||t[k].f||function(){(t[d].q=t[d].q||[]).push(arguments)}})(window,"trackdesk","TrackdeskObject");
-
-  // Calculate order value from santaLetterPackages (the actual order data)
-  var orderToken = localStorage.getItem('orderAccessToken') || "";
-  var packages = JSON.parse(localStorage.getItem('santaLetterPackages') || '[]');
-  var orderValue = 0;
-  
-  // Calculate total from packages
-  if (packages.length > 0) {
-    orderValue = packages.reduce(function(sum, pkg) { 
-      var price = parseFloat(pkg.packagePrice) || 0;
-      return sum + price;
-    }, 0);
-  }
-  
-  console.log('🔥 Trackdesk pixel data:', { orderToken: orderToken, orderValue: orderValue.toFixed(2), packageCount: packages.length });
-
-  trackdesk("directwebinteractive", "conversion", {
-    "conversionType": "sale",
-    "externalId": orderToken,
-    "customParams": {
-      "advS1": orderValue.toFixed(2)
-    }
-  });
-</script>
-<!-- Trackdesk tracker end -->
-  
+    <script async src="//cdn.trackdesk.com/tracking.js"></script>
+    <script>
+      (function(t,d,k){(t[k]=t[k]||[]).push(d);t[d]=t[d]||t[k].f||function(){(t[d].q=t[d].q||[]).push(arguments)}})(window,"trackdesk","TrackdeskObject");
+    
+      // Get order token and order total from localStorage
+      var orderToken = localStorage.getItem('orderAccessToken') || "";
+      var orderValue = parseFloat(localStorage.getItem('orderTotal')) || 0;
+      
+      console.log('🔥 Trackdesk SALE pixel - Order value:', orderValue.toFixed(2));
+      
+      // Fire pixel with accurate order value
+      trackdesk("directwebinteractive", "conversion", {
+        "conversionType": "sale",
+        "externalId": orderToken,
+        "customParams": {
+          "advS1": orderValue.toFixed(2)
+        }
+      });
+    </script>
+    <!-- Trackdesk tracker end -->
   
   
   <!-- Google tag (gtag.js) -->

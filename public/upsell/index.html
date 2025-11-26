@@ -13,22 +13,29 @@
     <script>
       (function(t,d,k){(t[k]=t[k]||[]).push(d);t[d]=t[d]||t[k].f||function(){(t[d].q=t[d].q||[]).push(arguments)}})(window,"trackdesk","TrackdeskObject");
     
-      // Get order token and order total from localStorage
-      var orderToken = localStorage.getItem('orderAccessToken') || "";
-      var orderValue = parseFloat(localStorage.getItem('orderTotal')) || 0;
-      
-      console.log('🔥 Trackdesk SALE pixel - Order value:', orderValue.toFixed(2));
-      
-      // Fire pixel with accurate order value
-      trackdesk("directwebinteractive", "conversion", {
-        "conversionType": "sale",
-        "externalId": orderToken,
-        "customParams": {
-          "advS1": orderValue.toFixed(2)
-        }
+      // Wait for page to fully load and verify order total exists
+      window.addEventListener('load', function() {
+        // Get order token and order total from localStorage
+        var orderToken = localStorage.getItem('orderAccessToken') || "";
+        var orderTotal = localStorage.getItem('orderTotal');
+        var orderValue = parseFloat(orderTotal) || 0;
+        
+        console.log('🔍 Trackdesk Debug - Raw orderTotal from localStorage:', orderTotal);
+        console.log('🔍 Trackdesk Debug - Parsed orderValue:', orderValue);
+        console.log('🔥 Trackdesk SALE pixel - Order value:', orderValue.toFixed(2));
+        
+        // Fire pixel with accurate order value
+        trackdesk("directwebinteractive", "conversion", {
+          "conversionType": "sale",
+          "externalId": orderToken,
+          "customParams": {
+            "advS1": orderValue.toFixed(2)
+          }
+        });
       });
     </script>
     <!-- Trackdesk tracker end -->
+      
   
   
   <!-- Google tag (gtag.js) -->

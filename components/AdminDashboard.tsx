@@ -79,6 +79,14 @@ interface Order {
   lastFourCard?: string;
   activityLog?: ActivityLogEntry[];
   trafficSource?: string;
+  // Tracking parameters
+  subIds?: {
+    affS1?: string;
+    affS2?: string;
+    affS3?: string;
+    ref?: string;
+    campaign?: string;
+  };
 }
 
 interface AffiliateReport {
@@ -4276,6 +4284,27 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
                       )}
                       {selectedOrderForActivity.trafficSource && (
                         <p><strong>Source Type:</strong> {selectedOrderForActivity.trafficSource}</p>
+                      )}
+                      {/* Tracking Parameters */}
+                      {selectedOrderForActivity.subIds && Object.keys(selectedOrderForActivity.subIds).length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-purple-200">
+                          <p className="font-semibold mb-1">Tracking Parameters:</p>
+                          {selectedOrderForActivity.subIds.affS1 && (
+                            <p><strong>SubID 1:</strong> {selectedOrderForActivity.subIds.affS1}</p>
+                          )}
+                          {selectedOrderForActivity.subIds.affS2 && (
+                            <p><strong>SubID 2:</strong> {selectedOrderForActivity.subIds.affS2}</p>
+                          )}
+                          {selectedOrderForActivity.subIds.affS3 && (
+                            <p><strong>SubID 3:</strong> {selectedOrderForActivity.subIds.affS3}</p>
+                          )}
+                          {selectedOrderForActivity.subIds.ref && (
+                            <p><strong>Ref:</strong> {selectedOrderForActivity.subIds.ref}</p>
+                          )}
+                          {selectedOrderForActivity.subIds.campaign && (
+                            <p><strong>Campaign:</strong> {selectedOrderForActivity.subIds.campaign}</p>
+                          )}
+                        </div>
                       )}
                     </div>
                   </Card>

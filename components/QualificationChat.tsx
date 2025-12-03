@@ -1,13 +1,18 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { X, MessageCircle, Send, Loader2 } from "lucide-react";
+import { X, MessageCircle, Send, Loader2, ExternalLink } from "lucide-react";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
   suggestedAnswers?: string[]; // Add suggested button answers
+  recommendations?: Array<{
+    category: string;
+    title: string;
+    url: string;
+  }>;
 }
 
 interface QualificationChatProps {
@@ -30,6 +35,8 @@ export function QualificationChat({ customerInfo, orderToken, mode = "popup", on
   const [conversationHistory, setConversationHistory] = useState<any[]>([]);
   const [hasEngaged, setHasEngaged] = useState(false);
   const [leadId, setLeadId] = useState<string | null>(null);
+  const [isReturningUser, setIsReturningUser] = useState(false);
+  const [showInitialButtons, setShowInitialButtons] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const hasLoadedHistory = useRef(false);
@@ -85,169 +92,75 @@ export function QualificationChat({ customerInfo, orderToken, mode = "popup", on
       const data = await response.json();
 
       if (data.success && data.conversationHistory && data.conversationHistory.length > 0) {
-        // Resume from where they left off
+        // RETURNING USER - Resume from where they left off
         setConversationHistory(data.conversationHistory);
         setLeadId(data.leadId);
         setHasEngaged(true);
+        setIsReturningUser(true);
         
-        // Convert conversation history to messages for UI
-        const uiMessages: Message[] = [];
-        for (const msg of data.conversationHistory) {
-          if (msg.role === "system") continue; // Skip system messages
-          const suggestedAnswers = extractSuggestedAnswers(msg.content);
-          uiMessages.push({
-            role: msg.role,
-            content: msg.content,
-            suggestedAnswers
-          });
-        }
-        setMessages(uiMessages);
+        // Show welcome back message with YES/Not Right Now buttons
+        const welcomeBackMessage: Message = {
+          role: "assistant",
+          content: `Welcome back, ${customerInfo.name || "there"}! If you want to find other savings, or have any questions, I'm here to help!`,
+          suggestedAnswers: ["Yes", "Not right now"]
+        };
         
-        console.log("✅ Loaded conversation history, resuming from where they left off");
+        setMessages([welcomeBackMessage]);
+        setShowInitialButtons(true);
       } else {
-        // No history, send initial greeting
-        await sendInitialGreeting();
+        // FIRST TIME USER - Show initial greeting with YES button
+        setIsReturningUser(false);
+        const greetingMessage: Message = {
+          role: "assistant",
+          content: `Hey, ${customerInfo.name || "there"}! Before you go, I can quickly check if you qualify for extra savings and benefits. Can I ask you a few quick questions?`,
+          suggestedAnswers: ["Yes", "Not right now"]
+        };
+        
+        setMessages([greetingMessage]);
+        setShowInitialButtons(true);
       }
     } catch (error) {
-      console.error("Error loading conversation history:", error);
-      // Fallback to initial greeting
-      await sendInitialGreeting();
+      console.error("❌ Error loading conversation history:", error);
+      
+      // Show default greeting on error
+      const greetingMessage: Message = {
+        role: "assistant",
+        content: `Hey, ${customerInfo.name || "there"}! Before you go, I can quickly check if you qualify for extra savings and benefits. Can I ask you a few quick questions?`,
+        suggestedAnswers: ["Yes", "Not right now"]
+      };
+      
+      setMessages([greetingMessage]);
+      setShowInitialButtons(true);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleOpen = async () => {
+  const handleOpen = () => {
     setIsOpen(true);
-    
-    // Send initial greeting
-    if (messages.length === 0) {
-      await sendInitialGreeting();
+    if (messages.length === 0 && !hasLoadedHistory.current) {
+      loadConversationHistory();
     }
   };
 
   const handleClose = () => {
-    if (mode === "popup" && onDismiss) {
-      onDismiss(); // Notify parent to switch to embedded mode
-    } else {
-      setIsOpen(false);
-    }
+    setIsOpen(false);
+    if (onDismiss) onDismiss();
   };
 
-  const sendInitialGreeting = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-cf244566/chat/message`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${publicAnonKey}`,
-          },
-          body: JSON.stringify({
-            message: "START",
-            conversationHistory: [],
-            customerInfo: customerInfo,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.success) {
-        setMessages([{ role: "assistant", content: data.message }]);
-        setConversationHistory(data.conversationHistory);
-      }
-    } catch (error) {
-      console.error("Error getting initial greeting:", error);
-      setMessages([
-        {
-          role: "assistant",
-          content: "Hey! Before you go, I can quickly check if you qualify for extra savings and benefits. Can I ask you a few quick questions?",
-        },
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSend = async (messageOverride?: string) => {
-    const userMessage = messageOverride || inputValue.trim();
-    if (!userMessage || isLoading) return;
-
-    setInputValue("");
-    
-    // Add user message to chat
-    setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
-    
-    // Mark as engaged for lead tracking
-    if (!hasEngaged) {
-      setHasEngaged(true);
-      await trackLead(userMessage);
-    }
-
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-cf244566/chat/message`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${publicAnonKey}`,
-          },
-          body: JSON.stringify({
-            message: userMessage,
-            conversationHistory: conversationHistory,
-            customerInfo: customerInfo,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.success) {
-        // Parse suggested answers from the message (looking for [Option1 | Option2 | Option3])
-        const suggestedAnswers = extractSuggestedAnswers(data.message);
-        setMessages((prev) => [...prev, { role: "assistant", content: data.message, suggestedAnswers }]);
-        setConversationHistory(data.conversationHistory);
-        
-        // LIVE UPDATE: Save conversation to backend immediately
-        await updateLeadConversation(userMessage, data.message, data.conversationHistory);
-      } else {
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: "Sorry, I'm having trouble right now. Please try again." },
-        ]);
-      }
-    } catch (error) {
-      console.error("Error sending message:", error);
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "Sorry, I'm having trouble connecting. Please try again." },
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Extract suggested answers from AI message (e.g., [Yes | No] or [Option1 | Option2 | Option3])
-  const extractSuggestedAnswers = (message: string): string[] | undefined => {
-    const match = message.match(/\[([^\]]+)\]/);
+  // Extract suggested answers from AI message (e.g., [Yes | No])
+  const extractSuggestedAnswers = (content: string): string[] | undefined => {
+    const match = content.match(/\[(.*?)\]/);
     if (match) {
-      return match[1].split('|').map(s => s.trim());
+      return match[1].split("|").map((s) => s.trim());
     }
     return undefined;
   };
 
-  // Handle button click for suggested answers
-  const handleButtonClick = (answer: string) => {
-    handleSend(answer);
-  };
-
-  const trackLead = async (firstMessage: string) => {
+  // Create or update lead
+  const createOrUpdateLead = async () => {
+    if (!customerInfo?.email || leadId) return; // Skip if already created
+    
     try {
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-cf244566/leads/create`,
@@ -258,32 +171,31 @@ export function QualificationChat({ customerInfo, orderToken, mode = "popup", on
             Authorization: `Bearer ${publicAnonKey}`,
           },
           body: JSON.stringify({
-            name: customerInfo?.name || "Unknown",
-            email: customerInfo?.email || "",
-            phone: customerInfo?.phone || "",
-            orderToken: orderToken || "",
-            responses: {
-              firstMessage: firstMessage,
-              timestamp: new Date().toISOString(),
-            },
+            name: customerInfo.name,
+            email: customerInfo.email,
+            phone: customerInfo.phone,
+            orderToken,
+            responses: {},
           }),
         }
       );
 
       const data = await response.json();
-      if (data.id) {
-        setLeadId(data.id);
+      if (data.success) {
+        setLeadId(data.leadId);
+        console.log("✅ Lead created:", data.leadId);
       }
     } catch (error) {
-      console.error("Error tracking lead:", error);
+      console.error("❌ Error creating lead:", error);
     }
   };
 
-  const updateLeadConversation = async (userMessage: string, assistantMessage: string, conversationHistory: any[]) => {
+  // Update conversation in backend LIVE
+  const updateConversationLive = async (userMsg: string, aiMsg: string, history: any[]) => {
     if (!customerInfo?.email) return;
     
     try {
-      const response = await fetch(
+      await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-cf244566/leads/update-conversation`,
         {
           method: "PATCH",
@@ -293,234 +205,322 @@ export function QualificationChat({ customerInfo, orderToken, mode = "popup", on
           },
           body: JSON.stringify({
             email: customerInfo.email,
-            userMessage: userMessage,
-            aiMessage: assistantMessage,
-            conversationHistory: conversationHistory,
+            userMessage: userMsg,
+            aiMessage: aiMsg,
+            conversationHistory: history,
+          }),
+        }
+      );
+      
+      console.log("✅ Conversation updated LIVE in backend");
+    } catch (error) {
+      console.error("❌ Error updating conversation:", error);
+    }
+  };
+
+  const sendMessage = async (messageText?: string) => {
+    const textToSend = messageText || inputValue.trim();
+    if (!textToSend || isLoading) return;
+
+    // Create or update lead on first engagement
+    if (!hasEngaged) {
+      setHasEngaged(true);
+      await createOrUpdateLead();
+    }
+
+    // Hide initial buttons after first response
+    if (showInitialButtons) {
+      setShowInitialButtons(false);
+    }
+
+    // Add user message
+    const userMessage: Message = { role: "user", content: textToSend };
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue("");
+    setIsLoading(true);
+
+    try {
+      // Build conversation history for backend
+      const newHistory = [
+        ...conversationHistory,
+        { role: "user", content: textToSend },
+      ];
+
+      // Call ChatGPT endpoint
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-cf244566/chat/message`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${publicAnonKey}`,
+          },
+          body: JSON.stringify({
+            message: textToSend,
+            conversationHistory,
+            customerInfo,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        const aiMessage = data.message;
+        const suggestedAnswers = extractSuggestedAnswers(aiMessage);
+        const recommendations = data.recommendations || [];
+
+        const assistantMessage: Message = {
+          role: "assistant",
+          content: aiMessage,
+          suggestedAnswers,
+          recommendations,
+        };
+
+        setMessages((prev) => [...prev, assistantMessage]);
+        setConversationHistory(data.conversationHistory);
+
+        // Update conversation LIVE in backend
+        await updateConversationLive(textToSend, aiMessage, data.conversationHistory);
+      } else {
+        throw new Error(data.error || "Failed to get response");
+      }
+    } catch (error: any) {
+      console.error("❌ Error sending message:", error);
+      const errorMessage: Message = {
+        role: "assistant",
+        content: "Sorry, I encountered an error. Please try again.",
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle SMS link sending
+  const sendSMSLink = async (category: string, url: string) => {
+    if (!customerInfo?.phone) {
+      alert("No phone number available to send SMS");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-cf244566/send-recommendation-sms`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${publicAnonKey}`,
+          },
+          body: JSON.stringify({
+            phone: customerInfo.phone,
+            category,
+            url,
+            customerName: customerInfo.name,
           }),
         }
       );
 
       const data = await response.json();
       if (data.success) {
-        console.log("✅ LIVE: Conversation saved to backend");
+        alert(`✅ Link sent to ${customerInfo.phone}!`);
       } else {
-        console.error("Error updating conversation:", data.error);
+        throw new Error(data.error);
       }
     } catch (error) {
-      console.error("Error updating conversation:", error);
+      console.error("❌ Error sending SMS:", error);
+      alert("Failed to send SMS. Please try again.");
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
-  // Popup Mode UI
-  if (mode === "popup") {
+  if (mode === "popup" && !isOpen) {
     return (
-      <>
-        {/* Chat Button - Fixed Bottom Right */}
-        {!isOpen && (
-          <button
-            onClick={handleOpen}
-            className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-red-600 to-green-600 text-white rounded-full p-4 shadow-2xl hover:scale-110 transition-transform duration-200 animate-bounce"
-            style={{ animationDuration: "2s" }}
-          >
-            <MessageCircle className="w-6 h-6" />
-          </button>
-        )}
-
-        {/* Modal Overlay */}
-        {isOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl border-2 border-gray-200 w-full max-w-lg flex flex-col overflow-hidden max-h-[90vh]">
-              {/* Header */}
-              <div className="bg-gradient-to-r from-red-600 to-green-600 text-white p-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <MessageCircle className="w-6 h-6" />
-                  <h3 className="text-xl font-semibold">Before You Go...</h3>
-                </div>
-                <p className="text-sm opacity-90">
-                  Quick question - see if you qualify for extra savings & benefits! ✨
-                </p>
-              </div>
-
-              {/* Messages */}
-              <div
-                ref={chatContainerRef}
-                className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50"
-                style={{ maxHeight: "400px", minHeight: "250px" }}
-              >
-                {messages.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    <div
-                      className={`max-w-[85%] rounded-2xl px-4 py-3 ${
-                        msg.role === "user"
-                          ? "bg-gradient-to-r from-red-600 to-green-600 text-white"
-                          : "bg-white text-gray-800 border border-gray-200 shadow-sm"
-                      }`}
-                    >
-                      <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
-                      {msg.suggestedAnswers && (
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {msg.suggestedAnswers.map((answer, index) => (
-                            <Button
-                              key={index}
-                              onClick={() => handleButtonClick(answer)}
-                              size="sm"
-                              className="bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700 text-white"
-                            >
-                              {answer}
-                            </Button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-                {isLoading && (
-                  <div className="flex justify-start">
-                    <div className="bg-white text-gray-800 border border-gray-200 rounded-2xl px-4 py-3 flex items-center gap-2 shadow-sm">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <p className="text-sm">Typing...</p>
-                    </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-
-              {/* Input */}
-              <div className="p-6 bg-white border-t border-gray-200">
-                <div className="flex gap-2 mb-3">
-                  <Input
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="If you have any questions, you can ask me..."
-                    className="flex-1"
-                    disabled={isLoading}
-                  />
-                  <Button
-                    onClick={handleSend}
-                    disabled={!inputValue.trim() || isLoading}
-                    className="bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700"
-                  >
-                    <Send className="w-4 h-4" />
-                  </Button>
-                </div>
-                
-                {/* Action Buttons */}
-                <div className="flex gap-2">
-                  <Button
-                    onClick={handleClose}
-                    variant="outline"
-                    className="flex-1 text-sm"
-                  >
-                    Not Right Now
-                  </Button>
-                </div>
-                
-                <p className="text-xs text-gray-500 mt-3 text-center">
-                  Chat is powered by AI to help you find savings
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-      </>
+      <Button
+        onClick={handleOpen}
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-2xl bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700 z-50"
+        size="icon"
+      >
+        <MessageCircle className="h-6 w-6 text-white" />
+      </Button>
     );
   }
 
-  // Embedded Mode UI
   return (
-    <div className="w-full bg-white rounded-xl shadow-lg border-2 border-gray-200 overflow-hidden">
+    <div
+      className={
+        mode === "popup"
+          ? "fixed bottom-24 right-6 w-full max-w-md h-[600px] bg-white rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden border-2 border-gray-200"
+          : "w-full h-full bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden border-2 border-gray-200"
+      }
+    >
       {/* Header */}
-      <div className="bg-gradient-to-r from-red-600 to-green-600 text-white p-4">
-        <div className="flex items-center gap-2">
+      <div className="bg-gradient-to-r from-red-600 to-green-600 text-white p-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
           <MessageCircle className="w-5 h-5" />
           <div>
-            <h3 className="font-semibold">Savings Assistant</h3>
-            <p className="text-xs opacity-90">See if you qualify for extra savings!</p>
+            <h3 className="font-semibold">Before You Go...</h3>
+            <p className="text-xs opacity-90">
+              Quick question - see if you qualify for extra savings & benefits! ✨
+            </p>
           </div>
         </div>
+        {mode === "popup" && (
+          <Button
+            onClick={handleClose}
+            variant="ghost"
+            size="icon"
+            className="text-white hover:bg-white/20 h-8 w-8"
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        )}
       </div>
 
-      {/* Messages */}
+      {/* Chat Messages */}
       <div
         ref={chatContainerRef}
-        className="overflow-y-auto p-4 space-y-3 bg-gray-50"
-        style={{ maxHeight: "400px", minHeight: "300px" }}
+        className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50"
       >
         {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-          >
+          <div key={idx}>
             <div
-              className={`max-w-[80%] rounded-2xl px-4 py-2 ${
-                msg.role === "user"
-                  ? "bg-gradient-to-r from-red-600 to-green-600 text-white"
-                  : "bg-white text-gray-800 border border-gray-200"
+              className={`flex ${
+                msg.role === "user" ? "justify-end" : "justify-start"
               }`}
             >
-              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-              {msg.suggestedAnswers && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {msg.suggestedAnswers.map((answer, index) => (
-                    <Button
-                      key={index}
-                      onClick={() => handleButtonClick(answer)}
-                      size="sm"
-                      className="bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700 text-white"
-                    >
-                      {answer}
-                    </Button>
-                  ))}
-                </div>
-              )}
+              <div
+                className={`max-w-[85%] rounded-2xl px-4 py-2 ${
+                  msg.role === "user"
+                    ? "bg-gradient-to-r from-red-600 to-green-600 text-white"
+                    : "bg-white shadow-sm border border-gray-200"
+                }`}
+              >
+                <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+              </div>
             </div>
+
+            {/* Suggested Answer Buttons */}
+            {msg.role === "assistant" && msg.suggestedAnswers && (
+              <div className="flex flex-wrap gap-2 mt-2 ml-2">
+                {msg.suggestedAnswers.map((answer, i) => (
+                  <Button
+                    key={i}
+                    onClick={() => sendMessage(answer)}
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full border-2 hover:bg-gradient-to-r hover:from-red-600 hover:to-green-600 hover:text-white hover:border-transparent"
+                    disabled={isLoading}
+                  >
+                    {answer}
+                  </Button>
+                ))}
+              </div>
+            )}
+
+            {/* Service Recommendations */}
+            {msg.role === "assistant" && msg.recommendations && msg.recommendations.length > 0 && (
+              <div className="mt-3 ml-2 space-y-2">
+                {msg.recommendations.map((rec, i) => (
+                  <div
+                    key={i}
+                    className="bg-gradient-to-r from-red-50 to-green-50 border-2 border-green-600 rounded-lg p-3"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1">
+                        <p className="font-semibold text-sm text-gray-900">{rec.title}</p>
+                        <p className="text-xs text-gray-600 mt-1">{rec.category}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => window.open(rec.url, "_blank")}
+                          size="sm"
+                          className="bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700"
+                        >
+                          <ExternalLink className="w-3 h-3 mr-1" />
+                          Open
+                        </Button>
+                        {customerInfo?.phone && (
+                          <Button
+                            onClick={() => sendSMSLink(rec.category, rec.url)}
+                            size="sm"
+                            variant="outline"
+                          >
+                            📱 Text Me
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ))}
+
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-white text-gray-800 border border-gray-200 rounded-2xl px-4 py-2 flex items-center gap-2">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <p className="text-sm">Typing...</p>
+            <div className="bg-white shadow-sm border border-gray-200 rounded-2xl px-4 py-2">
+              <Loader2 className="w-4 h-4 animate-spin text-gray-600" />
             </div>
           </div>
         )}
+
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <div className="p-4 bg-white border-t border-gray-200">
-        <div className="flex gap-2">
-          <Input
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="If you have any questions, you can ask me..."
-            className="flex-1"
-            disabled={isLoading}
-          />
+      {/* Initial YES / Not Right Now Buttons (only shown initially) */}
+      {showInitialButtons && (
+        <div className="p-4 bg-white border-t border-gray-200 flex flex-col gap-2">
           <Button
-            onClick={handleSend}
-            disabled={!inputValue.trim() || isLoading}
-            className="bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700"
+            onClick={() => sendMessage("Yes")}
+            className="w-full bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700 text-white font-semibold py-6 text-lg rounded-xl shadow-lg"
+            disabled={isLoading}
           >
-            <Send className="w-4 h-4" />
+            ✨ Yes
+          </Button>
+          <Button
+            onClick={() => sendMessage("Not right now")}
+            variant="outline"
+            className="w-full border-2 py-3"
+            disabled={isLoading}
+          >
+            Not Right Now
           </Button>
         </div>
-        <p className="text-xs text-gray-500 mt-2 text-center">
-          Chat is powered by AI to help you find savings
-        </p>
-      </div>
+      )}
+
+      {/* Input Area (hidden when initial buttons are showing) */}
+      {!showInitialButtons && (
+        <div className="p-4 bg-white border-t border-gray-200">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              sendMessage();
+            }}
+            className="flex gap-2"
+          >
+            <Input
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="If you have any questions, you can ask me..."
+              className="flex-1 rounded-full border-2 px-4"
+              disabled={isLoading}
+            />
+            <Button
+              type="submit"
+              size="icon"
+              className="rounded-full bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700 w-12 h-12 flex-shrink-0"
+              disabled={isLoading || !inputValue.trim()}
+            >
+              <Send className="w-4 h-4" />
+            </Button>
+          </form>
+          <p className="text-xs text-center text-gray-500 mt-2">
+            Chat is powered by AI to help you find savings
+          </p>
+        </div>
+      )}
     </div>
   );
 }

@@ -17,6 +17,7 @@ import { getOrderLink } from "../utils/domainHelper";
 import { SubscriptionLetterManager } from "./SubscriptionLetterManager";
 import { AdminAffiliateManagement } from "./AdminAffiliateManagementEnhanced";
 import { NetworkAffiliateReporting } from "./NetworkAffiliateReporting";
+import { LeadProfileModal } from "./LeadProfileModal";
 
 interface ActivityLogEntry {
   timestamp: string;
@@ -226,6 +227,10 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
   const [selectedRegularOrders, setSelectedRegularOrders] = useState<Set<string>>(new Set());
   const [selectedSubscriptionOrders, setSelectedSubscriptionOrders] = useState<Set<string>>(new Set());
   const [bulkActionInProgress, setBulkActionInProgress] = useState(false);
+
+  // Lead profile modal state
+  const [selectedLead, setSelectedLead] = useState<any>(null);
+  const [isLeadProfileOpen, setIsLeadProfileOpen] = useState(false);
 
   const API_URL = "https://" + projectId + ".supabase.co/functions/v1/make-server-cf244566";
 
@@ -3786,10 +3791,24 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
                             Copy Info
                           </Button>
 
-                          {lead.responses && Object.keys(lead.responses).length > 0 && (
+                          <Button
+                            variant="default"
+                            size="sm"
+                            className="mt-3"
+                            onClick={() => {
+                              setSelectedLead(lead);
+                              setIsLeadProfileOpen(true);
+                            }}
+                          >
+                            <MessageCircle className="w-4 h-4 mr-2" />
+                            View Full Profile
+                          </Button>
+
+                          {lead.responses?.messages && lead.responses.messages.length > 0 && (
                             <div className="mt-3 p-3 bg-gray-50 rounded text-sm">
-                              <p className="font-semibold mb-1">First Message:</p>
-                              <p className="text-gray-700">{lead.responses.firstMessage || "N/A"}</p>
+                              <p className="font-semibold mb-1">Latest Message:</p>
+                              <p className="text-gray-700">{lead.responses.messages[lead.responses.messages.length - 1].user}</p>
+                              <p className="text-xs text-gray-500 mt-1">{lead.responses.messages.length} total messages</p>
                             </div>
                           )}
                         </div>
@@ -3938,6 +3957,17 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Lead Profile Modal */}
+        <LeadProfileModal
+          lead={selectedLead}
+          isOpen={isLeadProfileOpen}
+          onClose={() => {
+            setIsLeadProfileOpen(false);
+            setSelectedLead(null);
+          }}
+          onRefresh={fetchLeads}
+        />
 
         {/* Edit Order Dialog */}
         {editingOrder && (

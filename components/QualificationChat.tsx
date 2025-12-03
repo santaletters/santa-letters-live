@@ -7,6 +7,7 @@ import { projectId, publicAnonKey } from "../utils/supabase/info";
 interface Message {
   role: "user" | "assistant";
   content: string;
+  suggestedAnswers?: string[]; // Add suggested button answers
 }
 
 interface QualificationChatProps {
@@ -28,13 +29,16 @@ export function QualificationChat({ customerInfo, orderToken, mode = "popup", on
   const [isLoading, setIsLoading] = useState(false);
   const [conversationHistory, setConversationHistory] = useState<any[]>([]);
   const [hasEngaged, setHasEngaged] = useState(false);
+  const [leadId, setLeadId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const hasLoadedHistory = useRef(false);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (messagesEndRef.current && chatContainerRef.current) {
+      // Scroll only within the chat container, not the entire page
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
@@ -49,12 +53,69 @@ export function QualificationChat({ customerInfo, orderToken, mode = "popup", on
 
       return () => clearTimeout(timer);
     } else if (mode === "embedded") {
-      // For embedded mode, send greeting immediately
-      if (messages.length === 0) {
-        sendInitialGreeting();
+      // For embedded mode, load history first, then send greeting if needed
+      if (messages.length === 0 && !hasLoadedHistory.current) {
+        loadConversationHistory();
       }
     }
   }, [mode]);
+
+  // Load conversation history when component mounts
+  const loadConversationHistory = async () => {
+    if (!customerInfo?.email || hasLoadedHistory.current) return;
+    
+    hasLoadedHistory.current = true;
+    setIsLoading(true);
+    
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-cf244566/leads/get-conversation`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${publicAnonKey}`,
+          },
+          body: JSON.stringify({
+            email: customerInfo.email,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success && data.conversationHistory && data.conversationHistory.length > 0) {
+        // Resume from where they left off
+        setConversationHistory(data.conversationHistory);
+        setLeadId(data.leadId);
+        setHasEngaged(true);
+        
+        // Convert conversation history to messages for UI
+        const uiMessages: Message[] = [];
+        for (const msg of data.conversationHistory) {
+          if (msg.role === "system") continue; // Skip system messages
+          const suggestedAnswers = extractSuggestedAnswers(msg.content);
+          uiMessages.push({
+            role: msg.role,
+            content: msg.content,
+            suggestedAnswers
+          });
+        }
+        setMessages(uiMessages);
+        
+        console.log("✅ Loaded conversation history, resuming from where they left off");
+      } else {
+        // No history, send initial greeting
+        await sendInitialGreeting();
+      }
+    } catch (error) {
+      console.error("Error loading conversation history:", error);
+      // Fallback to initial greeting
+      await sendInitialGreeting();
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleOpen = async () => {
     setIsOpen(true);
@@ -111,10 +172,10 @@ export function QualificationChat({ customerInfo, orderToken, mode = "popup", on
     }
   };
 
-  const handleSend = async () => {
-    if (!inputValue.trim() || isLoading) return;
+  const handleSend = async (messageOverride?: string) => {
+    const userMessage = messageOverride || inputValue.trim();
+    if (!userMessage || isLoading) return;
 
-    const userMessage = inputValue.trim();
     setInputValue("");
     
     // Add user message to chat
@@ -148,8 +209,13 @@ export function QualificationChat({ customerInfo, orderToken, mode = "popup", on
       const data = await response.json();
 
       if (data.success) {
-        setMessages((prev) => [...prev, { role: "assistant", content: data.message }]);
+        // Parse suggested answers from the message (looking for [Option1 | Option2 | Option3])
+        const suggestedAnswers = extractSuggestedAnswers(data.message);
+        setMessages((prev) => [...prev, { role: "assistant", content: data.message, suggestedAnswers }]);
         setConversationHistory(data.conversationHistory);
+        
+        // LIVE UPDATE: Save conversation to backend immediately
+        await updateLeadConversation(userMessage, data.message, data.conversationHistory);
       } else {
         setMessages((prev) => [
           ...prev,
@@ -167,9 +233,23 @@ export function QualificationChat({ customerInfo, orderToken, mode = "popup", on
     }
   };
 
+  // Extract suggested answers from AI message (e.g., [Yes | No] or [Option1 | Option2 | Option3])
+  const extractSuggestedAnswers = (message: string): string[] | undefined => {
+    const match = message.match(/\[([^\]]+)\]/);
+    if (match) {
+      return match[1].split('|').map(s => s.trim());
+    }
+    return undefined;
+  };
+
+  // Handle button click for suggested answers
+  const handleButtonClick = (answer: string) => {
+    handleSend(answer);
+  };
+
   const trackLead = async (firstMessage: string) => {
     try {
-      await fetch(
+      const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-cf244566/leads/create`,
         {
           method: "POST",
@@ -189,8 +269,45 @@ export function QualificationChat({ customerInfo, orderToken, mode = "popup", on
           }),
         }
       );
+
+      const data = await response.json();
+      if (data.id) {
+        setLeadId(data.id);
+      }
     } catch (error) {
       console.error("Error tracking lead:", error);
+    }
+  };
+
+  const updateLeadConversation = async (userMessage: string, assistantMessage: string, conversationHistory: any[]) => {
+    if (!customerInfo?.email) return;
+    
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-cf244566/leads/update-conversation`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${publicAnonKey}`,
+          },
+          body: JSON.stringify({
+            email: customerInfo.email,
+            userMessage: userMessage,
+            aiMessage: assistantMessage,
+            conversationHistory: conversationHistory,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        console.log("✅ LIVE: Conversation saved to backend");
+      } else {
+        console.error("Error updating conversation:", data.error);
+      }
+    } catch (error) {
+      console.error("Error updating conversation:", error);
     }
   };
 
@@ -250,6 +367,20 @@ export function QualificationChat({ customerInfo, orderToken, mode = "popup", on
                       }`}
                     >
                       <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                      {msg.suggestedAnswers && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {msg.suggestedAnswers.map((answer, index) => (
+                            <Button
+                              key={index}
+                              onClick={() => handleButtonClick(answer)}
+                              size="sm"
+                              className="bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700 text-white"
+                            >
+                              {answer}
+                            </Button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -271,7 +402,7 @@ export function QualificationChat({ customerInfo, orderToken, mode = "popup", on
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder="Type your message..."
+                    placeholder="If you have any questions, you can ask me..."
                     className="flex-1"
                     disabled={isLoading}
                   />
@@ -339,6 +470,20 @@ export function QualificationChat({ customerInfo, orderToken, mode = "popup", on
               }`}
             >
               <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+              {msg.suggestedAnswers && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {msg.suggestedAnswers.map((answer, index) => (
+                    <Button
+                      key={index}
+                      onClick={() => handleButtonClick(answer)}
+                      size="sm"
+                      className="bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700 text-white"
+                    >
+                      {answer}
+                    </Button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -360,7 +505,7 @@ export function QualificationChat({ customerInfo, orderToken, mode = "popup", on
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Type your message..."
+            placeholder="If you have any questions, you can ask me..."
             className="flex-1"
             disabled={isLoading}
           />

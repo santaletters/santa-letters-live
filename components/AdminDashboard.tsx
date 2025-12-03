@@ -135,7 +135,9 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
       
       if (!sessionData) {
         console.log('❌ No admin session found - redirecting to login');
-        window.location.href = '/admin/login';
+        if (onLogout) {
+          onLogout();
+        }
         return;
       }
       
@@ -147,7 +149,9 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
         if (!session.authenticated || now > expiresAt) {
           console.log('❌ Admin session expired - redirecting to login');
           localStorage.removeItem('adminSession');
-          window.location.href = '/admin/login';
+          if (onLogout) {
+            onLogout();
+          }
           return;
         }
         
@@ -155,12 +159,14 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
       } catch (error) {
         console.error('❌ Invalid session data - redirecting to login');
         localStorage.removeItem('adminSession');
-        window.location.href = '/admin/login';
+        if (onLogout) {
+          onLogout();
+        }
       }
     };
     
     checkAuth();
-  }, []);
+  }, [onLogout]);
   
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);

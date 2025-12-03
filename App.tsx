@@ -27,12 +27,13 @@ const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy").then(m => 
 const TermsAndConditions = lazy(() => import("./components/TermsAndConditions").then(m => ({ default: m.TermsAndConditions })));
 const ContactUs = lazy(() => import("./components/ContactUs").then(m => ({ default: m.ContactUs })));
 const UpsellOffer = lazy(() => import("./components/UpsellOffer").then(m => ({ default: m.UpsellOffer })));
+const Unsubscribe = lazy(() => import("./components/Unsubscribe").then(m => ({ default: m.Unsubscribe })));
 
 console.log("🎅 App.tsx loaded successfully - VERSION 3.0");
 console.log("🌐 Current URL:", window.location.href);
 console.log("📍 Current path:", window.location.pathname);
 
-type Step = "home" | "sales" | "form" | "checkout" | "success" | "admin" | "adminlogin" | "affiliate" | "affiliatemanage" | "affiliateauth" | "downsell" | "updatepayment" | "upsellmanage" | "privacy" | "terms" | "contact" | "snowupsell" | "snowdownsell" | "subscriptionupsell";
+type Step = "home" | "sales" | "form" | "checkout" | "success" | "admin" | "adminlogin" | "affiliate" | "affiliatemanage" | "affiliateauth" | "downsell" | "updatepayment" | "upsellmanage" | "privacy" | "terms" | "contact" | "snowupsell" | "snowdownsell" | "subscriptionupsell" | "unsubscribe";
 
 const STORAGE_KEY = "santaLetterData";
 
@@ -135,6 +136,12 @@ export default function App() {
     if (path === '/contact' || urlParams.get('page') === 'contact') {
       console.log("  → Routing to contact us");
       return 'contact';
+    }
+    
+    // Unsubscribe route
+    if (path === '/unsubscribe' || urlParams.get('page') === 'unsubscribe') {
+      console.log("  → Routing to unsubscribe");
+      return 'unsubscribe';
     }
     
     // Downsell route
@@ -296,6 +303,8 @@ export default function App() {
       newUrl = '/terms';
     } else if (currentStep === 'contact') {
       newUrl = '/contact';
+    } else if (currentStep === 'unsubscribe') {
+      newUrl = '/unsubscribe';
     } else if (currentStep === 'downsell' && downsellToken) {
       newUrl = '/downsell';
       params.set('downsell', downsellToken);
@@ -321,8 +330,22 @@ export default function App() {
     console.log("📦 Package selected - redirecting to letterform");
     // Store selected package in localStorage
     localStorage.setItem('selectedPackage', packageType || 'funnel');
-    // Redirect to HTML letterform
-    window.location.href = '/letterform/';
+    
+    // Preserve tracking parameters when redirecting to letterform
+    const params = new URLSearchParams(window.location.search);
+    const trackingParams = new URLSearchParams();
+    
+    // Preserve all tracking parameters
+    ['aid', 'ref', 'campaign', 'affS1', 'affS2', 'affS3'].forEach(param => {
+      const value = params.get(param);
+      if (value) trackingParams.set(param, value);
+    });
+    
+    const queryString = trackingParams.toString();
+    const letterformUrl = queryString ? `/letterform/?${queryString}` : '/letterform/';
+    
+    console.log("🔗 Redirecting to:", letterformUrl);
+    window.location.href = letterformUrl;
   };
 
   const handleFormComplete = (data: any) => {
@@ -373,13 +396,8 @@ export default function App() {
 
   const handleBackFromForm = () => {
     console.log("⬅️ Going back from form");
-    // Check if we came from the funnel or homepage
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('funnel') === 'true' || window.location.pathname === '/offer') {
-      setCurrentStep("sales");
-    } else {
-      setCurrentStep("home");
-    }
+    // Always go back to /offer page
+    setCurrentStep("sales");
   };
 
   const handleBackFromCheckout = () => {
@@ -542,8 +560,22 @@ export default function App() {
 
   const handleCheckout = () => {
     console.log("🛒 Proceeding to checkout from cart - redirecting to letterform");
-    // Redirect to HTML letterform
-    window.location.href = '/letterform/';
+    
+    // Preserve tracking parameters when redirecting to letterform
+    const params = new URLSearchParams(window.location.search);
+    const trackingParams = new URLSearchParams();
+    
+    // Preserve all tracking parameters
+    ['aid', 'ref', 'campaign', 'affS1', 'affS2', 'affS3'].forEach(param => {
+      const value = params.get(param);
+      if (value) trackingParams.set(param, value);
+    });
+    
+    const queryString = trackingParams.toString();
+    const letterformUrl = queryString ? `/letterform/?${queryString}` : '/letterform/';
+    
+    console.log("🔗 Redirecting to:", letterformUrl);
+    window.location.href = letterformUrl;
   };
 
   // Loading screen component for lazy-loaded routes
@@ -715,6 +747,12 @@ export default function App() {
         {currentStep === "contact" && (
           <Suspense fallback={<LoadingScreen />}>
             <ContactUs onBack={handleBackFromSupportPages} />
+          </Suspense>
+        )}
+
+        {currentStep === "unsubscribe" && (
+          <Suspense fallback={<LoadingScreen />}>
+            <Unsubscribe onBack={handleReturnHome} />
           </Suspense>
         )}
       </div>

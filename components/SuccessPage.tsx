@@ -9,14 +9,16 @@ import { Edit, Save, X, Package, CheckCircle2, Truck, Plus, CreditCard } from "l
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 
 // Unsplash Images
-const santaGiftsImage = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/15f4b3cb26c39fe064d874b5ddeae3c4249b7de1_2.avif?v=1763927948";
-const northPoleSnowImage = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/North-Pole-Snow.png?v=1764063951";
-const santaMagicalJourneyProduct = "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/Subscription-upsell-image.png?v=1764064941";
+const santaGiftsImage = "https://images.unsplash.com/photo-1703753936800-593a07d2285b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW50YSUyMGNsYXVzJTIwZ2lmdHMlMjBwcmVzZW50c3xlbnwxfHx8fDE3NjM3NjIzNzV8MA&ixlib=rb-4.1.0&q=80&w=1080";
+const northPoleSnowImage = "https://images.unsplash.com/photo-1673298062288-2df0ce037a1a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxub3J0aCUyMHBvbGUlMjBzbm93JTIwd2ludGVyfGVufDF8fHx8MTc2Mzc2MjM3Nnww&ixlib=rb-4.1.0&q=80&w=1080";
+const santaMagicalJourneyProduct = "https://images.unsplash.com/photo-1699369398947-f3779c75bbf2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW50YSUyMG1hZ2ljYWwlMjBqb3VybmV5JTIwYm9va3xlbnwxfHx8fDE3NjM3NjIzODB8MA&ixlib=rb-4.1.0&q=80&w=1080";
 import { UpsellOffer } from "./UpsellOffer";
 import { AddAnotherChild } from "./AddAnotherChild";
 import { Card } from "./ui/card";
 import { CUSTOM_DOMAIN } from "../utils/domainHelper";
 import { EmbeddedPaymentForm } from "./EmbeddedPaymentForm";
+import { SubscriptionUpsellModal } from "./SubscriptionUpsellModal";
+import { QualificationChat } from "./QualificationChat";
 
 // Stripe Publishable Key (safe to expose in frontend)
 const STRIPE_PUBLISHABLE_KEY = 'pk_live_51SIHQT2NsH2CKfRANHrn5PsrTTnvRY0t5QStLGW8W3ihy4dhFVhDX4ZIP3lrOYhA1HPtnflUgDAhDxEZ0TgNB1V000lsmZhQBB';
@@ -86,6 +88,8 @@ export function SuccessPage({ onReturnHome }: SuccessPageProps) {
   const [snowQuantity, setSnowQuantity] = useState(1);
   const [subscriptionQuantity, setSubscriptionQuantity] = useState(1);
   const [defaultLetterPrice, setDefaultLetterPrice] = useState(17.95);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [subscriptionModalHandled, setSubscriptionModalHandled] = useState(false);
   
   console.log("📊 CURRENT STATE:", {
     hasOrderData: !!orderData,
@@ -119,6 +123,8 @@ export function SuccessPage({ onReturnHome }: SuccessPageProps) {
   const [showCustomQuantity, setShowCustomQuantity] = useState(false);
   const [upsellClientSecret, setUpsellClientSecret] = useState<string | null>(null);
   const [isProcessingUpsell, setIsProcessingUpsell] = useState(false);
+  const [chatMode, setChatMode] = useState<"popup" | "embedded">("popup");
+  const [showEmbeddedChat, setShowEmbeddedChat] = useState(false);
 
   // Get access token from URL or localStorage
   const getAccessToken = () => {
@@ -198,9 +204,10 @@ export function SuccessPage({ onReturnHome }: SuccessPageProps) {
         console.log("  - alreadyShown:", alreadyShown ? "Yes" : "No");
         
         if (!alreadyShown) {
-          console.log("✅ SHOWING UPSELLS - Fresh from checkout!");
+          console.log("✅ SHOWING SUBSCRIPTION MODAL FIRST - Fresh from checkout!");
           sessionStorage.setItem(shownKey, 'true');
-          setShowUpsells(true);
+          // Show subscription modal first
+          setShowSubscriptionModal(true);
         } else {
           console.log("⏭️ Skipping upsells - already shown this session");
         }
@@ -1013,6 +1020,22 @@ A separate subscription order has been created. You can view it in your email co
           </Card>
         )}
         
+        {/* Embedded Chat - Shows if user dismissed popup */}
+        {showEmbeddedChat && orderData && (
+          <div className="mb-6">
+            <QualificationChat
+              customerInfo={{
+                name: orderData.customerInfo.name,
+                email: orderData.customerInfo.email,
+                phone: orderData.customerInfo.phone,
+                state: orderData.customerInfo.address.state,
+              }}
+              orderToken={getAccessToken() || undefined}
+              mode="embedded"
+            />
+          </div>
+        )}
+        
         {/* Santa Image */}
         <div className="mb-6 text-center">
           <img 
@@ -1262,138 +1285,7 @@ A separate subscription order has been created. You can view it in your email co
           </Card>
         )}
 
-        {/* Add Subscription Upsell - Show if user didn't subscribe during funnel */}
-        {orderData && !orderData.monthlySubscription && !orderData.subscriptionId && !((orderData as any).upsellsAccepted?.some((u: any) => u.isSubscription)) && (
-          <Card className="mb-6 p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-300">
-            <div className="text-center mb-4">
-              <h3 className="text-2xl mb-2" style={{ fontFamily: "Pacifico", color: "#9333ea" }}>
-                🎅 Get 2 Free Extra Gifts - Join Santa's Magical Journey! 🎄
-              </h3>
-              <p className="text-gray-700">
-                Monthly personalized letters from Santa all year long!
-              </p>
-            </div>
-
-            {/* Product Image */}
-            <div className="flex justify-center mb-4">
-              <img 
-                src={santaMagicalJourneyProduct} 
-                alt="Santa's Magical Journey - Monthly Letters" 
-                className="w-full max-w-md h-auto object-contain rounded-lg"
-              />
-            </div>
-
-            <div className="bg-white rounded-lg p-6 mb-4">
-              <div className="text-center mb-4">
-                <div className="text-5xl text-purple-600 mb-2" style={{ fontFamily: "Pacifico, cursive" }}>
-                  $12/month
-                </div>
-                <p className="text-sm text-gray-600">per child • cancel anytime</p>
-                <div className="mt-3 bg-yellow-50 border-2 border-yellow-400 rounded-lg p-3">
-                  <p className="text-yellow-900" style={{ fontWeight: '700' }}>
-                    🎁 Get 2 FREE Bonus Gifts:
-                  </p>
-                  <ul className="text-yellow-800 text-sm mt-2 space-y-1">
-                    <li>• Nice List Certificate</li>
-                    <li>• Personalized Autographed Photo of Santa</li>
-                  </ul>
-                  <p className="text-purple-700 text-sm mt-2" style={{ fontWeight: '600' }}>
-                    💰 $0 Today - Billing Starts January 1st
-                  </p>
-                </div>
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-center mb-3" style={{ fontWeight: '600' }}>
-                  How many children?
-                </label>
-                <div className="flex justify-center gap-2">
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <Button
-                      key={num}
-                      type="button"
-                      variant={subscriptionQuantity === num ? "default" : "outline"}
-                      className={subscriptionQuantity === num ? "bg-purple-600 hover:bg-purple-700" : ""}
-                      onClick={() => setSubscriptionQuantity(num)}
-                      disabled={addingUpsell === "upsell_subscription"}
-                    >
-                      {num}
-                    </Button>
-                  ))}
-                </div>
-                <p className="text-center text-sm text-purple-600 mt-2">
-                  ${(12 * subscriptionQuantity).toFixed(2)}/month for {subscriptionQuantity} {subscriptionQuantity === 1 ? 'child' : 'children'}
-                </p>
-              </div>
-
-              {/* Stripe Payment Form */}
-              {!upsellClientSecret || addingUpsell !== "upsell_subscription" ? (
-                <Button
-                  onClick={() => handleInitiateUpsellPayment("upsell_subscription", "Santa's Magical Journey", 12.00, subscriptionQuantity)}
-                  disabled={addingUpsell === "upsell_subscription"}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white text-lg py-6"
-                >
-                  {addingUpsell === "upsell_subscription" ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                      Loading Payment Form...
-                    </>
-                  ) : (
-                    <>
-                      🎅 YES! Start Monthly Letters ($0 Today - Billing Starts Jan 1st)
-                    </>
-                  )}
-                </Button>
-              ) : (
-                <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4 mb-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <CreditCard className="w-5 h-5 text-yellow-700" />
-                    <h4 className="font-semibold text-yellow-900">Secure Payment Required</h4>
-                  </div>
-                  <p className="text-sm text-yellow-800 mb-4">
-                    Enter your card information to secure your subscription. <strong>$0 charged today</strong> - billing begins January 1st.
-                  </p>
-                  
-                  <Elements stripe={stripePromise}>
-                    <EmbeddedPaymentForm
-                      clientSecret={upsellClientSecret}
-                      onSuccess={handleUpsellPaymentSuccess}
-                      onError={handleUpsellPaymentError}
-                      isProcessing={isProcessingUpsell}
-                      setIsProcessing={setIsProcessingUpsell}
-                      buttonText={`Start Subscription - $0 Today`}
-                      buttonEmoji="🎅"
-                    />
-                  </Elements>
-                  
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setUpsellClientSecret(null);
-                      setAddingUpsell(null);
-                    }}
-                    className="w-full mt-3"
-                    disabled={isProcessingUpsell}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            <div className="bg-white rounded-lg p-4">
-              <p className="text-sm font-semibold text-gray-800 mb-2">What You'll Get Each Month:</p>
-              <ul className="text-sm text-gray-700 space-y-1">
-                <li>✓ Personalized letter from Santa with child's name</li>
-                <li>✓ Updates about Santa's workshop and the North Pole</li>
-                <li>✓ Encouragement for good behavior and achievements</li>
-                <li>✓ Seasonal activities and fun facts</li>
-                <li>✓ Magical keepsakes your child will treasure</li>
-                <li>✓ Cancel anytime - no long-term commitment</li>
-              </ul>
-            </div>
-          </Card>
-        )}
+        {/* Subscription upsell moved to modal that shows on page load */}
 
         {/* Confirmation Details */}
         <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6 mb-6 text-left">
@@ -1468,16 +1360,74 @@ A separate subscription order has been created. You can view it in your email co
         <p className="mt-6 text-xs text-gray-500 text-center">
           Bookmark this page to check your order status and tracking information
         </p>
-        
-        <div className="mt-4 flex items-center justify-center">
-          <button 
-            onClick={onAffiliateClick}
-            className="text-gray-400 hover:text-gray-600 text-xs underline"
-          >
-            🎁 Affiliate Partners
-          </button>
-        </div>
       </div>
+
+      {/* Subscription Upsell Modal - Shows FIRST */}
+      {orderData && !orderData.monthlySubscription && !subscriptionModalHandled && (
+        <SubscriptionUpsellModal
+          isOpen={showSubscriptionModal}
+          orderToken={getAccessToken() || ''}
+          numberOfChildren={orderData.letterPackages?.length || 1}
+          onAccept={() => {
+            console.log("✅ Subscription accepted!");
+            setSubscriptionModalHandled(true);
+            setShowSubscriptionModal(false);
+            // Show regular upsells (snow) after subscription
+            setTimeout(() => {
+              setShowUpsells(true);
+            }, 500);
+          }}
+          onDecline={() => {
+            console.log("❌ Subscription declined");
+            setSubscriptionModalHandled(true);
+            setShowSubscriptionModal(false);
+            // Show regular upsells (snow) after decline
+            setTimeout(() => {
+              setShowUpsells(true);
+            }, 500);
+          }}
+        />
+      )}
+
+      {/* Regular Upsells (Snow Globe) - Shows AFTER subscription modal */}
+      {showUpsells && !showAddChild && orderData && (
+        <UpsellOffer 
+          orderToken={getAccessToken() || ''} 
+          onComplete={() => {
+            console.log("✅ Upsells completed");
+            setShowUpsells(false);
+          }}
+        />
+      )}
+
+      {/* Add Another Child Modal */}
+      {showAddChild && orderData && (
+        <AddAnotherChild
+          orderToken={getAccessToken() || ''}
+          onComplete={() => {
+            console.log("✅ Add child completed");
+            setShowAddChild(false);
+            // Refresh order data
+            fetchOrderData();
+          }}
+          defaultLetterPrice={defaultLetterPrice}
+        />
+      )}
+
+      {/* Qualification Chat Widget - Popup mode (auto-opens after 3 seconds) */}
+      {orderData && !showEmbeddedChat && (
+        <QualificationChat
+          customerInfo={{
+            name: orderData.customerInfo.name,
+            email: orderData.customerInfo.email,
+            phone: orderData.customerInfo.phone,
+            state: orderData.customerInfo.address.state,
+          }}
+          orderToken={getAccessToken() || undefined}
+          mode="popup"
+          onDismiss={() => setShowEmbeddedChat(true)}
+        />
+      )}
     </div>
   );
 }

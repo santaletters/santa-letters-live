@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { HelmetProvider } from "react-helmet-async";
 import { CustomHead } from "./components/CustomHead";
 import { HomePage } from "./components/HomePage";
@@ -14,38 +14,27 @@ import { TrackdeskMaster } from "./components/TrackdeskMaster";
 import { projectId, publicAnonKey } from "./utils/supabase/info";
 import type { CartItem } from "./components/CartDrawer";
 
-// Import components directly (not lazy loading to avoid build issues)
-import { SuccessPage } from "./components/SuccessPage";
-import { AdminDashboard } from "./components/AdminDashboard";
-import { AffiliateDashboard } from "./components/AffiliateDashboard";
-import { AdminAffiliateManagement } from "./components/AdminAffiliateManagementEnhanced";
-import { AffiliateAuth } from "./components/AffiliateAuth";
-import { AdminLogin } from "./components/AdminLogin";
-import { AcceptDownsell } from "./components/AcceptDownsell";
-import { UpsellManagement } from "./components/UpsellManagement";
-import { PrivacyPolicy } from "./components/PrivacyPolicy";
-import { TermsAndConditions } from "./components/TermsAndConditions";
-import { ContactUs } from "./components/ContactUs";
-import { UpsellOffer } from "./components/UpsellOffer";
-import { Unsubscribe } from "./components/Unsubscribe";
+// Lazy load less frequently used components for better performance
+const SuccessPage = lazy(() => import("./components/SuccessPage").then(m => ({ default: m.SuccessPage })));
+const AdminDashboard = lazy(() => import("./components/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
+const AffiliateDashboard = lazy(() => import("./components/AffiliateDashboard").then(m => ({ default: m.AffiliateDashboard })));
+const AdminAffiliateManagement = lazy(() => import("./components/AdminAffiliateManagementEnhanced").then(m => ({ default: m.AdminAffiliateManagement })));
+const AffiliateAuth = lazy(() => import("./components/AffiliateAuth").then(m => ({ default: m.AffiliateAuth })));
+const AdminLogin = lazy(() => import("./components/AdminLogin").then(m => ({ default: m.AdminLogin })));
+const AcceptDownsell = lazy(() => import("./components/AcceptDownsell").then(m => ({ default: m.AcceptDownsell })));
+const UpsellManagement = lazy(() => import("./components/UpsellManagement").then(m => ({ default: m.UpsellManagement })));
+const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy").then(m => ({ default: m.PrivacyPolicy })));
+const TermsAndConditions = lazy(() => import("./components/TermsAndConditions").then(m => ({ default: m.TermsAndConditions })));
+const ContactUs = lazy(() => import("./components/ContactUs").then(m => ({ default: m.ContactUs })));
+const UpsellOffer = lazy(() => import("./components/UpsellOffer").then(m => ({ default: m.UpsellOffer })));
 
 console.log("🎅 App.tsx loaded successfully - VERSION 3.0");
 console.log("🌐 Current URL:", window.location.href);
 console.log("📍 Current path:", window.location.pathname);
 
-type Step = "home" | "sales" | "form" | "checkout" | "success" | "admin" | "adminlogin" | "affiliate" | "affiliatemanage" | "affiliateauth" | "downsell" | "updatepayment" | "upsellmanage" | "privacy" | "terms" | "contact" | "snowupsell" | "snowdownsell" | "subscriptionupsell" | "unsubscribe";
+type Step = "home" | "sales" | "form" | "checkout" | "success" | "admin" | "adminlogin" | "affiliate" | "affiliatemanage" | "affiliateauth" | "downsell" | "updatepayment" | "upsellmanage" | "privacy" | "terms" | "contact" | "snowupsell" | "snowdownsell" | "subscriptionupsell";
 
 const STORAGE_KEY = "santaLetterData";
-
-// Loading Screen Component
-const LoadingScreen = () => (
-  <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-    <div className="text-center">
-      <div className="animate-spin w-16 h-16 border-4 border-red-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-      <p className="text-gray-600">Loading...</p>
-    </div>
-  </div>
-);
 
 export default function App() {
   // Disable browser scroll restoration to prevent scroll position issues
@@ -146,12 +135,6 @@ export default function App() {
     if (path === '/contact' || urlParams.get('page') === 'contact') {
       console.log("  → Routing to contact us");
       return 'contact';
-    }
-    
-    // Unsubscribe route
-    if (path === '/unsubscribe' || urlParams.get('page') === 'unsubscribe') {
-      console.log("  → Routing to unsubscribe");
-      return 'unsubscribe';
     }
     
     // Downsell route
@@ -313,8 +296,6 @@ export default function App() {
       newUrl = '/terms';
     } else if (currentStep === 'contact') {
       newUrl = '/contact';
-    } else if (currentStep === 'unsubscribe') {
-      newUrl = '/unsubscribe';
     } else if (currentStep === 'downsell' && downsellToken) {
       newUrl = '/downsell';
       params.set('downsell', downsellToken);
@@ -392,8 +373,13 @@ export default function App() {
 
   const handleBackFromForm = () => {
     console.log("⬅️ Going back from form");
-    // Always go back to /offer page
-    setCurrentStep("sales");
+    // Check if we came from the funnel or homepage
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('funnel') === 'true' || window.location.pathname === '/offer') {
+      setCurrentStep("sales");
+    } else {
+      setCurrentStep("home");
+    }
   };
 
   const handleBackFromCheckout = () => {
@@ -560,6 +546,16 @@ export default function App() {
     window.location.href = '/letterform/';
   };
 
+  // Loading screen component for lazy-loaded routes
+  const LoadingScreen = () => (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-red-50 to-green-50">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading...</p>
+      </div>
+    </div>
+  );
+
   return (
     <HelmetProvider>
       <CustomHead />
@@ -638,44 +634,60 @@ export default function App() {
         )}
 
         {currentStep === "subscriptionupsell" && currentOrderToken && (
-          <UpsellOffer
-            orderToken={currentOrderToken}
-            onComplete={handleSubscriptionUpsellComplete}
-          />
+          <Suspense fallback={<LoadingScreen />}>
+            <UpsellOffer
+              orderToken={currentOrderToken}
+              onComplete={handleSubscriptionUpsellComplete}
+            />
+          </Suspense>
         )}
 
         {currentStep === "success" && (
-          <SuccessPage onReturnHome={handleReturnHome} />
+          <Suspense fallback={<LoadingScreen />}>
+            <SuccessPage onReturnHome={handleReturnHome} />
+          </Suspense>
         )}
 
         {currentStep === "admin" && (
-          <AdminDashboard onLogout={handleBackFromAdminDashboard} />
+          <Suspense fallback={<LoadingScreen />}>
+            <AdminDashboard onLogout={handleBackFromAdminDashboard} />
+          </Suspense>
         )}
 
         {currentStep === "adminlogin" && (
-          <AdminLogin
-            onLoginSuccess={() => setCurrentStep("admin")}
-            onBackToSales={handleReturnHome}
-          />
+          <Suspense fallback={<LoadingScreen />}>
+            <AdminLogin
+              onLoginSuccess={() => setCurrentStep("admin")}
+              onBackToSales={handleReturnHome}
+            />
+          </Suspense>
         )}
 
         {currentStep === "affiliate" && (
-          <AffiliateDashboard onLogout={handleBackFromAffiliateDashboard} />
+          <Suspense fallback={<LoadingScreen />}>
+            <AffiliateDashboard onLogout={handleBackFromAffiliateDashboard} />
+          </Suspense>
         )}
 
         {currentStep === "affiliatemanage" && (
-          <AdminAffiliateManagement onBack={handleBackFromAdminDashboard} />
+          <Suspense fallback={<LoadingScreen />}>
+            <AdminAffiliateManagement onBack={handleBackFromAdminDashboard} />
+          </Suspense>
         )}
 
         {currentStep === "affiliateauth" && (
-          <AffiliateAuth
-            onLoginSuccess={() => setCurrentStep("affiliate")}
-            onBack={handleReturnHome}
-          />
+          <Suspense fallback={<LoadingScreen />}>
+            <AffiliateAuth
+              onLoginSuccess={() => setCurrentStep("affiliate")}
+              onBack={handleReturnHome}
+            />
+          </Suspense>
         )}
 
         {currentStep === "downsell" && (
-          <AcceptDownsell />
+          <Suspense fallback={<LoadingScreen />}>
+            <AcceptDownsell />
+          </Suspense>
         )}
 
         {currentStep === "updatepayment" && (
@@ -683,23 +695,27 @@ export default function App() {
         )}
 
         {currentStep === "upsellmanage" && (
-          <UpsellManagement onBack={handleBackFromAdminDashboard} />
+          <Suspense fallback={<LoadingScreen />}>
+            <UpsellManagement onBack={handleBackFromAdminDashboard} />
+          </Suspense>
         )}
 
         {currentStep === "privacy" && (
-          <PrivacyPolicy onBack={handleBackFromSupportPages} />
+          <Suspense fallback={<LoadingScreen />}>
+            <PrivacyPolicy onBack={handleBackFromSupportPages} />
+          </Suspense>
         )}
 
         {currentStep === "terms" && (
-          <TermsAndConditions onBack={handleBackFromSupportPages} />
+          <Suspense fallback={<LoadingScreen />}>
+            <TermsAndConditions onBack={handleBackFromSupportPages} />
+          </Suspense>
         )}
 
         {currentStep === "contact" && (
-          <ContactUs onBack={handleBackFromSupportPages} />
-        )}
-
-        {currentStep === "unsubscribe" && (
-          <Unsubscribe onBack={handleReturnHome} />
+          <Suspense fallback={<LoadingScreen />}>
+            <ContactUs onBack={handleBackFromSupportPages} />
+          </Suspense>
         )}
       </div>
     </HelmetProvider>

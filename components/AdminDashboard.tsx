@@ -17,7 +17,6 @@ import { getOrderLink } from "../utils/domainHelper";
 import { SubscriptionLetterManager } from "./SubscriptionLetterManager";
 import { AdminAffiliateManagement } from "./AdminAffiliateManagementEnhanced";
 import { NetworkAffiliateReporting } from "./NetworkAffiliateReporting";
-import { LeadProfileModal } from "./LeadProfileModal";
 
 interface ActivityLogEntry {
   timestamp: string;
@@ -135,9 +134,7 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
       
       if (!sessionData) {
         console.log('❌ No admin session found - redirecting to login');
-        if (onLogout) {
-          onLogout();
-        }
+        window.location.href = '/admin/login';
         return;
       }
       
@@ -149,9 +146,7 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
         if (!session.authenticated || now > expiresAt) {
           console.log('❌ Admin session expired - redirecting to login');
           localStorage.removeItem('adminSession');
-          if (onLogout) {
-            onLogout();
-          }
+          window.location.href = '/admin/login';
           return;
         }
         
@@ -159,14 +154,12 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
       } catch (error) {
         console.error('❌ Invalid session data - redirecting to login');
         localStorage.removeItem('adminSession');
-        if (onLogout) {
-          onLogout();
-        }
+        window.location.href = '/admin/login';
       }
     };
     
     checkAuth();
-  }, [onLogout]);
+  }, []);
   
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
@@ -178,8 +171,7 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
     fulfilled: 0,
     revenue: 0,
   });
-  const [activeTab, setActiveTab] = useState<"alerts" | "orders" | "subscriptions" | "affiliates" | "declined" | "leads" | "settings">("alerts");
-  const [leads, setLeads] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<"alerts" | "orders" | "subscriptions" | "affiliates" | "declined" | "settings">("alerts");
   const [affiliateReports, setAffiliateReports] = useState<AffiliateReport[]>([]);
   const [declinedOrders, setDeclinedOrders] = useState<DeclinedOrder[]>([]);
   const [bulkTrackingData, setBulkTrackingData] = useState("");
@@ -233,10 +225,6 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
   const [selectedRegularOrders, setSelectedRegularOrders] = useState<Set<string>>(new Set());
   const [selectedSubscriptionOrders, setSelectedSubscriptionOrders] = useState<Set<string>>(new Set());
   const [bulkActionInProgress, setBulkActionInProgress] = useState(false);
-
-  // Lead profile modal state
-  const [selectedLead, setSelectedLead] = useState<any>(null);
-  const [isLeadProfileOpen, setIsLeadProfileOpen] = useState(false);
 
   const API_URL = "https://" + projectId + ".supabase.co/functions/v1/make-server-cf244566";
 
@@ -370,29 +358,9 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
     }
   };
 
-  // Fetch leads
-  const fetchLeads = async () => {
-    try {
-      const response = await fetch(API_URL + "/leads/all", {
-        headers: {
-          Authorization: "Bearer " + publicAnonKey,
-        },
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch leads");
-
-      const data = await response.json();
-      console.log('📋 Fetched leads:', data);
-      setLeads(data.leads || []);
-    } catch (error) {
-      console.error("Error fetching leads:", error);
-    }
-  };
-
   useEffect(() => {
     fetchOrders();
     fetchAffiliateReports();
-    fetchLeads();
     fetchDeclinedOrders();
   }, []);
 
@@ -2237,7 +2205,6 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
             <TabsTrigger value="affiliates">Affiliate Management</TabsTrigger>
             <TabsTrigger value="affiliate-reports">Affiliate Reports</TabsTrigger>
             <TabsTrigger value="declined">Declined ({declinedOrders.length})</TabsTrigger>
-            <TabsTrigger value="leads">💬 Leads ({leads.length})</TabsTrigger>
           </TabsList>
 
           {/* Admin Alerts Tab */}
@@ -3727,171 +3694,6 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
             />
           </TabsContent>
 
-          {/* Leads Tab */}
-          <TabsContent value="leads">
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl">💬 Qualification Leads</h2>
-                <Button onClick={fetchLeads} variant="outline" size="sm">
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Refresh
-                </Button>
-              </div>
-
-              {leads.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
-                  <p className="text-lg mb-2">No leads yet</p>
-                  <p className="text-sm">Leads will appear here when customers engage with the qualification chat</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {leads.map((lead) => (
-                    <Card key={lead.id} className="p-4 border-2">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-3">
-                            <h3 className="text-lg font-semibold">{lead.name}</h3>
-                            <Badge 
-                              variant={
-                                lead.status === "new" ? "default" :
-                                lead.status === "contacted" ? "secondary" :
-                                lead.status === "converted" ? "success" : "outline"
-                              }
-                            >
-                              {lead.status}
-                            </Badge>
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-                            <div className="flex items-center gap-2 text-gray-600">
-                              <Mail className="w-4 h-4" />
-                              <a href={`mailto:${lead.email}`} className="hover:underline">
-                                {lead.email}
-                              </a>
-                            </div>
-                            {lead.phone && (
-                              <div className="flex items-center gap-2 text-gray-600">
-                                <Phone className="w-4 h-4" />
-                                <a href={`tel:${lead.phone}`} className="hover:underline">
-                                  {lead.phone}
-                                </a>
-                              </div>
-                            )}
-                            <div className="flex items-center gap-2 text-gray-600">
-                              <Calendar className="w-4 h-4" />
-                              {new Date(lead.createdAt).toLocaleString()}
-                            </div>
-                          </div>
-
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="mt-2"
-                            onClick={() => {
-                              const info = `Name: ${lead.name}\nEmail: ${lead.email}\nPhone: ${lead.phone || "N/A"}`;
-                              navigator.clipboard.writeText(info);
-                              alert("Lead info copied to clipboard!");
-                            }}
-                          >
-                            <Copy className="w-4 h-4 mr-2" />
-                            Copy Info
-                          </Button>
-
-                          <Button
-                            variant="default"
-                            size="sm"
-                            className="mt-3"
-                            onClick={() => {
-                              setSelectedLead(lead);
-                              setIsLeadProfileOpen(true);
-                            }}
-                          >
-                            <MessageCircle className="w-4 h-4 mr-2" />
-                            View Full Profile
-                          </Button>
-
-                          {lead.responses?.messages && lead.responses.messages.length > 0 && (
-                            <div className="mt-3 p-3 bg-gray-50 rounded text-sm">
-                              <p className="font-semibold mb-1">Latest Message:</p>
-                              <p className="text-gray-700">{lead.responses.messages[lead.responses.messages.length - 1].user}</p>
-                              <p className="text-xs text-gray-500 mt-1">{lead.responses.messages.length} total messages</p>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="flex gap-2 ml-4">
-                          <Select
-                            value={lead.status}
-                            onValueChange={async (newStatus) => {
-                              try {
-                                const response = await fetch(
-                                  API_URL + `/leads/${lead.id}/status`,
-                                  {
-                                    method: "PATCH",
-                                    headers: {
-                                      "Content-Type": "application/json",
-                                      Authorization: "Bearer " + publicAnonKey,
-                                    },
-                                    body: JSON.stringify({ status: newStatus }),
-                                  }
-                                );
-
-                                if (response.ok) {
-                                  fetchLeads();
-                                }
-                              } catch (error) {
-                                console.error("Error updating lead status:", error);
-                              }
-                            }}
-                          >
-                            <SelectTrigger className="w-[130px]">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="new">New</SelectItem>
-                              <SelectItem value="contacted">Contacted</SelectItem>
-                              <SelectItem value="qualified">Qualified</SelectItem>
-                              <SelectItem value="converted">Converted</SelectItem>
-                              <SelectItem value="not_interested">Not Interested</SelectItem>
-                            </SelectContent>
-                          </Select>
-
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={async () => {
-                              if (confirm("Are you sure you want to delete this lead?")) {
-                                try {
-                                  const response = await fetch(
-                                    API_URL + `/leads/${lead.id}`,
-                                    {
-                                      method: "DELETE",
-                                      headers: {
-                                        Authorization: "Bearer " + publicAnonKey,
-                                      },
-                                    }
-                                  );
-
-                                  if (response.ok) {
-                                    fetchLeads();
-                                  }
-                                } catch (error) {
-                                  console.error("Error deleting lead:", error);
-                                }
-                              }
-                            }}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </Card>
-          </TabsContent>
-
           {/* Settings Tab */}
           <TabsContent value="settings">
             <Card className="p-6 max-w-2xl">
@@ -3963,17 +3765,6 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
             </Card>
           </TabsContent>
         </Tabs>
-
-        {/* Lead Profile Modal */}
-        <LeadProfileModal
-          lead={selectedLead}
-          isOpen={isLeadProfileOpen}
-          onClose={() => {
-            setIsLeadProfileOpen(false);
-            setSelectedLead(null);
-          }}
-          onRefresh={fetchLeads}
-        />
 
         {/* Edit Order Dialog */}
         {editingOrder && (

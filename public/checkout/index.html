@@ -424,7 +424,7 @@
             const params = new URLSearchParams(window.location.search);
             const trackingParams = new URLSearchParams();
             
-            ['aid', 'ref', 'campaign', 'affS1', 'affS2', 'affS3'].forEach(param => {
+            ['aid', 'ref', 'campaign', 'subid', 'subid2', 'subid3', 'subid4', 'subid5'].forEach(param => {
                 const value = params.get(param);
                 if (value) trackingParams.set(param, value);
             });
@@ -441,7 +441,7 @@
             const params = new URLSearchParams(window.location.search);
             const trackingParams = new URLSearchParams();
             
-            ['aid', 'ref', 'campaign', 'affS1', 'affS2', 'affS3'].forEach(param => {
+            ['aid', 'ref', 'campaign', 'subid', 'subid2', 'subid3', 'subid4', 'subid5'].forEach(param => {
                 const value = params.get(param);
                 if (value) trackingParams.set(param, value);
             });
@@ -482,24 +482,37 @@
             const params = new URLSearchParams(window.location.search);
             const affiliateId = params.get('aid') || localStorage.getItem('affiliate_id') || null;
             
-            // Capture tracking parameters: affS1, affS2, affS3 (SubIDs only)
+            // Capture tracking parameters - Use actual parameter names as keys
             const subIds = {};
             
-            // Capture affS1, affS2, affS3 (SubIDs)
+            // Capture your custom affS1, affS2, affS3, affS4 parameters (use exact names)
             if (params.get('affS1')) subIds.affS1 = params.get('affS1');
             if (params.get('affS2')) subIds.affS2 = params.get('affS2');
             if (params.get('affS3')) subIds.affS3 = params.get('affS3');
+            if (params.get('affS4')) subIds.affS4 = params.get('affS4');
             
-            // Also support old parameter names (sub, sub2, sub3) for backwards compatibility
-            if (params.get('sub') && !subIds.affS1) subIds.affS1 = params.get('sub');
-            if (params.get('sub2') && !subIds.affS2) subIds.affS2 = params.get('sub2');
-            if (params.get('sub3') && !subIds.affS3) subIds.affS3 = params.get('sub3');
+            // Also support Trackdesk standard subid parameters (in case you use both)
+            if (params.get('subid')) subIds.subid = params.get('subid');
+            if (params.get('subid2')) subIds.subid2 = params.get('subid2');
+            if (params.get('subid3')) subIds.subid3 = params.get('subid3');
+            if (params.get('subid4')) subIds.subid4 = params.get('subid4');
+            if (params.get('subid5')) subIds.subid5 = params.get('subid5');
+            
+            // Backwards compatibility: Also support old sub, sub2, sub3 parameter names
+            if (params.get('sub')) subIds.sub = params.get('sub');
+            if (params.get('sub2')) subIds.sub2 = params.get('sub2');
+            if (params.get('sub3')) subIds.sub3 = params.get('sub3');
             
             // Capture ref and campaign as SEPARATE parameters (not in subIds)
             const affiliateRef = params.get('ref') || null;
             const affiliateCampaign = params.get('campaign') || null;
             
-            console.log('🔍 Tracking Parameters:', { subIds, affiliateRef, affiliateCampaign });
+            console.log('🔍 Tracking Parameters:', { 
+                subIds, 
+                affiliateRef, 
+                affiliateCampaign,
+                affiliateId 
+            });
     
             try {
                 // Step 1: Create payment intent

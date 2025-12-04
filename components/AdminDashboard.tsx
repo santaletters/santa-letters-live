@@ -80,12 +80,12 @@ interface Order {
   activityLog?: ActivityLogEntry[];
   trafficSource?: string;
   // Tracking parameters
+  affiliateRef?: string;
+  affiliateCampaign?: string;
   subIds?: {
     affS1?: string;
     affS2?: string;
     affS3?: string;
-    ref?: string;
-    campaign?: string;
   };
 }
 
@@ -2423,11 +2423,13 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
                                 <p className="text-sm text-purple-600">
                                   Affiliate: {order.affiliateName} (${order.affiliateCommission?.toFixed(2) || '0.00'} commission)
                                 </p>
-                                {order.subIds && Object.keys(order.subIds).length > 0 && (
+                                {(order.subIds || order.affiliateRef || order.affiliateCampaign) && (
                                   <p className="text-xs text-gray-600 mt-0.5">
-                                    {order.subIds.affS1 && `affS1: ${order.subIds.affS1}`}
-                                    {order.subIds.affS2 && ` | affS2: ${order.subIds.affS2}`}
-                                    {order.subIds.affS3 && ` | affS3: ${order.subIds.affS3}`}
+                                    {order.subIds?.affS1 && `affS1: ${order.subIds.affS1}`}
+                                    {order.subIds?.affS2 && ` | affS2: ${order.subIds.affS2}`}
+                                    {order.subIds?.affS3 && ` | affS3: ${order.subIds.affS3}`}
+                                    {order.affiliateRef && ` | ref: ${order.affiliateRef}`}
+                                    {order.affiliateCampaign && ` | campaign: ${order.affiliateCampaign}`}
                                   </p>
                                 )}
                               </div>
@@ -3074,11 +3076,13 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
                                 <p className="text-sm text-purple-600">
                                   Affiliate: {order.affiliateName} (${order.affiliateCommission?.toFixed(2) || '0.00'} commission)
                                 </p>
-                                {order.subIds && Object.keys(order.subIds).length > 0 && (
+                                {(order.subIds || order.affiliateRef || order.affiliateCampaign) && (
                                   <p className="text-xs text-gray-600 mt-0.5">
-                                    {order.subIds.affS1 && `affS1: ${order.subIds.affS1}`}
-                                    {order.subIds.affS2 && ` | affS2: ${order.subIds.affS2}`}
-                                    {order.subIds.affS3 && ` | affS3: ${order.subIds.affS3}`}
+                                    {order.subIds?.affS1 && `affS1: ${order.subIds.affS1}`}
+                                    {order.subIds?.affS2 && ` | affS2: ${order.subIds.affS2}`}
+                                    {order.subIds?.affS3 && ` | affS3: ${order.subIds.affS3}`}
+                                    {order.affiliateRef && ` | ref: ${order.affiliateRef}`}
+                                    {order.affiliateCampaign && ` | campaign: ${order.affiliateCampaign}`}
                                   </p>
                                 )}
                               </div>
@@ -4286,23 +4290,23 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
                         <p><strong>Source Type:</strong> {selectedOrderForActivity.trafficSource}</p>
                       )}
                       {/* Tracking Parameters */}
-                      {selectedOrderForActivity.subIds && Object.keys(selectedOrderForActivity.subIds).length > 0 && (
+                      {(selectedOrderForActivity.subIds || selectedOrderForActivity.affiliateRef || selectedOrderForActivity.affiliateCampaign) && (
                         <div className="mt-3 pt-3 border-t border-purple-200">
                           <p className="font-semibold mb-1">Tracking Parameters:</p>
-                          {selectedOrderForActivity.subIds.affS1 && (
+                          {selectedOrderForActivity.subIds?.affS1 && (
                             <p><strong>SubID 1:</strong> {selectedOrderForActivity.subIds.affS1}</p>
                           )}
-                          {selectedOrderForActivity.subIds.affS2 && (
+                          {selectedOrderForActivity.subIds?.affS2 && (
                             <p><strong>SubID 2:</strong> {selectedOrderForActivity.subIds.affS2}</p>
                           )}
-                          {selectedOrderForActivity.subIds.affS3 && (
+                          {selectedOrderForActivity.subIds?.affS3 && (
                             <p><strong>SubID 3:</strong> {selectedOrderForActivity.subIds.affS3}</p>
                           )}
-                          {selectedOrderForActivity.subIds.ref && (
-                            <p><strong>Ref:</strong> {selectedOrderForActivity.subIds.ref}</p>
+                          {selectedOrderForActivity.affiliateRef && (
+                            <p><strong>Ref:</strong> {selectedOrderForActivity.affiliateRef}</p>
                           )}
-                          {selectedOrderForActivity.subIds.campaign && (
-                            <p><strong>Campaign:</strong> {selectedOrderForActivity.subIds.campaign}</p>
+                          {selectedOrderForActivity.affiliateCampaign && (
+                            <p><strong>Campaign:</strong> {selectedOrderForActivity.affiliateCampaign}</p>
                           )}
                         </div>
                       )}

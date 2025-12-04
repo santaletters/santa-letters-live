@@ -879,6 +879,9 @@
                         // Show success and redirect to NEXT OFFER (snow upsell)
                         button.innerHTML = '✅ Subscription Added!';
                         setTimeout(() => {
+                            // 🔧 CRITICAL FIX: Reset processing flag before showing next offer
+                            processing = false;
+                            
                             // Show next offer instead of going to success page
                             clearInterval(currentTimer);
                             document.getElementById('subscription-page').classList.add('hidden');

@@ -769,9 +769,9 @@
             let aiCallQuantity = 1;
             let unlimitedUpgrade = false;
             const UPSELL_PRICE = 9.99;
-            const DOWNSELL_PRICE = 7.99;
+            const DOWNSELL_PRICE = 1;
             const AI_CALL_BASE_PRICE = 1;
-            const AI_CALL_UPGRADE_PRICE = 1;
+            const AI_CALL_UPGRADE_PRICE = 5.00;
             let processing = false;
 
             // AI Call Form State
@@ -926,14 +926,14 @@
                 try {
                     console.log('📦 Adding subscription for', subscriptionQuantity, 'children');
                     
-                    const response = await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/subscription/accept', {
+                    const response = await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/upsell/accept-subscription', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJncGNncmhmbm12YXhia2Z6Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NjY3MzAsImV4cCI6MjA3NjA0MjczMH0.eDun3lViK4XA--bTwRTqyCTBO40B8JU7m12mc4Jz2mo'
                         },
                         body: JSON.stringify({
-                            accessToken: orderToken,
+                            orderToken: orderToken,
                             quantity: subscriptionQuantity
                         })
                     });
@@ -1071,14 +1071,14 @@
                     const amount = upsellQuantity * UPSELL_PRICE;
                     console.log('💳 Charging for', upsellQuantity, 'jars at $' + UPSELL_PRICE, '= $' + amount.toFixed(2));
                     
-                    const response = await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/upsell/accept', {
+                    const response = await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/upsell/accept-snow', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJncGNncmhmbm12YXhia2Z6Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NjY3MzAsImV4cCI6MjA3NjA0MjczMH0.eDun3lViK4XA--bTwRTqyCTBO40B8JU7m12mc4Jz2mo'
                         },
                         body: JSON.stringify({
-                            accessToken: orderToken,
+                            orderToken: orderToken,
                             quantity: upsellQuantity
                         })
                     });
@@ -1178,14 +1178,14 @@
                     const amount = downsellQuantity * DOWNSELL_PRICE;
                     console.log('💳 Charging for', downsellQuantity, 'jars at $' + DOWNSELL_PRICE, '= $' + amount.toFixed(2));
                     
-                    const response = await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/downsell/accept', {
+                    const response = await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/upsell/accept-snow-downsell', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJncGNncmhmbm12YXhia2Z6Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NjY3MzAsImV4cCI6MjA3NjA0MjczMH0.eDun3lViK4XA--bTwRTqyCTBO40B8JU7m12mc4Jz2mo'
                         },
                         body: JSON.stringify({
-                            accessToken: orderToken,
+                            orderToken: orderToken,
                             quantity: downsellQuantity
                         })
                     });

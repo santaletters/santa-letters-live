@@ -179,9 +179,13 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
     fulfilled: 0,
     revenue: 0,
   });
-  const [activeTab, setActiveTab] = useState<"alerts" | "orders" | "subscriptions" | "affiliates" | "declined" | "settings">("alerts");
+  const [activeTab, setActiveTab] = useState<"alerts" | "orders" | "subscriptions" | "affiliates" | "declined" | "aicalls" | "settings">("alerts");
   const [affiliateReports, setAffiliateReports] = useState<AffiliateReport[]>([]);
   const [declinedOrders, setDeclinedOrders] = useState<DeclinedOrder[]>([]);
+  
+  // Santa AI Call state
+  const [aiCallOrders, setAiCallOrders] = useState<any[]>([]);
+  const [loadingAiCalls, setLoadingAiCalls] = useState(false);
   const [bulkTrackingData, setBulkTrackingData] = useState("");
   const [trackingDialogOpen, setTrackingDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -366,10 +370,34 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
     }
   };
 
+  // Fetch Santa AI Call orders
+  const fetchAiCallOrders = async () => {
+    setLoadingAiCalls(true);
+    try {
+      const response = await fetch(API_URL + "/admin/santa-ai-calls", {
+        headers: {
+          Authorization: "Bearer " + publicAnonKey,
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch AI call orders");
+
+      const data = await response.json();
+      console.log('📞 Fetched AI call orders:', data);
+      setAiCallOrders(data.calls || []);
+    } catch (error) {
+      console.error("Error fetching AI call orders:", error);
+      setAiCallOrders([]);
+    } finally {
+      setLoadingAiCalls(false);
+    }
+  };
+
   useEffect(() => {
     fetchOrders();
     fetchAffiliateReports();
     fetchDeclinedOrders();
+    fetchAiCallOrders();
   }, []);
 
   // Search/filter orders
@@ -2213,6 +2241,7 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
             <TabsTrigger value="affiliates">Affiliate Management</TabsTrigger>
             <TabsTrigger value="affiliate-reports">Affiliate Reports</TabsTrigger>
             <TabsTrigger value="declined">Declined ({declinedOrders.length})</TabsTrigger>
+            <TabsTrigger value="aicalls">🎅 AI Calls ({aiCallOrders.length})</TabsTrigger>
           </TabsList>
 
           {/* Admin Alerts Tab */}
@@ -3704,6 +3733,150 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
               declinedOrders={declinedOrders} 
               onRefresh={fetchDeclinedOrders}
             />
+          </TabsContent>
+
+          {/* Santa AI Calls Tab */}
+          <TabsContent value="aicalls">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold">🎅 Santa AI Call Orders</h2>
+                <Button onClick={fetchAiCallOrders} variant="outline">
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Refresh
+                </Button>
+              </div>
+
+              {loadingAiCalls ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full mx-auto"></div>
+                  <p className="mt-4 text-gray-600">Loading AI call orders...</p>
+                </div>
+              ) : aiCallOrders.length === 0 ? (
+                <div className="text-center py-12 bg-white rounded-lg">
+                  <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-600">No AI call orders found</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {aiCallOrders.map((call) => (
+                    <Card key={call.id} className="p-6 border-2 border-purple-200">
+                      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between mb-4">
+                            <div>
+                              <h3 className="text-lg font-bold mb-1">Call #{call.call_id}</h3>
+                              <p className="text-sm text-gray-500">{formatDate(call.created_at)}</p>
+                              <div className="mt-2 inline-flex items-center gap-2 bg-purple-100 border-2 border-purple-400 rounded-lg px-3 py-1.5">
+                                <Phone className="w-4 h-4 text-purple-700" />
+                                <span className="text-sm text-purple-900">
+                                  <strong>{call.package_type === 'unlimited' ? 'Unlimited' : '5-Minute'} Call</strong> × {call.quantity}
+                                </span>
+                              </div>
+                            </div>
+                            <Badge className="bg-green-600 text-white">
+                              {call.payment_status}
+                            </Badge>
+                          </div>
+
+                          <div className="grid md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                              <div className="flex items-center gap-2 text-sm mb-1">
+                                <Mail className="w-4 h-4 text-gray-400" />
+                                <span className="text-gray-700">{call.customer_name || 'N/A'}</span>
+                              </div>
+                              <div className="text-sm text-gray-500 ml-6">{call.customer_email || 'N/A'}</div>
+                            </div>
+
+                            <div>
+                              <div className="flex items-center gap-2 text-sm mb-1">
+                                <Phone className="w-4 h-4 text-gray-400" />
+                                <span className="text-gray-700">{call.customer_phone || 'N/A'}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {call.children_data && call.children_data.length > 0 ? (
+                            <div className="border-t pt-4">
+                              <p className="text-sm mb-3">
+                                <strong>Scheduled Calls ({call.children_data.length}):</strong>
+                              </p>
+                              <div className="space-y-3">
+                                {call.children_data.map((child: any, idx: number) => (
+                                  <div key={idx} className="bg-purple-50 p-3 rounded-lg text-sm">
+                                    <p className="mb-1">
+                                      <strong>Child {idx + 1}:</strong> {child.childName || 'N/A'}
+                                    </p>
+                                    <div className="space-y-1 text-gray-600">
+                                      <p>📞 Phone: {child.phoneNumber || 'N/A'}</p>
+                                      {child.wish && child.wish !== 'N/A' && (
+                                        <p>🎁 Wish: {child.wish}</p>
+                                      )}
+                                      {child.goodDeeds && child.goodDeeds !== 'N/A' && (
+                                        <p>⭐ Good Deeds: {child.goodDeeds}</p>
+                                      )}
+                                      {child.scheduledTime && child.scheduledTime !== 'N/A' ? (
+                                        <p>📅 Scheduled: {new Date(child.scheduledTime).toLocaleString()}</p>
+                                      ) : (
+                                        <p>📅 Scheduled: Within 12-24 hours</p>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="border-t pt-4">
+                              <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg text-sm">
+                                <p className="text-yellow-800">
+                                  ⚠️ <strong>Details Pending:</strong> Customer hasn't filled out call details yet
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex flex-col gap-3 lg:w-48">
+                          <div className="text-2xl text-center p-3 bg-purple-100 rounded-lg">
+                            ${call.total_amount?.toFixed(2) || '0.00'}
+                          </div>
+
+                          {call.stripe_payment_id && (
+                            <Button
+                              onClick={() => window.open(`https://dashboard.stripe.com/payments/${call.stripe_payment_id}`, "_blank")}
+                              variant="outline"
+                              size="sm"
+                            >
+                              <ExternalLink className="w-4 h-4 mr-2" />
+                              View in Stripe
+                            </Button>
+                          )}
+
+                          {call.order_id && (
+                            <Button
+                              onClick={() => {
+                                // Find the order and switch to appropriate tab
+                                const order = orders.find(o => o.orderId === call.order_id);
+                                if (order) {
+                                  if (order.monthlySubscription && order.subscriptionId) {
+                                    setActiveTab('subscriptions');
+                                  } else {
+                                    setActiveTab('orders');
+                                  }
+                                }
+                              }}
+                              variant="outline"
+                              size="sm"
+                            >
+                              📦 View Order
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
           </TabsContent>
 
           {/* Settings Tab */}

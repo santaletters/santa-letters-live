@@ -125,9 +125,44 @@
         .pulse-once {
             animation: pulseOnce 0.5s ease-in-out;
         }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
     </style>
 </head>
 <body class="min-h-screen">
+    
+    <!-- Loading Overlay -->
+    <div id="final-loading-overlay" class="loading-overlay hidden">
+        <div class="bg-white rounded-2xl p-8 max-w-md text-center shadow-2xl">
+            <div class="mb-6">
+                <div class="w-20 h-20 border-4 border-green-200 border-t-green-600 rounded-full spinner mx-auto"></div>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-3">🎅 Processing Your Order...</h2>
+            <p class="text-lg text-gray-700 mb-2">Please wait while we schedule your magical Santa calls!</p>
+            <p class="text-red-600 font-bold text-sm">⚠️ DO NOT CLOSE THIS PAGE</p>
+            <div class="mt-6 flex items-center justify-center gap-2 text-sm text-gray-600">
+                <div class="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div>
+                <span>This may take up to 30 seconds...</span>
+            </div>
+        </div>
+    </div>
     
     <!-- Subscription Upsell Page (shows FIRST) -->
     <div id="subscription-page" class="min-h-screen bg-gradient-to-br from-green-700 via-blue-700 to-green-800 flex items-center justify-center p-4">
@@ -735,8 +770,8 @@
             let unlimitedUpgrade = false;
             const UPSELL_PRICE = 9.99;
             const DOWNSELL_PRICE = 7.99;
-            const AI_CALL_BASE_PRICE = 9.99;
-            const AI_CALL_UPGRADE_PRICE = 5.00;
+            const AI_CALL_BASE_PRICE = 1;
+            const AI_CALL_UPGRADE_PRICE = 1;
             let processing = false;
 
             // AI Call Form State
@@ -1429,6 +1464,9 @@
 
             async function submitAICallData() {
                 try {
+                    // Show loading overlay
+                    document.getElementById('final-loading-overlay').classList.remove('hidden');
+                    
                     console.log('📤 Submitting AI Call data:', aiChildrenData);
                     
                     const response = await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/santa-ai-call/schedule', {
@@ -1455,6 +1493,8 @@
                     
                 } catch (error) {
                     console.error('❌ Error scheduling calls:', error);
+                    // Hide loading overlay on error
+                    document.getElementById('final-loading-overlay').classList.add('hidden');
                     alert('Error scheduling calls: ' + error.message);
                 }
             }

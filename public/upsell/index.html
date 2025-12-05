@@ -27,7 +27,7 @@
             'Content-Type': 'application/json',
             'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJncGNncmhmbm12YXhia2Z6Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NjY3MzAsImV4cCI6MjA3NjA0MjczMH0.eDun3lViK4XA--bTwRTqyCTBO40B8JU7m12mc4Jz2mo'
           },
-          body: JSON.stringify({ accessToken: orderToken })
+          body: JSON.stringify({ orderToken: orderToken })
         })
         .then(function(response) { return response.json(); })
         .then(function(data) {
@@ -912,7 +912,10 @@
             }
 
             window.acceptSubscription = async function() {
-                if (processing) return;
+                if (processing) {
+                    console.log('⚠️ Already processing, ignoring click');
+                    return;
+                }
                 
                 processing = true;
                 const button = document.getElementById('sub-accept-btn');
@@ -946,7 +949,11 @@
                     
                     console.log('✅ Subscription added successfully:', data);
                     
+                    // Clear timer and reset state
                     if (currentTimer) clearInterval(currentTimer);
+                    processing = false;
+                    
+                    // Transition to next page
                     document.getElementById('subscription-page').classList.add('hidden');
                     document.getElementById('upsell-page').classList.remove('hidden');
                     initializeSnowQuantity();
@@ -966,6 +973,7 @@
             window.declineSubscription = function() {
                 console.log('⏭️ Subscription declined');
                 if (currentTimer) clearInterval(currentTimer);
+                processing = false;
                 document.getElementById('subscription-page').classList.add('hidden');
                 document.getElementById('upsell-page').classList.remove('hidden');
                 initializeSnowQuantity();
@@ -995,6 +1003,7 @@
                 const timerDisplay = document.getElementById('timer');
                 if (!timerDisplay) return;
                 
+                timeLeft = 120; // ✅ FIXED: Reset timer
                 if (currentTimer) clearInterval(currentTimer);
                 
                 currentTimer = setInterval(() => {
@@ -1008,6 +1017,7 @@
                         console.log('⏱️ Snow timer expired, showing downsell');
                         document.getElementById('upsell-page').classList.add('hidden');
                         document.getElementById('downsell-page').classList.remove('hidden');
+                        initializeDownsellQuantity();
                     }
                 }, 1000);
             }
@@ -1056,7 +1066,10 @@
             }
 
             window.acceptUpsell = async function() {
-                if (processing) return;
+                if (processing) {
+                    console.log('⚠️ Already processing, ignoring click');
+                    return;
+                }
                 
                 processing = true;
                 const button = document.getElementById('accept-btn');
@@ -1092,6 +1105,8 @@
                     console.log('✅ Snow upsell accepted, proceeding to AI Call offer');
                     
                     if (currentTimer) clearInterval(currentTimer);
+                    processing = false;
+                    
                     document.getElementById('upsell-page').classList.add('hidden');
                     document.getElementById('ai-call-page').classList.remove('hidden');
                     initializeAICallPage();
@@ -1110,13 +1125,29 @@
             window.declineUpsell = function() {
                 console.log('⏭️ Snow upsell declined, showing downsell');
                 if (currentTimer) clearInterval(currentTimer);
+                processing = false;
                 document.getElementById('upsell-page').classList.add('hidden');
                 document.getElementById('downsell-page').classList.remove('hidden');
+                initializeDownsellQuantity();
             }
 
             // =====================================================
             // SNOW DOWNSELL FUNCTIONS
             // =====================================================
+
+            function initializeDownsellQuantity() {
+                try {
+                    const packages = JSON.parse(localStorage.getItem('santaLetterPackages') || '[]');
+                    const letterCount = packages.length || 1;
+                    
+                    console.log('💰 Auto-selecting', letterCount, 'jars for downsell');
+                    
+                    downsellQuantity = letterCount;
+                    updateDownsellTotal();
+                } catch (error) {
+                    console.error('Error auto-selecting downsell quantity:', error);
+                }
+            }
 
             function updateDownsellTotal() {
                 const total = (downsellQuantity * DOWNSELL_PRICE).toFixed(2);
@@ -1163,7 +1194,10 @@
             }
 
             window.acceptDownsell = async function() {
-                if (processing) return;
+                if (processing) {
+                    console.log('⚠️ Already processing, ignoring click');
+                    return;
+                }
                 
                 processing = true;
                 const button = document.getElementById('downsell-accept-btn');
@@ -1198,6 +1232,8 @@
                     
                     console.log('✅ Snow downsell accepted, proceeding to AI Call offer');
                     
+                    processing = false;
+                    
                     document.getElementById('downsell-page').classList.add('hidden');
                     document.getElementById('ai-call-page').classList.remove('hidden');
                     initializeAICallPage();
@@ -1215,6 +1251,7 @@
 
             window.skipDownsell = function() {
                 console.log('⏭️ Downsell skipped, proceeding to AI Call offer');
+                processing = false;
                 document.getElementById('downsell-page').classList.add('hidden');
                 document.getElementById('ai-call-page').classList.remove('hidden');
                 initializeAICallPage();
@@ -1285,7 +1322,10 @@
             }
 
             window.acceptAICall = async function() {
-                if (processing) return;
+                if (processing) {
+                    console.log('⚠️ Already processing, ignoring click');
+                    return;
+                }
                 
                 processing = true;
                 const button = document.getElementById('ai-call-accept-btn');
@@ -1360,6 +1400,7 @@
 
             window.skipAICall = function() {
                 console.log('⏭️ Skipping AI Call');
+                processing = false;
                 window.location.href = '/?token=' + orderToken;
             }
 

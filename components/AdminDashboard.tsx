@@ -535,18 +535,90 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
 
   // Export orders to CSV
   const exportOrders = () => {
-    const headers = ["Order ID", "Date", "Customer Name", "Email", "Phone", "Status", "Total", "Packages", "Tracking"];
-    const csvData = filteredOrders.map((order) => [
-      order.orderId || "N/A",
-      formatDate(order.orderDate || order.createdAt),
-      order.customerInfo?.name || "N/A",
-      order.customerInfo?.email || "N/A",
-      order.customerInfo?.phone || "N/A",
-      order.status || "N/A",
-      "$" + (order.total?.toFixed(2) || "0.00"),
-      order.numberOfPackages || 0,
-      order.trackingNumber || "N/A",
-    ]);
+    const headers = [
+      "Order ID", 
+      "Date", 
+      "Customer Name", 
+      "Email", 
+      "Phone",
+      "Address Line 1",
+      "Address Line 2", 
+      "City",
+      "State",
+      "Zip Code",
+      "Status", 
+      "Total", 
+      "Packages",
+      "Tracking",
+      "Children Names",
+      "Friend Names",
+      "Shipping Addresses",
+      "Subscription Active",
+      "Subscription ID",
+      "Snow Upsell Qty",
+      "Snow Upsell Price",
+      "AI Call Qty",
+      "AI Call Unlimited",
+      "Total Upsells",
+      "Affiliate ID",
+      "Affiliate Name"
+    ];
+    
+    const csvData = filteredOrders.map((order: any) => {
+      // Extract letter details
+      const childNames = order.letterPackages?.map((pkg: any) => `${pkg.childFirstName} ${pkg.childLastName}`).join("; ") || "N/A";
+      const friendNames = order.letterPackages?.map((pkg: any) => pkg.friendName || "None").join("; ") || "N/A";
+      const shippingAddresses = order.letterPackages?.map((pkg: any) => 
+        `${pkg.streetAddress}${pkg.unitApt ? ' ' + pkg.unitApt : ''}, ${pkg.city}, ${pkg.state} ${pkg.zipCode}`
+      ).join(" | ") || "N/A";
+      
+      // Extract upsell details
+      const snowUpsell = order.acceptedUpsells?.find((u: any) => u.name?.includes('Snow') || u.name?.includes('snow'));
+      const aiCallUpsell = order.acceptedUpsells?.find((u: any) => u.name?.includes('AI') || u.name?.includes('Call'));
+      
+      const snowQty = snowUpsell?.quantity || 0;
+      const snowPrice = snowUpsell?.total || 0;
+      const aiCallQty = aiCallUpsell?.quantity || 0;
+      const aiCallUnlimited = aiCallUpsell?.unlimitedUpgrade ? 'Yes' : 'No';
+      const totalUpsells = order.acceptedUpsells?.length || 0;
+      
+      // Determine real status
+      let realStatus = order.status || "pending";
+      if (order.trackingNumber && order.trackingNumber !== "N/A") {
+        realStatus = "fulfilled";
+      } else if (order.status === "paid" || order.stripePaymentId) {
+        realStatus = "processing";
+      }
+      
+      return [
+        order.orderId || "N/A",
+        formatDate(order.orderDate || order.createdAt),
+        order.customerInfo?.name || "N/A",
+        order.customerInfo?.email || "N/A",
+        order.customerInfo?.phone || "N/A",
+        order.customerInfo?.address?.line1 || "N/A",
+        order.customerInfo?.address?.line2 || "",
+        order.customerInfo?.address?.city || "N/A",
+        order.customerInfo?.address?.state || "N/A",
+        order.customerInfo?.address?.postal_code || "N/A",
+        realStatus,
+        "$" + (order.total?.toFixed(2) || "0.00"),
+        order.numberOfPackages || 0,
+        order.trackingNumber || "N/A",
+        `"${childNames}"`,
+        `"${friendNames}"`,
+        `"${shippingAddresses}"`,
+        order.monthlySubscription ? "Yes" : "No",
+        order.subscriptionId || "N/A",
+        snowQty,
+        snowQty > 0 ? "$" + snowPrice.toFixed(2) : "$0.00",
+        aiCallQty,
+        aiCallQty > 0 ? aiCallUnlimited : "N/A",
+        totalUpsells,
+        order.affiliateId || "N/A",
+        order.affiliateName || "N/A"
+      ];
+    });
 
     const csv = [headers, ...csvData].map((row) => row.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });

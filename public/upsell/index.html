@@ -7,63 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://js.stripe.com/v3/"></script>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-  <!-- Trackdesk tracker begin -->
-    <script async src="//cdn.trackdesk.com/tracking.js"></script>
-    <script>
-      (function(t,d,k){(t[k]=t[k]||[]).push(d);t[d]=t[d]||t[k].f||function(){(t[d].q=t[d].q||[]).push(arguments)}})(window,"trackdesk","TrackdeskObject");
-    
-      // Get order token from URL
-      var urlParams = new URLSearchParams(window.location.search);
-      var orderToken = urlParams.get('token') || localStorage.getItem('orderAccessToken') || "";
-      
-      console.log('🔍 Trackdesk - Order token:', orderToken ? orderToken.substring(0, 20) + '...' : 'NOT FOUND');
-    
-      // Fetch order total from backend
-      if (orderToken) {
-        fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/orders/get', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJncGNncmhmbm12YXhia2Z6Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NjY3MzAsImV4cCI6MjA3NjA0MjczMH0.eDun3lViK4XA--bTwRTqyCTBO40B8JU7m12mc4Jz2mo'
-          },
-          body: JSON.stringify({ orderToken: orderToken })
-        })
-        .then(function(response) { return response.json(); })
-        .then(function(data) {
-          var orderValue = 0;
-          
-          if (data.order && data.order.totalAmount) {
-            orderValue = parseFloat(data.order.totalAmount);
-          }
-          
-          console.log('🔍 Trackdesk - Order data from backend:', data.order);
-          console.log('🔥 Trackdesk SALE pixel - Order value:', orderValue.toFixed(2));
-          
-          // Fire pixel with accurate order value
-          trackdesk("directwebinteractive", "conversion", {
-            "conversionType": "sale",
-            "externalId": orderToken,
-            "customParams": {
-              "advS1": orderValue.toFixed(2)
-            }
-          });
-        })
-        .catch(function(error) {
-          console.error('❌ Error fetching order:', error);
-          // Fire pixel with 0 if error
-          trackdesk("directwebinteractive", "conversion", {
-            "conversionType": "sale",
-            "externalId": orderToken,
-            "customParams": {
-              "advS1": "0.00"
-            }
-          });
-        });
-      }
-    </script>
-    <!-- Trackdesk tracker end -->
-  
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17759657161"></script>
   <script>

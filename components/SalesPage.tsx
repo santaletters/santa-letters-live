@@ -215,9 +215,9 @@ export function SalesPage({ onOrderNow }: SalesPageProps) {
             {[
               {
                 name: "Sarah Jenkins",
-                text: "My daughter's face lit up when she got her personalized letter! The attention to detail was amazing.",
+                text: "My son's face lit up when she got her personalized letter! The attention to detail was amazing.",
                 rating: 5,
-                image: "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/01b938c2a364e43f9faff2232495b67bcb15c8ad.avif?v=1763927818"
+                image: "https://cdn.shopify.com/s/files/1/0711/9051/1843/files/ChatGPT_Image_Dec_14_2025_12_14_55_PM.png?v=1765732524"
               },
               {
                 name: "Rachel Bennett",

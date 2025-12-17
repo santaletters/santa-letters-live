@@ -1772,7 +1772,6 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
           }
 
           const fulfillData = await fulfillResponse.json();
-          alert(`✅ Marked ${selectedIds.length} order(s) as fulfilled!\n\n📧 Fulfillment emails have been sent to customers.`);
           break;
 
         case "pending":

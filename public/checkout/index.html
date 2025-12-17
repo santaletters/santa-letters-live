@@ -216,13 +216,13 @@
                                             <div class="text-sm text-gray-600">Perfect timing to arrive before Christmas!</div>
                                         </div>
                                     </label>
-                                    <label class="flex items-center p-3 bg-white rounded-lg border-2 border-gray-200 cursor-pointer hover:border-blue-500 transition-all">
+                                  <!--  <label class="flex items-center p-3 bg-white rounded-lg border-2 border-gray-200 cursor-pointer hover:border-blue-500 transition-all">
                                         <input type="radio" name="shippingDate" value="dec1" class="mr-3 w-5 h-5">
-                                        <!--<div>
+                                       <div>
                                             <div class="font-semibold">Ship December 10th</div>
                                             <div class="text-sm text-gray-600">Early arrival for maximum excitement!</div>
-                                        </div>-->
-                                    </label>
+                                        </div>
+                                    </label>-->
                                     <label class="flex items-center p-3 bg-white rounded-lg border-2 border-gray-200 cursor-pointer hover:border-blue-500 transition-all">
                                         <input type="radio" name="shippingDate" value="now" class="mr-3 w-5 h-5">
                                         <div>
@@ -385,7 +385,7 @@
         }
     
         // Calculate totals (flat $17.95 per letter)
-        const LETTER_PRICE = 19.95;
+        const LETTER_PRICE = 18.95;
         function calculateTotals() {
             const subtotal = packages.length * LETTER_PRICE;
             return { subtotal, total: subtotal };

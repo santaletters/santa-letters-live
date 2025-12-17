@@ -231,7 +231,7 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
   // Pagination state
   const [regularOrdersPage, setRegularOrdersPage] = useState(1);
   const [subscriptionOrdersPage, setSubscriptionOrdersPage] = useState(1);
-  const ORDERS_PER_PAGE = 125;
+  const ORDERS_PER_PAGE = 25;
 
   // Bulk selection state
   const [selectedRegularOrders, setSelectedRegularOrders] = useState<Set<string>>(new Set());
@@ -526,7 +526,11 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
       }
 
       await fetchOrders();
-      alert("Status updated successfully!");
+      if (newStatus === "fulfilled") {
+        alert("✅ Status updated to Fulfilled!\n\n📧 A fulfillment email has been sent to the customer.");
+      } else {
+        alert("Status updated successfully!");
+      }
     } catch (error) {
       console.error("Error updating status:", error);
       alert("Error updating status. Check console for details.");
@@ -1751,10 +1755,24 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
           break;
         
         case "fulfill":
-          for (const orderId of selectedIds) {
-            await updateOrderStatus(orderId, "fulfilled");
+          const fulfillResponse = await fetch(API_URL + "/orders/bulk/status", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + publicAnonKey,
+            },
+            body: JSON.stringify({
+              orderIds: selectedIds,
+              status: "fulfilled"
+            }),
+          });
+
+          if (!fulfillResponse.ok) {
+            throw new Error("Failed to bulk fulfill orders");
           }
-          alert(`✅ Marked ${selectedIds.length} order(s) as fulfilled!`);
+
+          const fulfillData = await fulfillResponse.json();
+          alert(`✅ Marked ${selectedIds.length} order(s) as fulfilled!\n\n📧 Fulfillment emails have been sent to customers.`);
           break;
 
         case "pending":
@@ -2428,9 +2446,10 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
                         size="sm"
                         variant="outline"
                         className="bg-green-50 hover:bg-green-100"
+                        title="Mark as fulfilled and send email notification to customers"
                       >
                         <CheckSquare className="w-4 h-4 mr-1" />
-                        Mark Fulfilled
+                        Mark Fulfilled 📧
                       </Button>
                       <Button
                         onClick={() => handleBulkRegularAction("pending")}
@@ -2990,7 +3009,7 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="fulfilled">Fulfilled</SelectItem>
+                            <SelectItem value="fulfilled">Fulfilled (sends email 📧)</SelectItem>
                             <SelectItem value="canceled-refunded">Canceled/Refunded</SelectItem>
                           </SelectContent>
                         </Select>
@@ -3817,7 +3836,7 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="fulfilled">Fulfilled</SelectItem>
+                            <SelectItem value="fulfilled">Fulfilled (sends email 📧)</SelectItem>
                             <SelectItem value="canceled-refunded">Canceled/Refunded</SelectItem>
                           </SelectContent>
                         </Select>

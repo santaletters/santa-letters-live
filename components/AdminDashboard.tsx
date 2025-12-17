@@ -238,7 +238,7 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
   const [selectedSubscriptionOrders, setSelectedSubscriptionOrders] = useState<Set<string>>(new Set());
   const [bulkActionInProgress, setBulkActionInProgress] = useState(false);
 
-  const API_URL = "https://" + projectId + ".supabase.co/functions/v1/make-server-cf244566";
+  const API_URL = "https://" + projectId + ".supabase.co/functions/v1/server/make-server-cf244566";
 
   // Fetch global settings on mount
   useEffect(() => {

@@ -510,7 +510,7 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
   };
 
   // Update order status
-  const updateOrderStatus = async (orderId: string, newStatus: string) => {
+  const updateOrderStatus = async (orderId: string, newStatus: string, silent = false) => {
     try {
       const response = await fetch(API_URL + "/orders/" + orderId + "/status", {
         method: "POST",
@@ -525,15 +525,20 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
         throw new Error("Failed to update status");
       }
 
-      await fetchOrders();
-      if (newStatus === "fulfilled") {
-        alert("✅ Status updated to Fulfilled!\n\n📧 A fulfillment email has been sent to the customer.");
-      } else {
-        alert("Status updated successfully!");
+      if (!silent) {
+        await fetchOrders();
+        if (newStatus === "fulfilled") {
+          alert("✅ Status updated to Fulfilled!\n\n📧 A fulfillment email has been sent to the customer.");
+        } else {
+          alert("Status updated successfully!");
+        }
       }
     } catch (error) {
       console.error("Error updating status:", error);
-      alert("Error updating status. Check console for details.");
+      if (!silent) {
+        alert("Error updating status. Check console for details.");
+      }
+      throw error; // Re-throw so bulk action can count failures
     }
   };
 
@@ -1761,13 +1766,16 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
           
           for (const orderId of selectedIds) {
             try {
-              await updateOrderStatus(orderId, "fulfilled");
+              await updateOrderStatus(orderId, "fulfilled", true); // silent mode
               succeeded++;
             } catch (error) {
               console.error(`Failed to fulfill order ${orderId}:`, error);
               failed++;
             }
           }
+          
+          // Refresh orders once at the end
+          await fetchOrders();
           
           if (failed === 0) {
             alert(`✅ Marked ${succeeded} order(s) as fulfilled!\n\n📧 Fulfillment emails have been sent to customers.`);
@@ -1778,8 +1786,9 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
 
         case "pending":
           for (const orderId of selectedIds) {
-            await updateOrderStatus(orderId, "pending");
+            await updateOrderStatus(orderId, "pending", true); // silent mode
           }
+          await fetchOrders();
           alert(`✅ Updated ${selectedIds.length} order(s) to pending!`);
           break;
 

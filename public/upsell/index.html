@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Offer - Letters From Santa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+  <!-- Trackdesk tracker begin -->
+    <script async src="//cdn.trackdesk.com/tracking.js"></script>
+    <script>
+      (function(t,d,k){(t[k]=t[k]||[]).push(d);t[d]=t[d]||t[k].f||function(){(t[d].q=t[d].q||[]).push(arguments)}})(window,"trackdesk","TrackdeskObject");
+    
+      // Get order token from URL
+      var urlParams = new URLSearchParams(window.location.search);
+      var orderToken = urlParams.get('token') || localStorage.getItem('orderAccessToken') || "";
+      
+      console.log('🔍 Trackdesk - Order token:', orderToken ? orderToken.substring(0, 20) + '...' : 'NOT FOUND');
+    
+      // Fetch order total from backend
+      if (orderToken) {
+        fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/orders/get', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJncGNncmhmbm12YXhia2Z6Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NjY3MzAsImV4cCI6MjA3NjA0MjczMH0.eDun3lViK4XA--bTwRTqyCTBO40B8JU7m12mc4Jz2mo'
+          },
+          body: JSON.stringify({ orderToken: orderToken })
+        })
+        .then(function(response) { return response.json(); })
+        .then(function(data) {
+          var orderValue = 0;
+          
+          if (data.order && data.order.totalAmount) {
+            orderValue = parseFloat(data.order.totalAmount);
+          }
+          
+          console.log('🔍 Trackdesk - Order data from backend:', data.order);
+          console.log('🔥 Trackdesk SALE pixel - Order value:', orderValue.toFixed(2));
+          
+          // Fire pixel with accurate order value
+          trackdesk("directwebinteractive", "conversion", {
+            "conversionType": "sale",
+            "externalId": orderToken,
+            "customParams": {
+              "advS1": orderValue.toFixed(2)
+            }
+          });
+        })
+        .catch(function(error) {
+          console.error('❌ Error fetching order:', error);
+          // Fire pixel with 0 if error
+          trackdesk("directwebinteractive", "conversion", {
+            "conversionType": "sale",
+            "externalId": orderToken,
+            "customParams": {
+              "advS1": "0.00"
+            }
+          });
+        });
+      }
+    </script>
+    <!-- Trackdesk tracker end -->
+  
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17759657161"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+  
+    gtag('config', 'AW-17759657161');
+  </script>
+  
+  <!-- Event snippet for Purchase conversion page -->
+  <script>
+    gtag('event', 'conversion', {
+        'send_to': 'AW-17759657161/zw39COG37MYbEMm5u5RC',
+        'value': 20.0,
+        'currency': 'USD',
+        'transaction_id': ''
+    });
+  </script>
+
+ <!-- Facebook Pixel Base Code -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '3464263063594944');
+    fbq('track', 'Purchase');
+  </script>
+  <!-- End Pixel Base Code -->
+  
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .pacifico { font-family: 'Pacifico', cursive; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes pulseOnce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .pulse-once {
+            animation: pulseOnce 0.5s ease-in-out;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    
+    <!-- Loading Overlay -->
+    <div id="final-loading-overlay" class="loading-overlay hidden">
+        <div class="bg-white rounded-2xl p-8 max-w-md text-center shadow-2xl">
+            <div class="mb-6">
+                <div class="w-20 h-20 border-4 border-green-200 border-t-green-600 rounded-full spinner mx-auto"></div>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-3">🎅 Processing Your Order...</h2>
+            <p class="text-lg text-gray-700 mb-2">Please wait while we schedule your magical Santa calls!</p>
+            <p class="text-red-600 font-bold text-sm">⚠️ DO NOT CLOSE THIS PAGE</p>
+            <div class="mt-6 flex items-center justify-center gap-2 text-sm text-gray-600">
+                <div class="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div>
+                <span>This may take up to 30 seconds...</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Subscription Upsell Page (shows FIRST) -->
+    <div id="subscription-page" class="min-h-screen bg-gradient-to-br from-green-700 via-blue-700 to-green-800 flex items-center justify-center p-4">
+        <div class="max-w-6xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Timer Banner -->
+            <div class="bg-green-600 text-white py-4 px-6 flex items-center justify-center gap-2">
+                <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-lg font-bold">Limited Time Offer: <span id="sub-timer">2:00</span></span>
+            </div>
+
+            <!-- Main Content -->
+            <div class="grid lg:grid-cols-2 gap-8 p-6 lg:p-8">
+                <!-- Left Column - Offer Details -->
+                <div class="flex flex-col justify-center">
+                    <div class="mb-4">
+                        <h1 class="text-3xl lg:text-4xl font-bold text-green-700 mb-3">
+                            🎁 Wait! Keep The Magic Alive All Year!
+                        </h1>
+                        <p class="text-gray-700 text-lg leading-relaxed mb-4">
+                            Get a <strong>Free Personalized North Pole Dream Pass</strong> and a <strong>Personalized Autographed Picture of Santa</strong> when you try out Santa's Magical Journey!
+                        </p>
+                        <p class="text-gray-700 text-lg leading-relaxed mb-4">
+                            Starting in January, Santa himself sends a personalized package sharing stories of his travels from around the world.
+                        </p>
+                        <p class="text-green-700 text-xl font-bold leading-relaxed">
+                            Children everywhere are loving staying up to date with Santa and his crew! Your child will be thrilled to receive their very own letter from the North Pole each month! 🎅✨
+                        </p>
+                    </div>
+
+                    <!-- Bonus Gifts Box -->
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-5 mb-4 text-white shadow-lg">
+                        <p class="font-bold text-xl mb-3">✨ Your 2 FREE Bonus Gifts:</p>
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-2xl">🎫</span>
+                                <span class="font-semibold">Personalized North Pole Dream Pass</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-2xl">📸</span>
+                                <span class="font-semibold">Personalized Autographed Picture of Santa</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Features List -->
+                    <ul class="space-y-2">
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Personalized letter from Santa every month</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Keep the magic alive year-round</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Cancel anytime with no hassle</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Right Column - Pricing & CTA -->
+                <div class="flex flex-col justify-start">
+                    <!-- Price Badge -->
+                    <div class="bg-green-50 border-2 border-green-600 rounded-xl p-6 mb-4">
+                        <div class="text-center">
+                            <p class="text-gray-700 font-semibold mb-2">FREE Today and Starting in January</p>
+                            <div class="flex items-center justify-center gap-2">
+                                <span class="text-5xl font-bold text-green-700">$12</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quantity Auto-Selected Message -->
+                    <div class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4 mb-4 text-center">
+                        <p class="text-blue-900 font-semibold">
+                            ✅ Auto-selected for <span id="sub-quantity-display">1</span> <span id="sub-children-text">child</span>
+                        </p>
+                        <p class="text-sm text-blue-700 mt-1">Based on your order</p>
+                    </div>
+
+                    <!-- Subscription Quantity Adjuster (for 5+ children) -->
+                    <div id="sub-quantity-adjuster" class="hidden mb-4">
+                        <div class="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4">
+                            <p class="text-sm text-gray-700 mb-3 text-center">
+                                💡 <strong>Tip:</strong> You can adjust the number of subscriptions:
+                            </p>
+                            <div class="flex items-center justify-center gap-4">
+                                <button onclick="decreaseSubscriptionQuantity()" class="px-6 py-2 text-lg font-bold border-2 border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">−</button>
+                                <div class="text-center">
+                                    <div id="sub-qty-adjust-display" class="text-2xl font-bold text-green-700">5</div>
+                                    <div class="text-xs text-gray-600">subscriptions</div>
+                                </div>
+                                <button onclick="increaseSubscriptionQuantity()" class="px-6 py-2 text-lg font-bold border-2 border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">+</button>
+                            </div>
+                            <p class="text-center text-sm text-gray-600 mt-2">
+                                $<span id="sub-monthly-total">60</span>/month starting January
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="sub-error-message" class="hidden mb-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700"></div>
+
+                    <!-- Action Buttons -->
+                    <div class="space-y-3">
+                        <button 
+                            id="sub-accept-btn" 
+                            onclick="acceptSubscription()"
+                            class="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-xl font-bold shadow-lg rounded-lg transition-colors"
+                        >
+                            <span id="sub-accept-text">✓ Yes! Get 2 Extra FREE Gifts + Santa's Magical Journey</span>
+                            <span id="sub-accept-loading" class="hidden">Processing...</span>
+                        </button>
+
+                        <button 
+                            id="sub-decline-btn" 
+                            onclick="declineSubscription()"
+                            class="w-full text-gray-600 hover:text-gray-800 py-3 rounded-lg transition-colors"
+                        >
+                            No thanks, I don't wish to join Santa's Magical Journey
+                        </button>
+                    </div>
+
+                    <p class="text-center text-sm text-gray-500 mt-3">
+                        🔒 Secure checkout • 💳 Same payment method
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Snow Upsell Page -->
+    <div id="upsell-page" class="min-h-screen bg-gradient-to-br from-red-700 via-green-700 to-red-800 flex items-center justify-center p-4 hidden">
+        <div class="max-w-6xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Timer Banner -->
+            <div class="bg-red-600 text-white py-4 px-6 flex items-center justify-center gap-2">
+                <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-lg font-bold">Limited Time Offer: <span id="timer">2:00</span></span>
+            </div>
+
+            <!-- Main Content -->
+            <div class="grid lg:grid-cols-2 gap-8 p-6 lg:p-8">
+                <!-- Left Column - Product Image -->
+                <div class="flex flex-col items-center justify-start bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 lg:p-8 pt-4">
+                    <img 
+                        src="https://cdn.shopify.com/s/files/1/0711/9051/1843/files/North-Pole-Snow.png?v=1764063951"
+                        alt="Certified North Pole Snow"
+                        class="w-full max-w-sm h-auto object-contain drop-shadow-2xl rounded-lg"
+                    />
+                    <div class="mt-4 text-center">
+                        <h3 class="text-xl font-bold text-blue-900 mb-2">🎄 Authentic North Pole Snow</h3>
+                        <p class="text-gray-600">Certified & Collectible</p>
+                    </div>
+                    
+                    <!-- Features List -->
+                    <ul class="space-y-2 mt-4 w-full max-w-md">
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Authentic certified snow from the North Pole</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Beautiful collectible jar with certificate</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Perfect keepsake to treasure forever</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Ships FREE with your Santa letter order</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Right Column - Offer Details -->
+                <div class="flex flex-col justify-start">
+                    <div class="mb-4">
+                        <h1 class="text-3xl lg:text-4xl font-bold text-red-700 mb-3">
+                            🎁 Wait! Add Certified North Pole Snow!
+                        </h1>
+                        <p class="text-gray-700 text-lg leading-relaxed">
+                            Complete your magical experience with authentic snow from the North Pole! 
+                            This special jar of certified snow makes the perfect keepsake.
+                        </p>
+                    </div>
+
+                    <!-- Price Badge -->
+                    <div class="bg-green-50 border-2 border-green-600 rounded-xl p-4 mb-4">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-gray-700 font-medium">Special One-Time Offer</span>
+                            <span class="text-3xl font-bold text-green-700">$9.99</span>
+                        </div>
+                        <p class="text-sm text-gray-600">per jar</p>
+                    </div>
+
+                    <!-- Quantity Selector -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-semibold mb-3 text-center">
+                            Select Quantity:
+                        </label>
+                        
+                        <!-- Quick Select Buttons -->
+                        <div class="flex flex-wrap gap-2 mb-4 justify-center">
+                            <button onclick="setUpsellQuantity(1)" class="qty-btn-upsell px-6 py-3 rounded-lg font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">1</button>
+                            <button onclick="setUpsellQuantity(2)" class="qty-btn-upsell px-6 py-3 rounded-lg font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">2</button>
+                            <button onclick="setUpsellQuantity(3)" class="qty-btn-upsell px-6 py-3 rounded-lg font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">3</button>
+                            <button onclick="setUpsellQuantity(4)" class="qty-btn-upsell px-6 py-3 rounded-lg font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">4</button>
+                            <button onclick="setUpsellQuantity(5)" class="qty-btn-upsell px-6 py-3 rounded-lg font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">5</button>
+                        </div>
+
+                        <!-- Plus/Minus Controls -->
+                        <div class="flex items-center gap-4 justify-center">
+                            <button onclick="decreaseUpsellQuantity()" class="px-8 py-3 text-xl font-bold border-2 border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">−</button>
+                            <div class="flex-1 text-center max-w-[100px]">
+                                <div id="upsell-quantity-display" class="text-3xl font-bold text-gray-900">1</div>
+                                <div id="upsell-quantity-label" class="text-sm text-gray-600">jar</div>
+                            </div>
+                            <button onclick="increaseUpsellQuantity()" class="px-8 py-3 text-xl font-bold border-2 border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">+</button>
+                        </div>
+
+                        <!-- Total Price -->
+                        <div class="mt-4 text-center py-3 bg-gray-50 rounded-lg">
+                            <span class="text-gray-700">Total: </span>
+                            <span id="upsell-total-price" class="text-2xl font-bold text-green-700">$9.99</span>
+                        </div>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="error-message" class="hidden mb-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700"></div>
+
+                    <!-- Action Buttons -->
+                    <div class="space-y-3">
+                        <button 
+                            id="accept-btn" 
+                            onclick="acceptUpsell()"
+                            class="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-xl font-bold shadow-lg rounded-lg transition-colors"
+                        >
+                            <span id="accept-text">✓ Yes! Add <span id="accept-qty">1</span> <span id="accept-label">Jar</span></span>
+                            <span id="accept-loading" class="hidden">Adding to Order...</span>
+                        </button>
+
+                        <button 
+                            id="decline-btn" 
+                            onclick="declineUpsell()"
+                            class="w-full text-gray-600 hover:text-gray-800 py-3 rounded-lg transition-colors"
+                        >
+                            No thanks, I don't want this special offer
+                        </button>
+                    </div>
+
+                    <p class="text-center text-sm text-gray-500 mt-3">
+                        🔒 Secure checkout • 💳 Same payment method
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Snow Downsell Page -->
+    <div id="downsell-page" class="hidden min-h-screen bg-gradient-to-br from-orange-600 via-red-600 to-pink-700 flex items-center justify-center p-4">
+        <div class="max-w-4xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Header -->
+            <div class="bg-orange-600 text-white py-6 px-6 text-center">
+                <h1 class="text-3xl font-bold mb-2">⏰ LAST CHANCE!</h1>
+                <p class="text-lg">Before you go... here's an even better deal!</p>
+            </div>
+
+            <!-- Content -->
+            <div class="p-8">
+                <div class="text-center mb-6">
+                    <h2 class="text-4xl font-bold text-orange-700 mb-4">
+                        How About Just $7.99?
+                    </h2>
+                    <p class="text-xl text-gray-700 mb-4">
+                        We really want you to have this magical keepsake!
+                    </p>
+                    <div class="inline-block bg-yellow-100 border-2 border-yellow-400 rounded-lg px-6 py-3 mb-4">
+                        <span class="text-gray-500 line-through text-2xl">$9.99</span>
+                        <span class="text-4xl font-bold text-orange-600 ml-3">$7.99</span>
+                        <span class="text-sm text-gray-600 ml-2">per jar</span>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 mb-6">
+                    <img 
+                        src="https://cdn.shopify.com/s/files/1/0711/9051/1843/files/North-Pole-Snow.png?v=1764063951"
+                        alt="North Pole Snow"
+                        class="w-full max-w-xs mx-auto h-auto object-contain drop-shadow-xl rounded-lg"
+                    />
+                </div>
+
+                <!-- Quantity Selector for Downsell -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-semibold mb-3 text-center">
+                        Select Quantity:
+                    </label>
+                    
+                    <!-- Quick Select Buttons -->
+                    <div class="flex flex-wrap gap-2 mb-4 justify-center">
+                        <button onclick="setDownsellQuantity(1)" class="qty-btn-downsell px-6 py-3 rounded-lg font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">1</button>
+                        <button onclick="setDownsellQuantity(2)" class="qty-btn-downsell px-6 py-3 rounded-lg font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">2</button>
+                        <button onclick="setDownsellQuantity(3)" class="qty-btn-downsell px-6 py-3 rounded-lg font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">3</button>
+                        <button onclick="setDownsellQuantity(4)" class="qty-btn-downsell px-6 py-3 rounded-lg font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">4</button>
+                        <button onclick="setDownsellQuantity(5)" class="qty-btn-downsell px-6 py-3 rounded-lg font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">5</button>
+                    </div>
+
+                    <!-- Plus/Minus Controls -->
+                    <div class="flex items-center gap-4 justify-center">
+                        <button onclick="decreaseDownsellQuantity()" class="px-8 py-3 text-xl font-bold border-2 border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">−</button>
+                        <div class="flex-1 text-center max-w-[100px]">
+                            <div id="downsell-quantity-display" class="text-3xl font-bold text-gray-900">1</div>
+                            <div id="downsell-quantity-label" class="text-sm text-gray-600">jar</div>
+                        </div>
+                        <button onclick="increaseDownsellQuantity()" class="px-8 py-3 text-xl font-bold border-2 border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">+</button>
+                    </div>
+
+                    <!-- Total Price -->
+                    <div class="mt-4 text-center py-3 bg-yellow-50 rounded-lg border-2 border-yellow-400">
+                        <span class="text-gray-700">Total: </span>
+                        <span id="downsell-total-price" class="text-2xl font-bold text-orange-600">$7.99</span>
+                    </div>
+                </div>
+
+                <!-- Error Message -->
+                <div id="downsell-error" class="hidden mb-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700"></div>
+
+                <!-- Buttons -->
+                <div class="space-y-3">
+                    <button 
+                        id="downsell-accept-btn"
+                        onclick="acceptDownsell()"
+                        class="w-full bg-orange-600 hover:bg-orange-700 text-white py-6 text-2xl font-bold shadow-lg rounded-lg transition-colors"
+                    >
+                        <span id="downsell-accept-text">🎉 YES! Give Me <span id="downsell-qty">1</span> <span id="downsell-label">Jar</span> for $<span id="downsell-price">7.99</span>!</span>
+                        <span id="downsell-loading" class="hidden">Processing...</span>
+                    </button>
+
+                    <button 
+                        onclick="skipDownsell()"
+                        class="w-full text-gray-600 hover:text-gray-800 py-3 rounded-lg transition-colors"
+                    >
+                        No thanks, continue to my order
+                    </button>
+                </div>
+
+                <p class="text-center text-sm text-gray-500 mt-3">
+                    🔒 Secure checkout • 💳 Same payment method
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🆕 SANTA AI CALL UPSELL PAGE (NEW CHECKBOX UPGRADE FLOW) -->
+    <div id="ai-call-page" class="hidden min-h-screen bg-gradient-to-br from-red-600 via-green-600 to-blue-700 flex items-center justify-center p-4">
+        <div class="max-w-3xl w-full">
+            
+            <!-- STEP 1: OFFER PAGE WITH CHECKBOX UPGRADE -->
+            <div id="ai-call-offer" class="bg-white rounded-2xl shadow-2xl overflow-hidden fade-in">
+                <!-- Compact Hero Header -->
+                <div class="bg-gradient-to-r from-red-600 to-green-600 text-white text-center py-5 px-6">
+                    <div class="text-4xl mb-2">🎅📞</div>
+                    <h1 class="text-2xl lg:text-3xl font-bold mb-2 pacifico">
+                        A Personal Call from Santa!
+                    </h1>
+                </div>
+
+                <div class="p-6 lg:p-7">
+                    <!-- Value Proposition - Compact -->
+                    <div class="text-center mb-5">
+                        <p class="text-lg text-gray-800 mb-2 leading-snug">
+                            Watch their eyes light up as <strong>Santa himself</strong> calls them by name, knows their secret wish, and praises their good deeds!
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            A truly unforgettable moment they'll treasure forever. ✨
+                        </p>
+                    </div>
+
+                    <!-- How It Works - Compact -->
+                    <div class="bg-blue-50 rounded-lg p-4 mb-5">
+                        <h2 class="text-lg font-bold text-center mb-3 text-gray-800">🎁 How It Works</h2>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="text-center">
+                                <div class="w-10 h-10 bg-red-600 text-white rounded-full flex items-center justify-center text-lg font-bold mx-auto mb-2">1</div>
+                                <h3 class="font-bold text-sm mb-1">Share Details</h3>
+                                <p class="text-xs text-gray-600">Tell us their name, wish, and when to call</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center text-lg font-bold mx-auto mb-2">2</div>
+                                <h3 class="font-bold text-sm mb-1">We Prepare</h3>
+                                <p class="text-xs text-gray-600">Santa's AI learns about your child</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center text-lg font-bold mx-auto mb-2">3</div>
+                                <h3 class="font-bold text-sm mb-1">Magic Happens!</h3>
+                                <p class="text-xs text-gray-600">Santa calls - pure magic!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Pricing - Single Package -->
+                    <div class="bg-gradient-to-br from-red-50 to-green-50 rounded-xl p-5 mb-5 border-2 border-green-500">
+                        <div class="text-center mb-4">
+                            <div class="text-4xl mb-2">⏱️</div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-1">Winter Warmth Call</h2>
+                            <p class="text-sm text-gray-600 mb-3">The perfect Santa experience for your child</p>
+                            <div class="text-5xl font-bold text-green-700 mb-2">$9.99</div>
+                            <p class="text-sm text-gray-600">per child</p>
+                        </div>
+                        
+                        <!-- What's Included -->
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-green-600 text-lg">✓</span>
+                                <span class="text-sm">Personalized call from Santa</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-green-600 text-lg">✓</span>
+                                <span class="text-sm">Mentions their name & wishes</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-green-600 text-lg">✓</span>
+                                <span class="text-sm">Praises their good deeds</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-green-600 text-lg">✓</span>
+                                <span class="text-sm"><strong>Up to 5 minutes of magic</strong></span>
+                            </div>
+                        </div>
+
+                        <!-- UPGRADE CHECKBOX - Prominent -->
+                        <div class="border-t-2 border-green-300 pt-4">
+                            <label for="unlimited-upgrade" class="flex items-start gap-3 cursor-pointer group p-4 rounded-lg hover:bg-white transition-all">
+                                <input 
+                                    type="checkbox" 
+                                    id="unlimited-upgrade" 
+                                    onchange="toggleUnlimited()"
+                                    class="w-6 h-6 mt-1 accent-green-600 cursor-pointer"
+                                >
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="text-lg font-bold text-gray-900">♾️ Upgrade to Unlimited Magic</span>
+                                        <span class="bg-green-600 text-white px-2 py-1 rounded-full text-xs font-bold">BEST VALUE</span>
+                                    </div>
+                                    <p class="text-sm text-gray-700 mb-2">
+                                        Let the conversation flow naturally - <strong>no time limits!</strong>
+                                    </p>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-gray-400 line-through text-sm">$19.99</span>
+                                        <span class="text-2xl font-bold text-green-700">Only +$5</span>
+                                        <span class="text-sm text-gray-600">per child</span>
+                                    </div>
+                                    <p class="text-xs text-green-700 font-semibold mt-1">💰 Save $5 per call with this upgrade!</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Quantity Selection -->
+                    <div class="text-center mb-5">
+                        <p class="text-sm text-gray-600 mb-3">How many children?</p>
+                        <div class="flex items-center justify-center gap-4 mb-4">
+                            <button onclick="decreaseAICallQuantity()" class="w-12 h-12 text-xl font-bold bg-gray-200 hover:bg-gray-300 rounded-full transition-all">−</button>
+                            <div class="text-center min-w-[80px]">
+                                <div id="ai-call-quantity-display" class="text-4xl font-bold text-gray-900">1</div>
+                                <div class="text-xs text-gray-600">children</div>
+                            </div>
+                            <button onclick="increaseAICallQuantity()" class="w-12 h-12 text-xl font-bold bg-gray-200 hover:bg-gray-300 rounded-full transition-all">+</button>
+                        </div>
+                        
+                        <!-- Total Price - Prominent -->
+                        <div id="ai-call-total-box" class="bg-green-50 border-2 border-green-500 rounded-lg p-4">
+                            <div id="ai-call-price-breakdown" class="text-sm text-gray-600 mb-2">
+                                <span id="ai-call-base-calc">1 children × $9.99</span>
+                                <span id="ai-call-upgrade-calc" class="hidden"> + Unlimited upgrade ($5 × 1)</span>
+                            </div>
+                            <p class="text-gray-700 text-sm mb-1">Total Today:</p>
+                            <p id="ai-call-total-price" class="text-4xl font-bold text-green-700">$9.99</p>
+                        </div>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="ai-call-error" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm text-center"></div>
+
+                    <!-- CTA Button - Prominent -->
+                    <button id="ai-call-accept-btn" onclick="acceptAICall()" class="w-full bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700 text-white py-5 text-xl font-bold shadow-xl rounded-xl transition-all mb-3">
+                        <span id="ai-call-accept-text">🎅 YES! Schedule Santa Calls!</span>
+                        <span id="ai-call-loading" class="hidden">⏳ Processing...</span>
+                    </button>
+                    
+                    <button onclick="skipAICall()" class="w-full text-gray-600 hover:text-gray-800 py-3 rounded-lg transition-colors text-sm">
+                        No thanks, skip this offer
+                    </button>
+
+                    <!-- Trust Badges - Compact -->
+                    <div class="mt-5 pt-5 border-t border-gray-200">
+                        <div class="grid grid-cols-3 gap-3 text-center">
+                            <div>
+                                <div class="text-2xl mb-1">🔒</div>
+                                <p class="text-xs font-semibold text-gray-800">100% Secure</p>
+                            </div>
+                            <div>
+                                <div class="text-2xl mb-1">⚡</div>
+                                <p class="text-xs font-semibold text-gray-800">Instant Setup</p>
+                            </div>
+                            <div>
+                                <div class="text-2xl mb-1">💝</div>
+                                <p class="text-xs font-semibold text-gray-800">Pure Magic</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: MULTI-STEP FORM (Hidden initially) -->
+            <div id="ai-call-form" class="bg-white rounded-2xl shadow-2xl p-8 hidden">
+                <!-- Progress Bar -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-semibold text-gray-600">📞 Child <span id="ai-current-child">1</span> of <span id="ai-total-children">1</span></span>
+                        <span class="text-sm font-semibold text-gray-600">Question <span id="ai-current-step">1</span> of <span id="ai-total-steps">5</span></span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div id="ai-progress-bar" class="bg-gradient-to-r from-red-600 to-green-600 h-3 rounded-full transition-all duration-500" style="width: 10%"></div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Question Container -->
+                <div id="ai-question-container" class="fade-in">
+                    <!-- Questions will be injected here -->
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex gap-4 mt-8">
+                    <button id="ai-back-btn" onclick="goBackAIForm()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-4 text-lg font-bold rounded-lg transition-colors hidden">
+                        ← Back
+                    </button>
+                    <button id="ai-next-btn" onclick="goNextAIForm()" class="flex-1 bg-gradient-to-r from-red-600 to-green-600 hover:from-red-700 hover:to-green-700 text-white py-4 text-lg font-bold rounded-lg transition-colors">
+                        Continue →
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // =====================================================
+        // COMPLETE UPSELL FUNNEL WITH NEW AI CALL FLOW
+        // =====================================================
+        
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ DOM loaded, initializing upsell page...');
+            
+            function getOrderTokenFromURL() {
+                const params = new URLSearchParams(window.location.search);
+                return params.get('token') || localStorage.getItem('orderAccessToken') || null;
+            }
+            
+            const orderToken = getOrderTokenFromURL();
+            
+            if (!orderToken) {
+                console.error('❌ No order token in URL! Redirecting to homepage...');
+                alert('No order found. Please complete checkout first.');
+                window.location.href = '/';
+                return;
+            }
+            
+            localStorage.setItem('orderAccessToken', orderToken);
+            console.log('✅ Fresh upsell session initialized for order:', orderToken.substring(0, 20) + '...');
+            
+            // Wait for Stripe
+            if (typeof Stripe === 'undefined') {
+                console.error('❌ Stripe not loaded yet!');
+                setTimeout(function() { window.location.reload(); }, 1000);
+                return;
+            }
+            
+            const stripe = Stripe('pk_live_51SIHQT2NsH2CKfRANHrn5PsrTTnvRY0t5QStLGW8W3ihy4dhFVhDX4ZIP3lrOYhA1HPtnflUgDAhDxEZ0TgNB1V000lsmZhQBB');
+            
+            // State Management
+            let upsellQuantity = 1;
+            let downsellQuantity = 1;
+            let subscriptionQuantity = 1;
+            let aiCallQuantity = 1;
+            let unlimitedUpgrade = false;
+            const UPSELL_PRICE = 9.99;
+            const DOWNSELL_PRICE = 7.99;
+            const AI_CALL_BASE_PRICE = 9.99;
+            const AI_CALL_UPGRADE_PRICE = 5.00;
+            let processing = false;
+
+            // AI Call Form State
+            let aiCurrentChild = 1;
+            let aiCurrentStep = 1;
+            let aiChildrenData = [];
+            
+            const aiQuestions = [
+                {
+                    step: 1,
+                    title: "What is your child's name?",
+                    subtitle: "Santa will greet them by this exact name!",
+                    type: "text",
+                    field: "childName",
+                    placeholder: "e.g., Emma",
+                    required: true
+                },
+                {
+                    step: 2,
+                    title: "What phone number should we call?",
+                    subtitle: "Make sure it's a number you'll answer!",
+                    type: "tel",
+                    field: "phoneNumber",
+                    placeholder: "e.g., (555) 123-4567",
+                    required: true
+                },
+                {
+                    step: 3,
+                    title: "What's their biggest wish?",
+                    subtitle: "Optional - but makes the call extra special!",
+                    type: "text",
+                    field: "wish",
+                    placeholder: "e.g., A new bicycle (or leave blank)",
+                    required: false
+                },
+                {
+                    step: 4,
+                    title: "Tell Santa about their good deeds!",
+                    subtitle: "Optional - recent accomplishments or good behavior",
+                    type: "textarea",
+                    field: "goodDeeds",
+                    placeholder: "e.g., Helped with dishes, got good grades (or skip)",
+                    required: false
+                },
+                {
+                    step: 5,
+                    title: "When should Santa call?",
+                    subtitle: "Optional - If left blank, a call will be made within 12-24 hours!",
+                    type: "datetime",
+                    field: "scheduledTime",
+                    placeholder: "",
+                    required: false
+                }
+            ];
+
+            // Timer Management
+            let timeLeft = 120;
+            let currentTimer = null;
+            
+            if (currentTimer) {
+                clearInterval(currentTimer);
+                currentTimer = null;
+            }
+            
+            console.log('🔄 Fresh upsell session initialized for order:', orderToken);
+
+            // =====================================================
+            // SUBSCRIPTION FUNCTIONS
+            // =====================================================
+
+            function initializeSubscriptionQuantity() {
+                try {
+                    const packages = JSON.parse(localStorage.getItem('santaLetterPackages') || '[]');
+                    const letterCount = packages.length || 1;
+                    
+                    subscriptionQuantity = letterCount;
+                    
+                    document.getElementById('sub-quantity-display').textContent = letterCount;
+                    document.getElementById('sub-children-text').textContent = letterCount === 1 ? 'child' : 'children';
+                    
+                    if (letterCount >= 5) {
+                        document.getElementById('sub-quantity-adjuster').classList.remove('hidden');
+                        updateSubscriptionTotal();
+                    }
+                    
+                    console.log('✅ Subscription auto-selected for', letterCount, 'children');
+                } catch (error) {
+                    console.error('Error initializing subscription quantity:', error);
+                    subscriptionQuantity = 1;
+                }
+            }
+
+            function updateSubscriptionTotal() {
+                const monthlyTotal = subscriptionQuantity * 12;
+                document.getElementById('sub-monthly-total').textContent = monthlyTotal;
+                document.getElementById('sub-qty-adjust-display').textContent = subscriptionQuantity;
+                document.getElementById('sub-quantity-display').textContent = subscriptionQuantity;
+                document.getElementById('sub-children-text').textContent = subscriptionQuantity === 1 ? 'child' : 'children';
+            }
+
+            window.increaseSubscriptionQuantity = function() {
+                if (!processing) {
+                    subscriptionQuantity++;
+                    updateSubscriptionTotal();
+                }
+            }
+
+            window.decreaseSubscriptionQuantity = function() {
+                if (!processing && subscriptionQuantity > 1) {
+                    subscriptionQuantity--;
+                    updateSubscriptionTotal();
+                }
+            }
+
+            // Start subscription page timer
+            function startSubscriptionTimer() {
+                const timerDisplay = document.getElementById('sub-timer');
+                if (!timerDisplay) return;
+                
+                timeLeft = 120;
+                if (currentTimer) clearInterval(currentTimer);
+                
+                currentTimer = setInterval(() => {
+                    timeLeft--;
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(currentTimer);
+                        console.log('⏱️ Timer expired, showing next offer');
+                        document.getElementById('subscription-page').classList.add('hidden');
+                        document.getElementById('upsell-page').classList.remove('hidden');
+                        initializeSnowQuantity();
+                        startUpsellTimer();
+                    }
+                }, 1000);
+            }
+
+            window.acceptSubscription = async function() {
+                if (processing) {
+                    console.log('⚠️ Already processing, ignoring click');
+                    return;
+                }
+                
+                processing = true;
+                const button = document.getElementById('sub-accept-btn');
+                const errorDiv = document.getElementById('sub-error-message');
+                
+                button.disabled = true;
+                document.getElementById('sub-accept-text').classList.add('hidden');
+                document.getElementById('sub-accept-loading').classList.remove('hidden');
+                errorDiv.classList.add('hidden');
+                
+                try {
+                    console.log('📦 Adding subscription for', subscriptionQuantity, 'children');
+                    
+                    const response = await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/upsell/accept-subscription', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJncGNncmhmbm12YXhia2Z6Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NjY3MzAsImV4cCI6MjA3NjA0MjczMH0.eDun3lViK4XA--bTwRTqyCTBO40B8JU7m12mc4Jz2mo'
+                        },
+                        body: JSON.stringify({
+                            orderToken: orderToken,
+                            quantity: subscriptionQuantity
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Failed to add subscription');
+                    }
+                    
+                    console.log('✅ Subscription added successfully:', data);
+                    
+                    // Clear timer and reset state
+                    if (currentTimer) clearInterval(currentTimer);
+                    processing = false;
+                    
+                    // Transition to next page
+                    document.getElementById('subscription-page').classList.add('hidden');
+                    document.getElementById('upsell-page').classList.remove('hidden');
+                    initializeSnowQuantity();
+                    startUpsellTimer();
+                    
+                } catch (error) {
+                    console.error('❌ Subscription error:', error);
+                    errorDiv.textContent = error.message || 'Error adding subscription. Please try again.';
+                    errorDiv.classList.remove('hidden');
+                    processing = false;
+                    button.disabled = false;
+                    document.getElementById('sub-accept-text').classList.remove('hidden');
+                    document.getElementById('sub-accept-loading').classList.add('hidden');
+                }
+            }
+
+            window.declineSubscription = function() {
+                console.log('⏭️ Subscription declined');
+                if (currentTimer) clearInterval(currentTimer);
+                processing = false;
+                document.getElementById('subscription-page').classList.add('hidden');
+                document.getElementById('upsell-page').classList.remove('hidden');
+                initializeSnowQuantity();
+                startUpsellTimer();
+            }
+
+            // =====================================================
+            // SNOW UPSELL FUNCTIONS
+            // =====================================================
+
+            function initializeSnowQuantity() {
+                try {
+                    const packages = JSON.parse(localStorage.getItem('santaLetterPackages') || '[]');
+                    const letterCount = packages.length || 1;
+                    
+                    console.log('❄️ Auto-selecting', letterCount, 'jars based on order');
+                    
+                    upsellQuantity = letterCount;
+                    updateUpsellTotal();
+                } catch (error) {
+                    console.error('Error auto-selecting snow quantity:', error);
+                }
+            }
+
+            // Start upsell page timer
+            function startUpsellTimer() {
+                const timerDisplay = document.getElementById('timer');
+                if (!timerDisplay) return;
+                
+                timeLeft = 120; // ✅ FIXED: Reset timer
+                if (currentTimer) clearInterval(currentTimer);
+                
+                currentTimer = setInterval(() => {
+                    timeLeft--;
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(currentTimer);
+                        console.log('⏱️ Snow timer expired, showing downsell');
+                        document.getElementById('upsell-page').classList.add('hidden');
+                        document.getElementById('downsell-page').classList.remove('hidden');
+                        initializeDownsellQuantity();
+                    }
+                }, 1000);
+            }
+
+            function updateUpsellTotal() {
+                const total = (upsellQuantity * UPSELL_PRICE).toFixed(2);
+                document.getElementById('upsell-total-price').textContent = '$' + total;
+                document.getElementById('accept-qty').textContent = upsellQuantity;
+                document.getElementById('accept-label').textContent = upsellQuantity === 1 ? 'Jar' : 'Jars';
+                document.getElementById('upsell-quantity-display').textContent = upsellQuantity;
+                document.getElementById('upsell-quantity-label').textContent = upsellQuantity === 1 ? 'jar' : 'jars';
+                
+                document.querySelectorAll('.qty-btn-upsell').forEach(btn => {
+                    btn.classList.remove('bg-green-600', 'text-white');
+                    btn.classList.add('bg-gray-100', 'text-gray-700');
+                });
+                
+                const selectedBtn = Array.from(document.querySelectorAll('.qty-btn-upsell')).find(btn => 
+                    parseInt(btn.textContent) === upsellQuantity
+                );
+                if (selectedBtn) {
+                    selectedBtn.classList.remove('bg-gray-100', 'text-gray-700');
+                    selectedBtn.classList.add('bg-green-600', 'text-white');
+                }
+            }
+
+            window.setUpsellQuantity = function(qty) {
+                if (!processing) {
+                    upsellQuantity = qty;
+                    updateUpsellTotal();
+                }
+            }
+
+            window.increaseUpsellQuantity = function() {
+                if (!processing) {
+                    upsellQuantity++;
+                    updateUpsellTotal();
+                }
+            }
+
+            window.decreaseUpsellQuantity = function() {
+                if (!processing && upsellQuantity > 1) {
+                    upsellQuantity--;
+                    updateUpsellTotal();
+                }
+            }
+
+            window.acceptUpsell = async function() {
+                if (processing) {
+                    console.log('⚠️ Already processing, ignoring click');
+                    return;
+                }
+                
+                processing = true;
+                const button = document.getElementById('accept-btn');
+                const errorDiv = document.getElementById('error-message');
+                
+                button.disabled = true;
+                document.getElementById('accept-text').classList.add('hidden');
+                document.getElementById('accept-loading').classList.remove('hidden');
+                errorDiv.classList.add('hidden');
+                
+                try {
+                    const amount = upsellQuantity * UPSELL_PRICE;
+                    console.log('💳 Charging for', upsellQuantity, 'jars at $' + UPSELL_PRICE, '= $' + amount.toFixed(2));
+                    
+                    const response = await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/upsell/accept-snow', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJncGNncmhmbm12YXhia2Z6Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NjY3MzAsImV4cCI6MjA3NjA0MjczMH0.eDun3lViK4XA--bTwRTqyCTBO40B8JU7m12mc4Jz2mo'
+                        },
+                        body: JSON.stringify({
+                            orderToken: orderToken,
+                            quantity: upsellQuantity
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Payment failed');
+                    }
+                    
+                    console.log('✅ Snow upsell accepted, proceeding to AI Call offer');
+                    
+                    if (currentTimer) clearInterval(currentTimer);
+                    processing = false;
+                    
+                    document.getElementById('upsell-page').classList.add('hidden');
+                    document.getElementById('ai-call-page').classList.remove('hidden');
+                    window.scrollTo(0, 0);
+                    initializeAICallPage();
+                    
+                } catch (error) {
+                    console.error('❌ Upsell error:', error);
+                    errorDiv.textContent = error.message || 'Payment failed. Please try again.';
+                    errorDiv.classList.remove('hidden');
+                    processing = false;
+                    button.disabled = false;
+                    document.getElementById('accept-text').classList.remove('hidden');
+                    document.getElementById('accept-loading').classList.add('hidden');
+                }
+            }
+
+            window.declineUpsell = function() {
+                console.log('⏭️ Snow upsell declined, showing downsell');
+                if (currentTimer) clearInterval(currentTimer);
+                processing = false;
+                document.getElementById('upsell-page').classList.add('hidden');
+                document.getElementById('downsell-page').classList.remove('hidden');
+                initializeDownsellQuantity();
+            }
+
+            // =====================================================
+            // SNOW DOWNSELL FUNCTIONS
+            // =====================================================
+
+            function initializeDownsellQuantity() {
+                try {
+                    const packages = JSON.parse(localStorage.getItem('santaLetterPackages') || '[]');
+                    const letterCount = packages.length || 1;
+                    
+                    console.log('💰 Auto-selecting', letterCount, 'jars for downsell');
+                    
+                    downsellQuantity = letterCount;
+                    updateDownsellTotal();
+                } catch (error) {
+                    console.error('Error auto-selecting downsell quantity:', error);
+                }
+            }
+
+            function updateDownsellTotal() {
+                const total = (downsellQuantity * DOWNSELL_PRICE).toFixed(2);
+                document.getElementById('downsell-total-price').textContent = '$' + total;
+                document.getElementById('downsell-qty').textContent = downsellQuantity;
+                document.getElementById('downsell-label').textContent = downsellQuantity === 1 ? 'Jar' : 'Jars';
+                document.getElementById('downsell-price').textContent = total;
+                document.getElementById('downsell-quantity-display').textContent = downsellQuantity;
+                document.getElementById('downsell-quantity-label').textContent = downsellQuantity === 1 ? 'jar' : 'jars';
+                
+                document.querySelectorAll('.qty-btn-downsell').forEach(btn => {
+                    btn.classList.remove('bg-orange-600', 'text-white');
+                    btn.classList.add('bg-gray-100', 'text-gray-700');
+                });
+                
+                const selectedBtn = Array.from(document.querySelectorAll('.qty-btn-downsell')).find(btn => 
+                    parseInt(btn.textContent) === downsellQuantity
+                );
+                if (selectedBtn) {
+                    selectedBtn.classList.remove('bg-gray-100', 'text-gray-700');
+                    selectedBtn.classList.add('bg-orange-600', 'text-white');
+                }
+            }
+
+            window.setDownsellQuantity = function(qty) {
+                if (!processing) {
+                    downsellQuantity = qty;
+                    updateDownsellTotal();
+                }
+            }
+
+            window.increaseDownsellQuantity = function() {
+                if (!processing) {
+                    downsellQuantity++;
+                    updateDownsellTotal();
+                }
+            }
+
+            window.decreaseDownsellQuantity = function() {
+                if (!processing && downsellQuantity > 1) {
+                    downsellQuantity--;
+                    updateDownsellTotal();
+                }
+            }
+
+            window.acceptDownsell = async function() {
+                if (processing) {
+                    console.log('⚠️ Already processing, ignoring click');
+                    return;
+                }
+                
+                processing = true;
+                const button = document.getElementById('downsell-accept-btn');
+                const errorDiv = document.getElementById('downsell-error');
+                
+                button.disabled = true;
+                document.getElementById('downsell-accept-text').classList.add('hidden');
+                document.getElementById('downsell-loading').classList.remove('hidden');
+                errorDiv.classList.add('hidden');
+                
+                try {
+                    const amount = downsellQuantity * DOWNSELL_PRICE;
+                    console.log('💳 Charging for', downsellQuantity, 'jars at $' + DOWNSELL_PRICE, '= $' + amount.toFixed(2));
+                    
+                    const response = await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/upsell/accept-snow-downsell', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJncGNncmhmbm12YXhia2Z6Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NjY3MzAsImV4cCI6MjA3NjA0MjczMH0.eDun3lViK4XA--bTwRTqyCTBO40B8JU7m12mc4Jz2mo'
+                        },
+                        body: JSON.stringify({
+                            orderToken: orderToken,
+                            quantity: downsellQuantity
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Payment failed');
+                    }
+                    
+                    console.log('✅ Snow downsell accepted, proceeding to AI Call offer');
+                    
+                    processing = false;
+                    
+                    document.getElementById('downsell-page').classList.add('hidden');
+                    document.getElementById('ai-call-page').classList.remove('hidden');
+                    window.scrollTo(0, 0);
+                    initializeAICallPage();
+                    
+                } catch (error) {
+                    console.error('❌ Downsell error:', error);
+                    errorDiv.textContent = error.message || 'Payment failed. Please try again.';
+                    errorDiv.classList.remove('hidden');
+                    processing = false;
+                    button.disabled = false;
+                    document.getElementById('downsell-accept-text').classList.remove('hidden');
+                    document.getElementById('downsell-loading').classList.add('hidden');
+                }
+            }
+
+            window.skipDownsell = function() {
+                console.log('⏭️ Downsell skipped, proceeding to AI Call offer');
+                processing = false;
+                document.getElementById('downsell-page').classList.add('hidden');
+                document.getElementById('ai-call-page').classList.remove('hidden');
+                window.scrollTo(0, 0);
+                initializeAICallPage();
+            }
+
+            // =====================================================
+            // AI CALL FUNCTIONS (NEW CHECKBOX UPGRADE FLOW)
+            // =====================================================
+
+            function initializeAICallPage() {
+                try {
+                    const packages = JSON.parse(localStorage.getItem('santaLetterPackages') || '[]');
+                    const letterCount = packages.length || 1;
+                    
+                    console.log('🎅 Initializing AI Call page for', letterCount, 'children');
+                    
+                    aiCallQuantity = letterCount;
+                    unlimitedUpgrade = false;
+                    document.getElementById('unlimited-upgrade').checked = false;
+                    
+                    updateAICallTotal();
+                } catch (error) {
+                    console.error('Error initializing AI Call page:', error);
+                }
+            }
+
+            window.toggleUnlimited = function() {
+                unlimitedUpgrade = document.getElementById('unlimited-upgrade').checked;
+                updateAICallTotal();
+                
+                const totalBox = document.getElementById('ai-call-total-box');
+                totalBox.classList.remove('pulse-once');
+                void totalBox.offsetWidth;
+                totalBox.classList.add('pulse-once');
+            }
+
+            function updateAICallTotal() {
+                const baseTotal = aiCallQuantity * AI_CALL_BASE_PRICE;
+                const upgradeTotal = unlimitedUpgrade ? (aiCallQuantity * AI_CALL_UPGRADE_PRICE) : 0;
+                const total = baseTotal + upgradeTotal;
+                
+                document.getElementById('ai-call-total-price').textContent = '$' + total.toFixed(2);
+                document.getElementById('ai-call-quantity-display').textContent = aiCallQuantity;
+                
+                document.getElementById('ai-call-base-calc').textContent = `${aiCallQuantity} children × $${AI_CALL_BASE_PRICE.toFixed(2)}`;
+                
+                const upgradeCalc = document.getElementById('ai-call-upgrade-calc');
+                if (unlimitedUpgrade) {
+                    upgradeCalc.textContent = ` + Unlimited upgrade ($${AI_CALL_UPGRADE_PRICE.toFixed(2)} × ${aiCallQuantity})`;
+                    upgradeCalc.classList.remove('hidden');
+                } else {
+                    upgradeCalc.classList.add('hidden');
+                }
+            }
+
+            window.increaseAICallQuantity = function() {
+                if (!processing) {
+                    aiCallQuantity++;
+                    updateAICallTotal();
+                }
+            }
+
+            window.decreaseAICallQuantity = function() {
+                if (!processing && aiCallQuantity > 1) {
+                    aiCallQuantity--;
+                    updateAICallTotal();
+                }
+            }
+
+            window.acceptAICall = async function() {
+                if (processing) {
+                    console.log('⚠️ Already processing, ignoring click');
+                    return;
+                }
+                
+                processing = true;
+                const button = document.getElementById('ai-call-accept-btn');
+                const errorDiv = document.getElementById('ai-call-error');
+                
+                button.disabled = true;
+                document.getElementById('ai-call-accept-text').classList.add('hidden');
+                document.getElementById('ai-call-loading').classList.remove('hidden');
+                errorDiv.classList.add('hidden');
+                
+                try {
+                    const baseTotal = aiCallQuantity * AI_CALL_BASE_PRICE;
+                    const upgradeTotal = unlimitedUpgrade ? (aiCallQuantity * AI_CALL_UPGRADE_PRICE) : 0;
+                    const total = baseTotal + upgradeTotal;
+                    
+                    console.log('💳 Processing AI Call payment:', {
+                        quantity: aiCallQuantity,
+                        unlimitedUpgrade: unlimitedUpgrade,
+                        baseTotal: baseTotal.toFixed(2),
+                        upgradeTotal: upgradeTotal.toFixed(2),
+                        total: total.toFixed(2)
+                    });
+                    
+                    const response = await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/santa-ai-call/charge', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJncGNncmhmbm12YXhia2Z6Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NjY3MzAsImV4cCI6MjA3NjA0MjczMH0.eDun3lViK4XA--bTwRTqyCTBO40B8JU7m12mc4Jz2mo'
+                        },
+                        body: JSON.stringify({
+                            accessToken: orderToken,
+                            quantity: aiCallQuantity,
+                            unlimitedUpgrade: unlimitedUpgrade
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Payment failed');
+                    }
+                    
+                    console.log('✅ Payment successful! Proceeding to form...');
+                    
+                    aiChildrenData = [];
+                    for (let i = 0; i < aiCallQuantity; i++) {
+                        aiChildrenData.push({});
+                    }
+                    
+                    processing = false;
+                    document.getElementById('ai-call-offer').classList.add('hidden');
+                    document.getElementById('ai-call-form').classList.remove('hidden');
+                    
+                    document.getElementById('ai-total-children').textContent = aiCallQuantity;
+                    document.getElementById('ai-total-steps').textContent = aiQuestions.length;
+                    
+                    aiCurrentChild = 1;
+                    aiCurrentStep = 1;
+                    
+                    renderAIQuestion();
+                    
+                } catch (error) {
+                    console.error('❌ Payment error:', error);
+                    errorDiv.textContent = error.message || 'Payment failed. Please try again.';
+                    errorDiv.classList.remove('hidden');
+                    processing = false;
+                    button.disabled = false;
+                    document.getElementById('ai-call-accept-text').classList.remove('hidden');
+                    document.getElementById('ai-call-loading').classList.add('hidden');
+                }
+            }
+
+            window.skipAICall = function() {
+                console.log('⏭️ Skipping AI Call');
+                processing = false;
+                window.location.href = '/?token=' + orderToken;
+            }
+
+            function renderAIQuestion() {
+                const question = aiQuestions[aiCurrentStep - 1];
+                const container = document.getElementById('ai-question-container');
+                
+                document.getElementById('ai-current-child').textContent = aiCurrentChild;
+                document.getElementById('ai-current-step').textContent = aiCurrentStep;
+                
+                const totalSteps = aiCallQuantity * aiQuestions.length;
+                const currentProgress = ((aiCurrentChild - 1) * aiQuestions.length + aiCurrentStep) / totalSteps * 100;
+                document.getElementById('ai-progress-bar').style.width = currentProgress + '%';
+                
+                let inputHTML = '';
+                const savedValue = aiChildrenData[aiCurrentChild - 1][question.field] || '';
+                
+                if (question.type === 'text') {
+                    inputHTML = `<input type="text" id="ai-answer" value="${savedValue}" class="w-full px-6 py-4 text-xl border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none" placeholder="${question.placeholder}" autofocus>`;
+                } else if (question.type === 'tel') {
+                    inputHTML = `<input type="tel" id="ai-answer" value="${savedValue}" class="w-full px-6 py-4 text-xl border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none" placeholder="${question.placeholder}" autofocus>`;
+                } else if (question.type === 'textarea') {
+                    inputHTML = `<textarea id="ai-answer" rows="4" class="w-full px-6 py-4 text-xl border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none" placeholder="${question.placeholder}" autofocus>${savedValue}</textarea>`;
+                } else if (question.type === 'datetime') {
+                    inputHTML = `<input type="datetime-local" id="ai-answer" value="${savedValue}" class="w-full px-6 py-4 text-xl border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none" autofocus>`;
+                }
+                
+                const requiredBadge = question.required 
+                    ? '<span class="inline-block bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-bold ml-2">Required</span>'
+                    : '<span class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-bold ml-2">Optional</span>';
+                
+                container.innerHTML = `
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                            ${question.title}
+                            ${requiredBadge}
+                        </h2>
+                        <p class="text-lg text-gray-600">${question.subtitle}</p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        ${inputHTML}
+                    </div>
+                `;
+                
+                const backBtn = document.getElementById('ai-back-btn');
+                const nextBtn = document.getElementById('ai-next-btn');
+                
+                if (aiCurrentChild === 1 && aiCurrentStep === 1) {
+                    backBtn.classList.add('hidden');
+                } else {
+                    backBtn.classList.remove('hidden');
+                }
+                
+                if (aiCurrentChild === aiCallQuantity && aiCurrentStep === aiQuestions.length) {
+                    nextBtn.textContent = '🎅 Complete!';
+                } else {
+                    nextBtn.textContent = question.required ? 'Continue →' : 'Continue (or Skip) →';
+                }
+                
+                setTimeout(() => {
+                    document.getElementById('ai-answer').focus();
+                }, 100);
+            }
+
+            window.goNextAIForm = async function() {
+                const question = aiQuestions[aiCurrentStep - 1];
+                const answer = document.getElementById('ai-answer').value.trim();
+                
+                if (question.required && !answer) {
+                    alert('This field is required!');
+                    return;
+                }
+                
+                aiChildrenData[aiCurrentChild - 1][question.field] = answer;
+                
+                if (aiCurrentChild === aiCallQuantity && aiCurrentStep === aiQuestions.length) {
+                    await submitAICallData();
+                    return;
+                }
+                
+                if (aiCurrentStep < aiQuestions.length) {
+                    aiCurrentStep++;
+                } else {
+                    aiCurrentChild++;
+                    aiCurrentStep = 1;
+                }
+                
+                renderAIQuestion();
+            }
+
+            window.goBackAIForm = function() {
+                if (aiCurrentStep > 1) {
+                    aiCurrentStep--;
+                } else if (aiCurrentChild > 1) {
+                    aiCurrentChild--;
+                    aiCurrentStep = aiQuestions.length;
+                }
+                
+                renderAIQuestion();
+            }
+
+            async function submitAICallData() {
+                try {
+                    // Show loading overlay
+                    document.getElementById('final-loading-overlay').classList.remove('hidden');
+                    
+                    console.log('📤 Submitting AI Call data:', aiChildrenData);
+                    
+                    const response = await fetch('https://bgpcgrhfnmvaxbkfzcxo.supabase.co/functions/v1/make-server-cf244566/santa-ai-call/schedule', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJncGNncmhmbm12YXhia2Z6Y3hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NjY3MzAsImV4cCI6MjA3NjA0MjczMH0.eDun3lViK4XA--bTwRTqyCTBO40B8JU7m12mc4Jz2mo'
+                        },
+                        body: JSON.stringify({
+                            accessToken: orderToken,
+                            callsData: aiChildrenData,
+                            unlimitedUpgrade: unlimitedUpgrade
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Failed to schedule calls');
+                    }
+                    
+                    console.log('✅ AI Calls scheduled successfully!');
+                    window.location.href = '/?token=' + orderToken;
+                    
+                } catch (error) {
+                    console.error('❌ Error scheduling calls:', error);
+                    // Hide loading overlay on error
+                    document.getElementById('final-loading-overlay').classList.add('hidden');
+                    alert('Error scheduling calls: ' + error.message);
+                }
+            }
+
+            // Initialize on page load
+            initializeSubscriptionQuantity();
+            startSubscriptionTimer();
+            
+            // Ensure subscription page is visible
+            document.getElementById('subscription-page').classList.remove('hidden');
+            document.getElementById('upsell-page').classList.add('hidden');
+            document.getElementById('downsell-page').classList.add('hidden');
+            document.getElementById('ai-call-page').classList.add('hidden');
+            console.log('✅ Page visibility reset for fresh session');
+        });
+    </script>
+
+</body>
+</html>

@@ -1755,23 +1755,25 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
           break;
         
         case "fulfill":
-          const fulfillResponse = await fetch(API_URL + "/orders/bulk/status", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + publicAnonKey,
-            },
-            body: JSON.stringify({
-              orderIds: selectedIds,
-              status: "fulfilled"
-            }),
-          });
-
-          if (!fulfillResponse.ok) {
-            throw new Error("Failed to bulk fulfill orders");
+          // Call individual status update for each order
+          let succeeded = 0;
+          let failed = 0;
+          
+          for (const orderId of selectedIds) {
+            try {
+              await updateOrderStatus(orderId, "fulfilled");
+              succeeded++;
+            } catch (error) {
+              console.error(`Failed to fulfill order ${orderId}:`, error);
+              failed++;
+            }
           }
-
-          const fulfillData = await fulfillResponse.json();
+          
+          if (failed === 0) {
+            alert(`✅ Marked ${succeeded} order(s) as fulfilled!\n\n📧 Fulfillment emails have been sent to customers.`);
+          } else {
+            alert(`⚠️ Bulk fulfillment completed with errors:\n\n✅ ${succeeded} orders fulfilled\n❌ ${failed} orders failed`);
+          }
           break;
 
         case "pending":

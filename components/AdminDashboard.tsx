@@ -231,7 +231,7 @@ export function AdminDashboard({ onBackToSales, onGoToAffiliateManage, onGoToUps
   // Pagination state
   const [regularOrdersPage, setRegularOrdersPage] = useState(1);
   const [subscriptionOrdersPage, setSubscriptionOrdersPage] = useState(1);
-  const ORDERS_PER_PAGE = 25;
+  const ORDERS_PER_PAGE = 125;
 
   // Bulk selection state
   const [selectedRegularOrders, setSelectedRegularOrders] = useState<Set<string>>(new Set());

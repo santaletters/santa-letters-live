@@ -1435,7 +1435,7 @@ A separate subscription order has been created. You can view it in your email co
             </li>
             <li className="flex gap-2">
               <span className="flex-shrink-0">3️⃣</span>
-              <span>You'll receive tracking information via email once it ships</span>
+              <span>You'll receive a  notification via email once it ships</span>
             </li>
             <li className="flex gap-2">
               <span className="flex-shrink-0">4️⃣</span>
@@ -1466,7 +1466,7 @@ A separate subscription order has been created. You can view it in your email co
         </div>
         
         <p className="mt-6 text-xs text-gray-500 text-center">
-          Bookmark this page to check your order status and tracking information
+          Bookmark this page to check your order status
         </p>
         
         <div className="mt-4 flex items-center justify-center">
